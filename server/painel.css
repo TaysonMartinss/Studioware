@@ -49,9 +49,28 @@ code { font: 12px ui-monospace, Consolas, monospace; background: var(--elevado);
 .marca { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 15px; letter-spacing: -.01em; }
 .marca .logo { width: 26px; height: 26px; border-radius: 8px; background: var(--acento); display: grid; place-items: center; color: #fff; }
 .topo-acoes { display: flex; align-items: center; gap: 10px; min-width: 0; }
-.seletor-canal { display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 4px 0 10px; border: 1px solid var(--borda); border-radius: var(--raio); background: var(--campo); color: var(--suave); min-width: 0; }
-.seletor-canal select { border: 0; background-color: transparent; color: var(--texto); font-weight: 500; height: 32px; padding: 0 26px 0 0; max-width: 260px; box-shadow: none !important; }
-.seletor-canal:focus-within { border-color: var(--acento); }
+/* seletor de canal: botão com a logo e menu próprio (a lista nativa do Windows ignora o tema) */
+.seletor-canal-caixa { position: relative; }
+.seletor-canal { display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 12px 0 6px; border: 1px solid var(--borda); border-radius: var(--raio); background: var(--campo); color: var(--suave); cursor: pointer; max-width: 300px; text-align: left; }
+.seletor-canal:hover { border-color: var(--borda-forte); }
+.seletor-canal[aria-expanded="true"] { border-color: var(--acento); box-shadow: 0 0 0 3px var(--acento-suave); }
+.seletor-canal-texto { display: flex; flex-direction: column; min-width: 0; line-height: 1.15; }
+.seletor-canal-texto small { font-size: 10.5px; color: var(--fraco); text-transform: uppercase; letter-spacing: .05em; }
+.seletor-canal-texto b { color: var(--texto); font-weight: 600; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* logos sempre sobre fundo escuro, como na marca d'água por cima do vídeo (logos brancas não somem no tema claro) */
+.canal-mini { width: 28px; height: 28px; border-radius: 7px; flex-shrink: 0; display: grid; place-items: center; background: #2a2e36; overflow: hidden; color: #aab1bd; }
+.canal-mini img { width: 100%; height: 100%; object-fit: contain; padding: 3px; }
+.menu-canal { position: absolute; right: 0; top: calc(100% + 6px); width: 300px; max-height: 70vh; overflow: auto; background: var(--painel); border: 1px solid var(--borda-forte); border-radius: var(--raio); box-shadow: var(--sombra); padding: 6px; z-index: 30; outline: none; }
+.menu-canal [role="option"] { display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px; border: 0; border-radius: var(--raio-peq); background: none; color: var(--texto); cursor: pointer; text-align: left; }
+.menu-canal [role="option"]:hover, .menu-canal [role="option"].foco { background: var(--elevado); }
+.menu-canal [role="option"] > span:nth-child(2) { flex: 1; display: flex; flex-direction: column; min-width: 0; line-height: 1.3; }
+.menu-canal [role="option"] b { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.menu-canal [role="option"] small { color: var(--suave); font-size: 12px; }
+.menu-canal .marcado { color: var(--acento); visibility: hidden; }
+.menu-canal [aria-selected="true"] .marcado { visibility: visible; }
+.menu-canal hr { border: 0; border-top: 1px solid var(--borda); margin: 6px 4px; }
+.menu-canal .acao-menu { display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px; border: 0; border-radius: var(--raio-peq); background: none; color: var(--suave); cursor: pointer; text-align: left; }
+.menu-canal .acao-menu:hover, .menu-canal .acao-menu.foco { background: var(--elevado); color: var(--texto); }
 .chip-fila { display: inline-flex; align-items: center; gap: 8px; height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--borda); background: var(--elevado); color: var(--texto); font-size: 13px; font-weight: 500; cursor: pointer; }
 .chip-fila:hover { border-color: var(--borda-forte); }
 
@@ -152,6 +171,7 @@ input[type=text], input[type=password], input[type=time], input[type=search], in
 input:hover, select:hover, textarea:hover { border-color: var(--fraco); }
 input:focus, select:focus, textarea:focus { border-color: var(--acento); box-shadow: 0 0 0 3px var(--acento-suave); }
 textarea { resize: vertical; min-height: 72px; line-height: 1.5; }
+select option, select optgroup { background: var(--painel); color: var(--texto); }
 select { appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--suave) 50%), linear-gradient(135deg, var(--suave) 50%, transparent 50%); background-position: calc(100% - 14px) 50%, calc(100% - 10px) 50%; background-size: 4px 4px; background-repeat: no-repeat; padding-right: 28px; }
 .linha { display: flex; gap: 8px; align-items: center; }
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
@@ -320,7 +340,7 @@ dialog.modal { margin: auto; width: min(460px, calc(100vw - 32px)); }
 .canal-cartao { display: flex; gap: 14px; align-items: flex-start; padding: 16px; border: 1px solid var(--borda); border-radius: var(--raio-grande); background: var(--painel); }
 .canal-cartao.atual { border-color: var(--acento); box-shadow: inset 0 0 0 1px var(--acento); }
 .canal-logo { width: 48px; height: 48px; flex-shrink: 0; border-radius: 10px; object-fit: contain; padding: 4px;
-  background: repeating-conic-gradient(#8881 0% 25%, transparent 0% 50%) 50% / 12px 12px; }
+  background: #2a2e36 repeating-conic-gradient(#ffffff0d 0% 25%, transparent 0% 50%) 50% / 12px 12px; }
 
 /* ================= telas menores ================= */
 @media (max-width: 1000px) {
@@ -344,7 +364,9 @@ dialog.modal { margin: auto; width: min(460px, calc(100vw - 32px)); }
   .passos button { justify-content: center; }
   .grid2, .grid3 { grid-template-columns: 1fr; }
   .marca span, .chip-fila span:last-child { display: none; }
-  .seletor-canal select { max-width: 150px; }
+  .seletor-canal-texto small { display: none; }
+  .seletor-canal { max-width: 170px; }
+  .menu-canal { width: min(300px, calc(100vw - 32px)); }
   .cabeca-pagina h1 { font-size: 21px; }
   .toast { left: 16px; right: 16px; bottom: 76px; }
 }

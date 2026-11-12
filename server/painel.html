@@ -19,10 +19,15 @@
   </div>
   <div class="topo-acoes">
     <button class="chip-fila" id="chipFila" onclick="irPara('producao')" hidden><span class="ponto vivo"></span><span id="textoChipFila">0 em produção</span></button>
-    <div class="seletor-canal">
-      <i class="i" style="--u:url(/icones/tv.svg)" aria-hidden="true"></i>
-      <label class="sr" for="canal">Canal</label>
-      <select id="canal" onchange="mudouCanal()"></select>
+    <!-- o <select> guarda o valor (o resto do painel lê #canal); o menu é o que se vê -->
+    <select id="canal" hidden onchange="mudouCanal()"></select>
+    <div class="seletor-canal-caixa">
+      <button type="button" class="seletor-canal" id="btnCanal" aria-haspopup="listbox" aria-expanded="false" aria-controls="menuCanal">
+        <span class="canal-mini" id="canalAtualLogo"></span>
+        <span class="seletor-canal-texto"><small>Canal</small><b id="canalAtualNome"></b></span>
+        <i class="i" style="--u:url(/icones/chevron-down.svg);width:14px;height:14px" aria-hidden="true"></i>
+      </button>
+      <div class="menu-canal" id="menuCanal" role="listbox" aria-label="Escolher canal" tabindex="-1" hidden></div>
     </div>
     <button class="btn fantasma icone" onclick="alternarTema()" title="Tema claro ou escuro" aria-label="Alternar tema claro ou escuro"><i class="i" id="iconeTema" style="--u:url(/icones/moon.svg)"></i></button>
   </div>

@@ -197,6 +197,7 @@ function criarDoAssistente() {
 // canal no topo: muda o contexto de todas as páginas
 function mudouCanal() {
   try { localStorage.canal = $("#canal").value; } catch {}
+  desenharSeletorCanal();
   const vista = location.hash.slice(1);
   if (vista === "ideias") abrirIdeias();
   if (vista === "canais") desenharListaCanais();
@@ -484,7 +485,64 @@ function desenharCanais(escolher) {
   $("#canal").innerHTML = opcoesCanal(guardado);
   if (!$("#canal").value || ($("#canal").value !== "nenhum" && !OPCOES.canais?.[$("#canal").value])) $("#canal").value = primeiroCanal();
   try { localStorage.canal = $("#canal").value; } catch {}
+  desenharSeletorCanal();
 }
+
+// menu do canal no topo: logo, nome e @ de cada canal, com teclado (setas, Enter, Esc)
+const logoMini = (c) => c ? `<img src="/public/${esc(c.logo)}" alt="" style="image-rendering:${c.pixelado ? "pixelated" : "auto"}">` : ic("eye-off", 14);
+function desenharSeletorCanal() {
+  const atual = $("#canal").value, c = OPCOES.canais?.[atual];
+  $("#canalAtualLogo").innerHTML = logoMini(c);
+  $("#canalAtualNome").textContent = c ? c.nome : "Sem marca d'água";
+  $("#btnCanal").setAttribute("aria-label", `Canal: ${c ? c.nome : "sem marca d'água"}. Trocar canal`);
+  const itens = [...Object.entries(OPCOES.canais ?? {}).map(([id, k]) => [id, k]), ["nenhum", null]];
+  $("#menuCanal").innerHTML = itens.map(([id, k]) => `
+    <div role="option" tabindex="-1" data-canal="${esc(id)}" aria-selected="${id === atual}">
+      <span class="canal-mini">${logoMini(k)}</span>
+      <span><b>${esc(k ? k.nome : "Sem marca d'água")}</b><small>${esc(k ? k.arroba : "O vídeo sai sem logo nem @")}</small></span>
+      <i class="i marcado" style="--u:url(/icones/check.svg)"></i>
+    </div>`).join("") + `<hr><button type="button" class="acao-menu" data-acao="gerir" tabindex="-1">${ic("settings", 16)}Gerir canais</button>`;
+}
+function abrirMenuCanal(focarPrimeiro = false) {
+  $("#menuCanal").hidden = false;
+  $("#btnCanal").setAttribute("aria-expanded", "true");
+  const itens = [...$("#menuCanal").querySelectorAll("[role=option], .acao-menu")];
+  const alvo = focarPrimeiro ? itens[0] : itens.find((i) => i.getAttribute("aria-selected") === "true") ?? itens[0];
+  focarItemCanal(alvo);
+}
+function fecharMenuCanal(devolverFoco = false) {
+  $("#menuCanal").hidden = true;
+  $("#btnCanal").setAttribute("aria-expanded", "false");
+  if (devolverFoco) $("#btnCanal").focus();
+}
+function focarItemCanal(el) {
+  $("#menuCanal").querySelectorAll(".foco").forEach((x) => x.classList.remove("foco"));
+  if (!el) return;
+  el.classList.add("foco");
+  el.focus();
+}
+function escolherItemCanal(el) {
+  if (!el) return;
+  if (el.dataset.acao === "gerir") { fecharMenuCanal(); return irPara("canais"); }
+  $("#canal").value = el.dataset.canal;
+  mudouCanal();
+  fecharMenuCanal(true);
+  toast(`Canal: ${OPCOES.canais?.[el.dataset.canal]?.nome ?? "sem marca d'água"}`, "check");
+}
+$("#btnCanal").addEventListener("click", () => ($("#menuCanal").hidden ? abrirMenuCanal() : fecharMenuCanal()));
+$("#btnCanal").addEventListener("keydown", (e) => { if (["ArrowDown", "ArrowUp"].includes(e.key)) { e.preventDefault(); abrirMenuCanal(); } });
+$("#menuCanal").addEventListener("click", (e) => escolherItemCanal(e.target.closest("[role=option], .acao-menu")));
+$("#menuCanal").addEventListener("keydown", (e) => {
+  const itens = [...$("#menuCanal").querySelectorAll("[role=option], .acao-menu")];
+  const i = itens.indexOf(document.activeElement);
+  if (e.key === "ArrowDown") { e.preventDefault(); focarItemCanal(itens[(i + 1) % itens.length]); }
+  else if (e.key === "ArrowUp") { e.preventDefault(); focarItemCanal(itens[(i - 1 + itens.length) % itens.length]); }
+  else if (e.key === "Home") { e.preventDefault(); focarItemCanal(itens[0]); }
+  else if (e.key === "End") { e.preventDefault(); focarItemCanal(itens.at(-1)); }
+  else if (e.key === "Enter" || e.key === " ") { e.preventDefault(); escolherItemCanal(document.activeElement); }
+  else if (e.key === "Escape" || e.key === "Tab") { fecharMenuCanal(e.key === "Escape"); }
+});
+document.addEventListener("click", (e) => { if (!$("#menuCanal").hidden && !e.target.closest(".seletor-canal-caixa")) fecharMenuCanal(); });
 
 // ---------- criar e editar canais (nome, @, logo e nicho) ----------
 let canalEmEdicao = null, logoRascunho = null;
