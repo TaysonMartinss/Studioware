@@ -4,6 +4,7 @@
 // 9:16 (1080×1920) para Shorts/Reels/TikTok; 16:9 em 1280×720 para o YouTube (limite de 2 MB).
 import { criarBundle } from "./bundle.mjs";
 import { openBrowser, renderStill, selectComposition } from "@remotion/renderer";
+import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
@@ -18,7 +19,8 @@ const existe = (m) => m?.arquivo && (m.arquivo.startsWith("procedural:") || exis
 // mídias que podem ser fundo: as do gancho primeiro (é a imagem que prende), fotos antes de vídeos
 const candidatos = [];
 r.cenas.forEach((c, i) => {
-  for (const m of [c.midia, c.esquerda?.midia, c.direita?.midia]) {
+  // nos cortes, as fotos e vídeos dos apoios também servem de fundo
+  for (const m of [c.midia, c.esquerda?.midia, c.direita?.midia, ...(c.broll ?? []).map((b) => b.midia)]) {
     if (existe(m) && m.formato !== "modelo3d" && !candidatos.some((x) => x.arquivo === m.arquivo)) {
       candidatos.push({ arquivo: m.arquivo, formato: m.formato, inicioS: m.inicioS, cena: i, gancho: c.tipo === "gancho" });
     }
@@ -26,8 +28,37 @@ r.cenas.forEach((c, i) => {
 });
 candidatos.sort((a, b) => Number(b.gancho) - Number(a.gancho) || Number(a.formato === "video") - Number(b.formato === "video") || a.cena - b.cena);
 
+// cortes e clipes: frames do próprio vídeo (a pessoa), já no enquadramento vertical do vídeo (rosto ou webcam),
+// a 25%, 50% e 75% do corte. Ficam primeiro: num corte, a cara de quem fala é o que prende na capa.
+const ffmpeg = (args) => spawnSync("npx", ["remotion", "ffmpeg", ...args].map((a) => (/[\s&()^"]/.test(a) ? `"${a}"` : a)), { shell: true, encoding: "utf-8" });
+r.cenas.forEach((c, i) => {
+  if (c.tipo !== "clipe" || !c.arquivo || !existsSync(`public/${c.arquivo}`)) return;
+  const dur = (c.duracaoMs ?? 10000) / 1000, enq = c.enquadramento;
+  [0.25, 0.5, 0.75].forEach((q, k) => {
+    const t = dur * q;
+    const arquivo = `videos/${r.id}/capa-clipe-${i}-${k}.jpg`;
+    if (!existsSync(`public/${arquivo}`)) {
+      mkdirSync(`public/videos/${r.id}`, { recursive: true });
+      // recorte vertical: o x do corte nesse frame (modo seguir), a webcam (modo webcam) ou o centro
+      let filtro = "crop=ih*9/16:ih";
+      if (enq?.modo === "seguir" && enq.xs?.length && enq.cropLargura) filtro = `crop=${enq.cropLargura}:ih:${enq.xs[Math.min(enq.xs.length - 1, Math.round(t * enq.fps))]}:0`;
+      else if (enq?.modo === "webcam") {
+        const seg = [...(enq.segmentos ?? [])].reverse().find((sg) => sg.de <= t * enq.fps && (sg.cam || sg.rosto));
+        const [x, y, w, h] = seg?.cam ?? seg?.rosto ?? [0, 0, enq.largura, enq.altura];
+        filtro = seg?.cam ? `crop=${w}:${h}:${x}:${y}` : `crop=ih*9/16:ih:${Math.max(0, x + w / 2 - (enq.altura * 9) / 32)}:0`;
+      } else if (enq?.modo === "passa" || (c.largura ?? 9) <= (c.altura ?? 16)) filtro = "null";
+      const r2 = ffmpeg(["-y", "-loglevel", "error", "-ss", t.toFixed(2), "-i", `public/${c.arquivo}`, "-frames:v", "1", "-vf", `${filtro},scale=1080:-2`, "-q:v", "3", `public/${arquivo}`]);
+      if (r2.status !== 0) { console.log(`⚠ frame do clipe ${i + 1} (${q * 100}%): ${(r2.stderr || "").slice(-200)}`); return; }
+    }
+    if (!candidatos.some((x) => x.arquivo === arquivo)) candidatos.push({ arquivo, formato: "imagem", cena: i, gancho: true, clipe: true });
+  });
+});
+candidatos.sort((a, b) => Number(Boolean(b.clipe)) - Number(Boolean(a.clipe)) || Number(b.gancho) - Number(a.gancho) || Number(a.formato === "video") - Number(b.formato === "video") || a.cena - b.cena);
+
 // objeto em destaque: um modelo 3D do vídeo (mídia 3D ou cena modelo3d), senão o hardware procedural de um produto
 const objeto = (() => {
+  // o objeto 3D de uma frase de efeito editorial (cortes) ou da tipografia
+  for (const c of r.cenas) for (const o of [c.objeto, ...(c.broll ?? []).map((b) => b.cena?.objeto)]) if (o?.formato === "modelo3d" && existe(o)) return { arquivo: o.arquivo, formato: "modelo3d" };
   for (const c of r.cenas) if (c.midia?.formato === "modelo3d" && existe(c.midia)) return { arquivo: c.midia.arquivo, formato: "modelo3d" };
   for (const c of r.cenas) if (c.tipo === "modelo3d") return { arquivo: c.modelo?.arquivo && existsSync(`public/${c.modelo.arquivo}`) ? c.modelo.arquivo : `procedural:${c.procedural ?? "gpu"}`, formato: "modelo3d" };
   const hw = r.cenas.find((c) => c.tipo === "produto" && ["gpu", "cpu", "ram", "ssd"].includes(c.icone));
@@ -66,7 +97,7 @@ for (const { c, i } of cenas3D) {
   if (!candidatos.some((x) => x.arquivo === arquivo)) candidatos.push({ arquivo, formato: "imagem", cena: i, gancho: i === 0, tresD: true });
 }
 // as fotos reais continuam primeiro; os frames 3D entram pela ordem das cenas (o da abertura primeiro)
-candidatos.sort((a, b) => Number(Boolean(a.tresD)) - Number(Boolean(b.tresD)) || Number(b.gancho) - Number(a.gancho) || a.cena - b.cena);
+candidatos.sort((a, b) => Number(Boolean(b.clipe)) - Number(Boolean(a.clipe)) || Number(Boolean(a.tresD)) - Number(Boolean(b.tresD)) || Number(b.gancho) - Number(a.gancho) || a.cena - b.cena);
 const fundoFinal = candidatos[Math.max(0, Math.min(candidatos.length - 1, Number(opcao("fundo") ?? anterior.fundo ?? 0)))];
 const variantes = [];
 for (const layout of ["impacto", "dividido", "objeto"]) {
