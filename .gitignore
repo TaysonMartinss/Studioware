@@ -25,6 +25,8 @@ public/marca/rascunho-*.png
 public/modelos3d/
 # amostras de voz para clonar: são vozes de pessoas reais
 public/vozes/
+# fontes com licença própria (ex.: Keep Calm, paga para uso comercial)
+public/fontes/
 # logos de redes sociais do criador (não fazem parte do produto)
 marca-insta/
 

@@ -3,7 +3,8 @@ import { Estilo, useEstilo } from "../estilos";
 import { Palavra } from "../types";
 import { Icone } from "./Icone";
 import { AMARELO, FONTES, normalizar, pop } from "./motion";
-import { useEtapa, useFerver } from "./PapelMotion";
+import { useEtapa, useFerver, useOndular } from "./PapelMotion";
+import { FAMILIA_LEGENDA } from "./FonteLegenda";
 import { bounce6 } from "./ui";
 
 // local = frames desde que a palavra começou; ordem = posição entre os destaques (para alternar cores)
@@ -38,19 +39,14 @@ const VARIANTES: Record<Estilo["legenda"], Variante> = {
   padrao: {
     porPagina: 3, top: 1250, maiusculas: true,
     bloco: (e) => ({ fontFamily: FONTES[e.titulo], fontSize: 108, lineHeight: 1.1, gap: "0 26px" }),
-    // destaque só pela cor da letra (sem caixa por trás): a palavra ativa na cor do estilo, os destaques a amarelo; sem glow.
-    // Tremor do papel stop motion (cada palavra ligeiramente torta e a saltar ~12 vezes por segundo), com a fonte do estilo.
-    palavra: (e, cor, { s, ativa, destaque, semente, etapa }) => {
-      const foto = e.passo > 1 ? etapa : Math.floor(etapa / 2.5);
-      const j = (eixo: string) => random(`${semente}${eixo}${foto}`) - 0.5;
-      return {
-        color: destaque ? AMARELO : ativa ? cor : "#fff",
-        padding: "0 6px",
-        transform: `translate(${j("x") * 7}px, ${(1 - s) * 24 + j("y") * 5}px) scale(${(0.7 + 0.3 * s) * (ativa ? 1.06 : 1)}) rotate(${(random(semente) - 0.5) * 5 + j("r") * 2.5}deg)`,
-        WebkitTextStroke: "12px #000", paintOrder: "stroke fill",
-        textShadow: "0 6px 0 #000",
-      };
-    },
+    // destaque só pela cor da letra (sem caixa por trás): a palavra ativa na cor do estilo, os destaques a amarelo; sem glow
+    palavra: (e, cor, { s, ativa, destaque }) => ({
+      color: destaque ? AMARELO : ativa ? cor : "#fff",
+      padding: "0 6px",
+      transform: `scale(${(0.7 + 0.3 * s) * (ativa ? 1.06 : 1)}) translateY(${(1 - s) * 24}px)`,
+      WebkitTextStroke: "12px #000", paintOrder: "stroke fill",
+      textShadow: "0 6px 0 #000",
+    }),
   },
   hormozi: {
     porPagina: 2, top: 1210, maiusculas: true,
@@ -181,7 +177,10 @@ export const Legendas: React.FC<{ palavras: Palavra[]; destaques: Set<string>; c
   const e = useEstilo();
   const etapa = useEtapa();
   const ferver = useFerver();
+  const ondular = useOndular();
   const v = VARIANTES[e.legenda] ?? VARIANTES.padrao;
+  // todas as legendas menos a do papel: fonte Keep Calm (com a do estilo por trás) e letras a ondular
+  const papel = e.legenda === "papel";
   const ms = (f / fps) * 1000;
 
   const paginas = paginar(palavras, v.porPagina);
@@ -218,6 +217,7 @@ export const Legendas: React.FC<{ palavras: Palavra[]; destaques: Set<string>; c
         style={{
           display: "flex", flexWrap: "wrap", justifyContent: "center", textAlign: "center",
           textTransform: v.maiusculas ? "uppercase" : "none", ...v.bloco(e), ...v.caixa?.(e, abrir),
+          ...(papel ? {} : { fontFamily: `"${FAMILIA_LEGENDA}", ${v.bloco(e).fontFamily ?? "sans-serif"}` }),
         }}
       >
         {pagina.map((p, i) => {
@@ -231,7 +231,9 @@ export const Legendas: React.FC<{ palavras: Palavra[]; destaques: Set<string>; c
             destaque: destaques.has(n), negativa: NEGATIVAS.has(n), ordem: ordemDe(p),
             semente: `${indice}-${i}`, etapa, ferver: ferver(`${indice}-${i}`),
           };
-          return <span key={i} style={{ display: "inline-block", ...v.palavra(e, cor, estado) }}>{texto}</span>;
+          const estilo = v.palavra(e, cor, estado);
+          if (!papel) estilo.filter = [ondular(`${indice}-${i}`), estilo.filter].filter(Boolean).join(" ");
+          return <span key={i} style={{ display: "inline-block", ...estilo }}>{texto}</span>;
         })}
       </div>
     </div>

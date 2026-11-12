@@ -7,7 +7,7 @@ import { MarcaDagua } from "./components/MarcaDagua";
 import { Musica } from "./components/Musica";
 import { Sfx, SfxCtx, SFX_PADRAO } from "./components/Sfx";
 import { Overlay } from "./components/Overlay";
-import { ColagemPapel, FiltrosFerver } from "./components/PapelMotion";
+import { ColagemPapel, FiltrosFerver, FiltrosOndular } from "./components/PapelMotion";
 import { FiltrosAquarela } from "./components/Aquarela";
 import { Pico, SonsPico, calcularPicos } from "./components/Picos";
 import { RitmoCtx, normalizar, ritmoDaFala, zoomPunch } from "./components/motion";
@@ -122,6 +122,7 @@ export const Video: React.FC<{ manifest: Manifest }> = ({ manifest }) => {
       {estilo.rgbSplit ? <FiltroRgb d={estilo.rgbSplit} /> : null}
       {estilo.pixel ? <FiltroPixel tamanho={estilo.pixel.tamanho} niveis={estilo.pixel.niveis} /> : null}
       {estilo.tema === "papel" && <FiltrosFerver />}
+      <FiltrosOndular />
       {estilo.textura === "aquarela" && <FiltrosAquarela tinta={estilo.corTexto} />}
       <BarraProgresso cor={cor} />
     </AbsoluteFill>

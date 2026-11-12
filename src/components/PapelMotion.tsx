@@ -30,6 +30,25 @@ export const FiltrosFerver: React.FC = () => (
   </svg>
 );
 
+// Ondulação das letras das legendas (como o "Turbulent Displace" do Premiere): os contornos ondulam e mudam de forma
+// ~10 vezes por segundo, sem a palavra sair do sítio. Mais forte que o "ferver" do papel, porque a letra é grossa e tem contorno.
+export const FiltrosOndular: React.FC = () => (
+  <svg width={0} height={0} style={{ position: "absolute" }}>
+    {Array.from({ length: VARIANTES }, (_, k) => (
+      <filter key={k} id={`ondular-${k}`} x="-8%" y="-15%" width="116%" height="130%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.028" numOctaves={2} seed={k * 11 + 5} result="ruido" />
+        <feDisplacementMap in="SourceGraphic" in2="ruido" scale={9} xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+    ))}
+  </svg>
+);
+export const useOndular = () => {
+  const f = useCurrentFrame();
+  const { passo } = useEstilo();
+  const foto = Math.floor(f / (passo > 1 ? passo : 3));
+  return (semente = "") => `url(#ondular-${(foto + Math.floor(random(`on${semente}`) * VARIANTES)) % VARIANTES})`;
+};
+
 // filtro da variante atual (só no estilo papel); "extra" junta outro filtro (ex.: a sombra)
 export const useFerver = () => {
   const e = useEstilo();
