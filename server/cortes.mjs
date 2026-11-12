@@ -8,13 +8,14 @@ import { basename, join } from "node:path";
 
 const JANELA = 90, SOBREPOR = 30;
 
-export function criarCortes({ raiz, claudeJSON }) {
+export function criarCortes({ raiz, claudeJSON, guardarProcesso }) {
   const guia = join(raiz, ".claude/skills/novo-video/cortes.md");
   const pasta = (arquivo) => join(raiz, "out/cortes", basename(arquivo).replace(/\.[^.]+$/, ""));
 
   const transcrever = (t, arquivo) => new Promise((ok, falha) => {
     const saida = join(pasta(arquivo), "transcricao.json");
     const p = spawn(process.execPath, ["scripts/transcrever_longo.mjs", join("public", arquivo), saida], { cwd: raiz, stdio: ["ignore", "pipe", "pipe"] });
+    guardarProcesso?.(t, p);
     let erro = "";
     p.stdout.on("data", (d) => { const l = String(d).trim().split(/\r?\n/).pop(); if (l) t.passo = `🎧 ${l}`; });
     p.stderr.on("data", (d) => { erro += d; });
@@ -59,6 +60,7 @@ export function criarCortes({ raiz, claudeJSON }) {
     mkdirSync(pasta(arquivo), { recursive: true });
     t.passo = "🎧 Transcrevendo o vídeo (a primeira vez demora)…";
     const tr = await transcrever(t, arquivo);
+    if (t.cancelado) throw new Error("Parado por si");
     if (tr.duracao < 45) throw new Error(`O vídeo tem só ${Math.round(tr.duracao)} s: é curto para cortes (use o modo de clipe normal)`);
     if (tr.palavras.length < 60) throw new Error(`A transcrição só achou ${tr.palavras.length} palavras: o vídeo tem pouca fala para escolher cortes`);
     const min = Math.max(10, Number(d.min) || 20), max = Math.max(min + 5, Number(d.max) || 60);
@@ -75,6 +77,7 @@ export function criarCortes({ raiz, claudeJSON }) {
         `JANELAS:\n${JSON.stringify(lote.map(({ id, inicio, fim, texto }) => ({ id, inicio: +inicio.toFixed(1), fim: +fim.toFixed(1), texto })))}`,
       ].join("\n\n"));
       notas.push(...(r.janelas ?? []));
+      if (t.cancelado) throw new Error("Parado por si");
     }
     notas.sort((a, b) => (b.nota ?? 0) - (a.nota ?? 0));
     const alvo = Math.min(js.length, Math.max(3, Math.round(tr.duracao / 240) + 3), 15);

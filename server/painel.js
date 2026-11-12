@@ -815,7 +815,7 @@ async function criar() {
 
 // ---------- fila ----------
 const ETAPAS = [["roteiro", "Roteiro"], ["editor", "Editor"], ["midia", "Mídia"], ["aguardando revisao", "Revisão"], ["clipes", "Cortes"], ["narracao", "Narração"], ["render", "Render"], ["pronto", "Pronto"]];
-const NOME_ESTADO = { "na fila": "Na fila", "na fila de render": "Aguardando render", roteiro: "Escrevendo o roteiro", editor: "Editor-chefe revisando", midia: "Buscando mídia", "aguardando revisao": "Aguardando sua revisão", clipes: "Cortando e legendando", narracao: "Narrando", render: "Renderizando", pronto: "Pronto", erro: "Falhou" };
+const NOME_ESTADO = { "na fila": "Na fila", "na fila de render": "Aguardando render", roteiro: "Escrevendo o roteiro", editor: "Editor-chefe revisando", midia: "Buscando mídia", "aguardando revisao": "Aguardando sua revisão", clipes: "Cortando e legendando", narracao: "Narrando", render: "Renderizando", pronto: "Pronto", erro: "Falhou", parado: "Parado" };
 const nomeFormato = (k) => FORMATOS.find(([f]) => f === k)?.[2] ?? "";
 let jobsAntes = {}, logsAbertos = new Set();
 let filaDesenhada = "";
@@ -823,7 +823,8 @@ async function atualizarJobs() {
   const analisando = await seguirAnalises().catch(() => 0);
   const jobs = await api("/api/jobs");
   const ativos = jobs.filter((j) => j.estado !== "pronto" || Date.now() - j.criado < 10 * 60e3);
-  const emCurso = ativos.filter((j) => !["pronto", "erro"].includes(j.estado)).length + analisando;
+  const emCurso = ativos.filter((j) => !["pronto", "erro", "parado"].includes(j.estado)).length + analisando;
+  $("#pararTudo").hidden = ativos.filter((j) => !["pronto", "erro", "parado", "aguardando revisao"].includes(j.estado)).length < 2;
   $("#contaFila").textContent = emCurso;
   $("#chipFila").hidden = !emCurso;
   $("#textoChipFila").textContent = `${emCurso} em produção`;
@@ -838,17 +839,19 @@ async function atualizarJobs() {
       (j.formato !== "clipe" || !["roteiro", "narracao"].includes(k)) && (j.tipo === "novo" || !["roteiro", "aguardando revisao", "editor"].includes(k)) && (k !== "editor" || j.editorChefe !== false));
     const chave = j.estado === "na fila de render" ? etapas[0]?.[0] : j.estado;
     const atual = etapas.findIndex(([k]) => k === chave);
-    const ponto = j.estado === "pronto" ? "ok" : j.estado === "erro" ? "erro" : j.estado === "aguardando revisao" ? "espera" : "vivo";
+    const ponto = j.estado === "pronto" ? "ok" : j.estado === "erro" ? "erro" : j.estado === "parado" ? "parado" : j.estado === "aguardando revisao" ? "espera" : "vivo";
+    const podeParar = !["pronto", "erro", "parado", "aguardando revisao"].includes(j.estado);
     return `<div class="job">
       <div class="job-linha">
         <div class="job-titulo">${esc(j.tema)}</div>
         <span class="meta">${esc(nomeFormato(j.formato))} · ${esc(OPCOES.estilos[j.estilo]?.nome ?? j.estilo ?? "")}</span>
         <span class="estado"><span class="ponto ${ponto}"></span>${NOME_ESTADO[j.estado] ?? esc(j.estado)}${j.estado === "render" ? ` ${j.progresso}%` : ""}</span>
         ${j.estado === "aguardando revisao" ? `<button class="btn primario peq" onclick="abrirEditor('${j.videoId}')">Rever roteiro</button>` : ""}
+        ${podeParar ? `<button class="btn peq" title="Parar este vídeo" onclick="pararJob('${j.id}')">${ic("square", 13)}Parar</button>` : ""}
         <button class="btn fantasma icone peq" title="Ver registro" onclick="alternarLog('${j.id}')">${ic("terminal", 14)}</button>
       </div>
       <div class="etapas">${etapas.map(([k, nome], i) => {
-        const cls = j.estado === "erro" ? (i === Math.max(0, atual) ? "falhou" : i < atual ? "feita" : "") : j.estado === "pronto" || i < atual ? "feita" : i === atual ? "agora" : "";
+        const cls = j.estado === "erro" || j.estado === "parado" ? (i === Math.max(0, atual) ? "falhou" : i < atual ? "feita" : "") : j.estado === "pronto" || i < atual ? "feita" : i === atual ? "agora" : "";
         const barra = cls === "agora" ? `<b style="width:${k === "render" ? j.progresso : 35}%"></b>` : "";
         return `<div class="etapa ${cls}"><i>${barra}</i><small>${nome}</small></div>`;
       }).join("")}</div>
@@ -857,6 +860,19 @@ async function atualizarJobs() {
   }).join("") : '<div class="vazio">Nada em produção.</div>';
   document.querySelectorAll(".log").forEach((l) => (l.scrollTop = l.scrollHeight));
   return finalizarJobs(jobs);
+}
+async function pararJob(id) {
+  const j = (await api("/api/jobs")).find((x) => x.id === id);
+  if (!j || !confirm(`Parar "${j.tema}"? O que já foi feito deste vídeo perde-se.`)) return;
+  try { await api(`/api/jobs/${id}/parar`, { method: "POST" }); toast("Vídeo parado", "square"); }
+  catch (e) { toast(e.message, "triangle-alert"); }
+  filaDesenhada = ""; atualizarJobs();
+}
+async function pararTudo() {
+  if (!confirm("Parar todos os vídeos em produção e na fila?")) return;
+  try { const r = await api("/api/jobs/parar-tudo", { method: "POST" }); toast(`${r.parados} ${r.parados === 1 ? "vídeo parado" : "vídeos parados"}`, "square"); }
+  catch (e) { toast(e.message, "triangle-alert"); }
+  filaDesenhada = ""; atualizarJobs();
 }
 // avisos do Windows quando um vídeo fica pronto (ou espera revisão) e o painel não está à vista
 const avisados = new Set();
@@ -1180,7 +1196,7 @@ async function seguirAnalises() {
       if (t.estado === "pronto") mostrarMomentos(a);
       else $("#cortesPasso").textContent = t.estado === "erro" ? `Falhou: ${t.erro}` : a.passo ?? "";
     }
-    if (t.estado !== "a correr") avisarAnalise(a);
+    if (t.estado !== "a correr" && t.estado !== "parado") avisarAnalise(a);
   }
   if (vivas.length) { gravarAnalises(); desenharAnalises(); }
   return analises.filter((a) => a.estado === "a correr").length;
@@ -1192,6 +1208,14 @@ function avisarAnalise(a) {
   if (document.hidden && "Notification" in window && Notification.permission === "granted") {
     new Notification(a.estado === "pronto" ? "Cortes prontos" : "Análise de cortes falhou", { body: msg, icon: "/icones/scissors.svg" });
   }
+}
+async function pararAnalise(id) {
+  const a = analises.find((x) => x.id === id);
+  if (!a || !confirm(`Parar a análise de ${a.nome}?`)) return;
+  await api(`/api/tarefas/${id}/parar`, { method: "POST" }).catch(() => {});
+  Object.assign(a, { estado: "parado", erro: undefined, fim: Date.now() });
+  gravarAnalises(); desenharAnalises();
+  if (analiseNaGaveta === id && dlgCortes.open) $("#cortesPasso").textContent = "Análise parada.";
 }
 function descartarAnalise(id) {
   analises = analises.filter((a) => a.id !== id);
@@ -1209,8 +1233,8 @@ function desenharAnalises() {
   const caixa = $("#analises");
   caixa.hidden = !analises.length;
   caixa.innerHTML = analises.map((a) => {
-    const ponto = a.estado === "pronto" ? "ok" : a.estado === "erro" ? "erro" : "vivo";
-    const estado = a.estado === "pronto" ? `${a.n} momentos` : a.estado === "erro" ? "Falhou" : `A analisar · ${decorrido(Date.now() - a.inicio)}`;
+    const ponto = a.estado === "pronto" ? "ok" : a.estado === "erro" ? "erro" : a.estado === "parado" ? "parado" : "vivo";
+    const estado = a.estado === "pronto" ? `${a.n} momentos` : a.estado === "erro" ? "Falhou" : a.estado === "parado" ? "Parado" : `A analisar · ${decorrido(Date.now() - a.inicio)}`;
     const id = esc(a.id);
     return `<div class="job">
       <div class="job-linha">
@@ -1218,8 +1242,8 @@ function desenharAnalises() {
         <span class="meta">Cortes automáticos</span>
         <span class="estado"><span class="ponto ${ponto}"></span>${estado}</span>
         ${a.estado === "pronto" ? `<button class="btn primario peq" onclick="abrirAnalise('${id}')">Ver momentos</button>` : ""}
-        ${a.estado === "a correr" ? `<button class="btn peq" onclick="abrirAnalise('${id}')">Abrir</button>` : ""}
-        ${a.estado === "erro" ? `<button class="btn peq" onclick="repetirAnalise('${id}')">${ic("rotate-ccw", 14)}Tentar de novo</button>` : ""}
+        ${a.estado === "a correr" ? `<button class="btn peq" onclick="abrirAnalise('${id}')">Abrir</button><button class="btn peq" title="Parar a análise" onclick="pararAnalise('${id}')">${ic("square", 13)}Parar</button>` : ""}
+        ${a.estado === "erro" || a.estado === "parado" ? `<button class="btn peq" onclick="repetirAnalise('${id}')">${ic("rotate-ccw", 14)}Tentar de novo</button>` : ""}
         ${a.estado !== "a correr" ? `<button class="btn fantasma icone peq" title="Tirar da lista" aria-label="Tirar da lista" onclick="descartarAnalise('${id}')">${ic("x", 14)}</button>` : ""}
       </div>
       ${a.estado === "a correr" ? `<div class="analise-passo">${esc(a.passo ?? "")}</div><div class="barra-viva"><b></b></div>` : ""}

@@ -253,6 +253,7 @@ select { appearance: none; background-image: linear-gradient(45deg, transparent 
 .estado { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--suave); white-space: nowrap; }
 .ponto { width: 8px; height: 8px; border-radius: 50%; background: var(--acento); flex-shrink: 0; }
 .ponto.vivo { animation: pulsar 1.2s ease-in-out infinite; }
+.ponto.parado { background: var(--fraco); }
 .ponto.ok { background: var(--ok); } .ponto.erro { background: var(--erro); } .ponto.espera { background: var(--aviso); }
 @keyframes pulsar { 50% { opacity: .3; } }
 @media (prefers-reduced-motion: reduce) { .ponto.vivo { animation: none; } * { transition: none !important; } }

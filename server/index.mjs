@@ -107,6 +107,22 @@ async function prepararVozEleven(voz) {
   return d.voice_id ?? id;
 }
 
+// ---------- parar operações ----------
+// o processo em curso fica guardado fora do JSON (não enumerável) para o botão Parar o poder matar
+const guardarProcesso = (alvo, p) => {
+  Object.defineProperty(alvo, "processo", { value: p, writable: true, enumerable: false, configurable: true });
+  p.on("close", () => { if (alvo.processo === p) alvo.processo = null; });
+  if (alvo.cancelado) matarArvore(p);
+  return p;
+};
+// mata o processo e os filhos (Chrome do render, ffmpeg, Whisper…); no Windows o kill normal deixa-os vivos
+const matarArvore = (p) => {
+  if (!p?.pid) return;
+  if (process.platform === "win32") spawn("taskkill", ["/PID", String(p.pid), "/T", "/F"], { stdio: "ignore" });
+  else try { process.kill(-p.pid, "SIGKILL"); } catch { p.kill("SIGKILL"); }
+};
+class Parado extends Error { constructor() { super("Parado por si"); } }
+
 // ---------- jobs ----------
 const jobs = new Map();
 let filaRender = Promise.resolve();
@@ -146,6 +162,7 @@ function rodarClaude(job, prompt) {
       "-p", prompt, "--append-system-prompt", roteirista, "--output-format", "stream-json", "--verbose", "--permission-mode", "acceptEdits",
       "--allowedTools", "WebSearch", "WebFetch", "Read", "Write", "Edit", "Glob", "Grep", "Skill",
     ], { cwd: RAIZ, stdio: ["ignore", "pipe", "pipe"], env: envClaude() });
+    guardarProcesso(job, p);
     let resto = "", ultimo = "";
     p.stdout.on("data", (d) => {
       const linhas = (resto + d).split("\n");
@@ -244,6 +261,7 @@ function claudeJSON(tarefa, guia, pedido, ferramentas = []) {
       "-p", "--append-system-prompt", sistema, "--output-format", "stream-json", "--verbose",
       ...(ferramentas.length ? ["--allowedTools", ...ferramentas] : []),
     ], { cwd: RAIZ, stdio: ["pipe", "pipe", "pipe"], env: envClaude() });
+    if (tarefa && typeof tarefa === "object" && !Object.getOwnPropertyDescriptor(tarefa, "passo")?.set) guardarProcesso(tarefa, p);
     let resto = "", resultado = null;
     p.stdout.on("data", (d) => {
       const linhas = (resto + d).split("\n");
@@ -270,7 +288,7 @@ function novaTarefa(tipo, trabalho) {
   const t = { id: `t${Date.now().toString(36)}${Math.random().toString(36).slice(2, 5)}`, tipo, estado: "a correr", passo: "🤖 Pensando…", criado: Date.now() };
   tarefas.set(t.id, t);
   for (const [k, v] of tarefas) if (Date.now() - v.criado > 3 * 3600e3) tarefas.delete(k);
-  trabalho(t).then((r) => Object.assign(t, { estado: "pronto", resultado: r }), (e) => Object.assign(t, { estado: "erro", erro: e.message }));
+  trabalho(t).then((r) => { if (!t.cancelado) Object.assign(t, { estado: "pronto", resultado: r }); }, (e) => { if (!t.cancelado) Object.assign(t, { estado: "erro", erro: e.message }); });
   return t;
 }
 
@@ -420,8 +438,9 @@ ${guiaDe("formato: animado")}` : "",
 function produzir(job) {
   job.estado = "na fila de render";
   filaRender = filaRender.then(() => new Promise((ok) => {
+    if (job.cancelado) return ok(); // parado enquanto esperava na fila
     job.estado = "narracao";
-    const p = spawn(process.execPath, ["scripts/produzir.mjs", `roteiros/${job.videoId}.json`], { cwd: RAIZ, stdio: ["ignore", "pipe", "pipe"] });
+    const p = guardarProcesso(job, spawn(process.execPath, ["scripts/produzir.mjs", `roteiros/${job.videoId}.json`], { cwd: RAIZ, stdio: ["ignore", "pipe", "pipe"], env: envClaude() }));
     const ler = (d) => {
       for (const l of String(d).split(/\r?\n/).filter(Boolean)) {
         const etapa = l.match(/^\[etapa\] (\w+)/);
@@ -434,7 +453,10 @@ function produzir(job) {
     p.stdout.on("data", ler);
     p.stderr.on("data", ler);
     p.on("close", (code) => {
-      if (code === 0) {
+      if (job.cancelado) {
+        job.estado = "parado";
+        registar(job, "⏹ Parado por si");
+      } else if (code === 0) {
         job.estado = "pronto";
         job.progresso = 100;
         registar(job, "🎬 Vídeo pronto!");
@@ -455,7 +477,8 @@ function produzir(job) {
 
 // Corre um script Python do projeto e copia a saída para o log do job
 const correrScript = (job, args) => new Promise((ok, falha) => {
-  const p = spawn("python", args, { cwd: RAIZ, stdio: ["ignore", "pipe", "pipe"], env: { ...process.env, PYTHONIOENCODING: "utf-8" } });
+  if (job.cancelado) return falha(new Parado());
+  const p = guardarProcesso(job, spawn("python", args, { cwd: RAIZ, stdio: ["ignore", "pipe", "pipe"], env: { ...process.env, PYTHONIOENCODING: "utf-8" } }));
   const ler = (d) => String(d).split(/\r?\n/).filter(Boolean).forEach((l) => registar(job, l));
   p.stdout.on("data", ler);
   p.stderr.on("data", ler);
@@ -496,9 +519,20 @@ async function correrJob(job) {
     }
     produzir(job);
   } catch (e) {
+    if (job.cancelado) return; // o estado "parado" já foi posto por pararJob
     job.estado = "erro";
     registar(job, `❌ ${e.message}`);
   }
+}
+
+// botão Parar: na fila sai da fila; a correr, mata o processo (o render, o Claude ou o script de mídia)
+function pararJob(job) {
+  if (["pronto", "erro", "parado"].includes(job.estado)) return false;
+  job.cancelado = true;
+  job.estado = "parado";
+  registar(job, "⏹ Parado por si");
+  matarArvore(job.processo);
+  return true;
 }
 
 // Prompt para escrever o roteiro noutra IA (ChatGPT, Gemini…) quando o Claude não está disponível:
@@ -709,7 +743,7 @@ const listarVideos = () =>
 
 // YouTube e modo automático (desligado até o criador o ativar no painel)
 const youtube = criarYouTube({ raiz: RAIZ, lerEnv, porta: PORTA });
-const cortes = criarCortes({ raiz: RAIZ, claudeJSON });
+const cortes = criarCortes({ raiz: RAIZ, claudeJSON, guardarProcesso });
 const automatico = criarAutomatico({
   raiz: RAIZ, canais, youtube,
   gerarIdeias, correrJob,
@@ -969,6 +1003,15 @@ const rotas = async (req, res) => {
   }
 
   if (b === "jobs" && req.method === "GET") return json(res, 200, [...jobs.values()].sort((x, y) => y.criado - x.criado));
+  if (b === "jobs" && c === "parar-tudo" && req.method === "POST") {
+    return json(res, 200, { parados: [...jobs.values()].filter(pararJob).length });
+  }
+  const pararDe = url.pathname.match(/^\/api\/jobs\/([\w-]{1,40})\/parar$/);
+  if (pararDe && req.method === "POST") {
+    const job = jobs.get(pararDe[1]);
+    if (!job) return json(res, 404, { erro: "Esse vídeo já não está na fila" });
+    return json(res, 200, { parado: pararJob(job) });
+  }
   if (b === "jobs" && req.method === "POST") {
     const d = await corpo(req);
     if (!d.tema?.trim()) return json(res, 400, { erro: "Falta o tema" });
@@ -1108,6 +1151,14 @@ const rotas = async (req, res) => {
   }
 
   // skill youtube: ideias, pacote de publicação, variantes de gancho (tarefas em segundo plano)
+  const pararTarefa = url.pathname.match(/^\/api\/tarefas\/([\w-]{1,40})\/parar$/);
+  if (pararTarefa && req.method === "POST") {
+    const t = tarefas.get(pararTarefa[1]);
+    if (!t) return json(res, 404, { erro: "tarefa não existe" });
+    if (t.estado === "a correr") Object.assign(t, { cancelado: true, estado: "parado", erro: "Parado por si" });
+    matarArvore(t.processo);
+    return json(res, 200, { parado: true });
+  }
   if (b === "tarefas" && req.method === "GET" && c) {
     const t = tarefas.get(c);
     return t ? json(res, 200, t) : json(res, 404, { erro: "tarefa não existe (o painel foi reiniciado?)" });
