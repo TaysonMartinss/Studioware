@@ -216,7 +216,8 @@ export const Legendas: React.FC<{ palavras: Palavra[]; destaques: Set<string>; c
       <div
         style={{
           display: "flex", flexWrap: "wrap", justifyContent: "center", textAlign: "center",
-          textTransform: v.maiusculas ? "uppercase" : "none", ...v.bloco(e), ...v.caixa?.(e, abrir),
+          // na Keep Calm (todas menos papel) sem caixa alta
+          textTransform: papel && v.maiusculas ? "uppercase" : "none", ...v.bloco(e), ...v.caixa?.(e, abrir),
           ...(papel ? {} : { fontFamily: `"${FAMILIA_LEGENDA}", ${v.bloco(e).fontFamily ?? "sans-serif"}` }),
         }}
       >
