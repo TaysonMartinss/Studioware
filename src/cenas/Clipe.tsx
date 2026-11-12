@@ -1,4 +1,4 @@
-import { AbsoluteFill, OffthreadVideo, Sequence, interpolate, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
+import { AbsoluteFill, Easing, OffthreadVideo, Sequence, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import { Conteudo, MidiaCartao } from "../components/MidiaReal";
 import { LowPolyCena } from "../lowpoly/LowPolyCena";
 import { PincelCena } from "../pincel/PincelCena";
@@ -126,7 +126,6 @@ export const Clipe: React.FC<{ cena: CenaClipe; cor: string }> = ({ cena, cor })
   const seguir = enq?.modo === "seguir" && enq.xs?.length && enq.cropLargura;
   const webcam = enq?.modo === "webcam" && enq.segmentos?.length;
   const horizontal = !seguir && !webcam && (cena.largura ?? 9) > (cena.altura ?? 16);
-  const s = pop(f, fps, 3, 14);
   // receita de edição: a imagem muda a cada 3 a 5 s. Novo plano (corte seco para outro zoom) no início de uma frase
   // ou depois de uma vírgula, se já passaram 2,5 s; à força aos 4,5 s. Dentro do plano, um zoom lento (nunca parado).
   const ms = (f / fps) * 1000;
@@ -167,11 +166,28 @@ export const Clipe: React.FC<{ cena: CenaClipe; cor: string }> = ({ cena, cor })
         <OffthreadVideo src={src} style={{ width: "100%", height: "100%", objectFit: "cover", transform: `scale(${zoom})`, transformOrigin: "50% 35%" }} />
       )}
       <AbsoluteFill style={{ background: "linear-gradient(180deg, #0008, transparent 22%, transparent 60%, #000a)" }} />
-      {cena.titulo && (
-        <div style={{ position: "absolute", top: 160, left: 60, right: 60, fontFamily: titulo, fontSize: 80, color: "#fff", textTransform: "uppercase", textShadow: "0 6px 0 #000", opacity: s, transform: `translateY(${(1 - s) * 30}px)` }}>
-          {cena.titulo}
-        </div>
-      )}
+      {/* título (gancho escrito): entra como popup, fica 4 s e sai a subir e a desvanecer, com pop e woosh */}
+      {cena.titulo && (() => {
+        const ENTRA = 3, FICA = Math.round(4 * fps), SAI = 10;
+        const fimTitulo = ENTRA + FICA;
+        if (f > fimTitulo + SAI) return null;
+        const entra = spring({ frame: f - ENTRA, fps, config: { damping: 11, stiffness: 190 } });
+        const sai = interpolate(f, [fimTitulo, fimTitulo + SAI], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: Easing.in(Easing.cubic) });
+        return (
+          <>
+            <Sequence from={ENTRA} durationInFrames={Math.round(fps)} layout="none"><Sfx nome="pop" volume={0.45} /></Sequence>
+            <Sequence from={fimTitulo} durationInFrames={Math.round(fps)} layout="none"><Sfx nome="whoosh" volume={0.3} /></Sequence>
+            <div style={{
+              position: "absolute", top: 160, left: 60, right: 60, fontFamily: titulo, fontSize: 80, color: "#fff", textTransform: "uppercase", textShadow: "0 6px 0 #000",
+              opacity: Math.min(1, entra * 1.5) * (1 - sai),
+              transform: `translateY(${(1 - entra) * 40 - sai * 90}px) scale(${(0.55 + 0.45 * entra) * (1 - 0.12 * sai)})`, transformOrigin: "50% 50%",
+              filter: sai > 0 ? `blur(${sai * 6}px)` : undefined,
+            }}>
+              {cena.titulo}
+            </div>
+          </>
+        );
+      })()}
       {(cena.broll ?? []).map((b, i) => {
         const ini = Math.round((b.inicioMs / 1000) * fps);
         if (b.cheio) {
