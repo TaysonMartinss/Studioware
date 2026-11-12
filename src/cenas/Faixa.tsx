@@ -1,4 +1,5 @@
 import { AbsoluteFill, interpolate, useVideoConfig } from "remotion";
+import { GrelhaOndulada } from "../components/GrelhaOndulada";
 import { Conteudo } from "../components/MidiaReal";
 import { FONTES, pop, useFrame } from "../components/motion";
 import { useEstilo } from "../estilos";
@@ -17,7 +18,8 @@ export const Faixa: React.FC<{ cena: CenaFaixa; cor: string }> = ({ cena, cor })
   const zoom = interpolate(f, [0, d], [1.04, 1.12]);
 
   return (
-    <AbsoluteFill style={{ background: "#050507" }}>
+    <AbsoluteFill style={{ background: "#000" }}>
+      <GrelhaOndulada opacidade={0.55} />
       <AbsoluteFill style={{ background: `radial-gradient(ellipse 90% 55% at 50% 42%, ${cor}2e, transparent 70%)` }} />
       <div style={{ position: "absolute", top: topo, left: 0, width: L, height: h, overflow: "hidden", opacity: s, transform: `translateY(${(1 - s) * 30}px)`, boxShadow: `0 0 80px ${cor}22` }}>
         {cena.midia?.arquivo ? (

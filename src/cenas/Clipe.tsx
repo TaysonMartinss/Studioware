@@ -2,6 +2,7 @@ import { AbsoluteFill, OffthreadVideo, Sequence, interpolate, staticFile, useCur
 import { Conteudo, MidiaCartao } from "../components/MidiaReal";
 import { LowPolyCena } from "../lowpoly/LowPolyCena";
 import { PincelCena } from "../pincel/PincelCena";
+import { GrelhaOndulada } from "../components/GrelhaOndulada";
 import { Faixa } from "./Faixa";
 import { Numero } from "./Numero";
 import { Palavras } from "./Palavras";
@@ -83,7 +84,9 @@ const Exemplo: React.FC<{ b: Broll; cor: string; canto: React.ReactNode }> = ({ 
   if (b.layout === "faixa" && b.midia?.arquivo) return <AbsoluteFill><Faixa cena={{ tipo: "faixa", fala: "", midia: b.midia, titulo: b.titulo, duracaoMs }} cor={cor} /></AbsoluteFill>;
   if (b.cena?.tipo === "numero") {
     return (
-      <AbsoluteFill style={{ background: `radial-gradient(ellipse 90% 60% at 50% 40%, ${cor}30, transparent 70%), #050507` }}>
+      <AbsoluteFill style={{ background: "#000" }}>
+        <GrelhaOndulada opacidade={0.6} />
+        <AbsoluteFill style={{ background: `radial-gradient(ellipse 90% 60% at 50% 40%, ${cor}26, transparent 70%)` }} />
         <Numero cena={{ ...b.cena, duracaoMs, palavras: [] }} cor={cor} />
       </AbsoluteFill>
     );

@@ -1,5 +1,6 @@
 import { AbsoluteFill, random, useVideoConfig } from "remotion";
 import { FONTES, pop, useFrame } from "../components/motion";
+import { GrelhaOndulada } from "../components/GrelhaOndulada";
 import { useOndular } from "../components/PapelMotion";
 import { CenaPalavras } from "../types";
 
@@ -26,10 +27,12 @@ export const Palavras: React.FC<{ cena: CenaPalavras; cor: string }> = ({ cena }
     <AbsoluteFill style={{
       background: papel
         ? "radial-gradient(ellipse at 40% 30%, #f1eee8, #d9d4ca 70%, #c9c2b6)"
-        : "radial-gradient(ellipse at 50% 40%, #1d1013, #09070a 70%)",
+        : "#000",
     }}>
+      {!papel && <GrelhaOndulada opacidade={0.6} />}
+      {!papel && <AbsoluteFill style={{ background: "radial-gradient(ellipse at 50% 40%, #e3262f1c, transparent 65%)" }} />}
       {/* textura: vincos do papel ou grão no escuro */}
-      <AbsoluteFill style={{ opacity: papel ? 0.35 : 0.18, mixBlendMode: papel ? "multiply" : "screen", backgroundImage: `repeating-linear-gradient(${papel ? 37 : 0}deg, #0000 0 22px, #00000014 22px 23px), repeating-linear-gradient(${papel ? 121 : 90}deg, #0000 0 31px, #ffffff10 31px 32px)` }} />
+      {papel && <AbsoluteFill style={{ opacity: 0.35, mixBlendMode: papel ? "multiply" : "screen", backgroundImage: `repeating-linear-gradient(${papel ? 37 : 0}deg, #0000 0 22px, #00000014 22px 23px), repeating-linear-gradient(${papel ? 121 : 90}deg, #0000 0 31px, #ffffff10 31px 32px)` }} />}
       {palavras.map((p, i) => {
         const inicio = Math.round((cena.quando?.[i] ?? i * 0.4) * fps);
         if (f < inicio) return null;
