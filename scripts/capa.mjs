@@ -6,7 +6,7 @@ import { criarBundle } from "./bundle.mjs";
 import { openBrowser, renderStill, selectComposition } from "@remotion/renderer";
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 const [id, ...resto] = process.argv.slice(2);
@@ -113,5 +113,7 @@ for (const layout of ["impacto", "dividido", "objeto"]) {
 }
 const info = { texto, destaque, fundo: fundoI, formato, candidatos, variantes, escolhida: anterior.escolhida, geradoEm: new Date().toISOString() };
 writeFileSync(`out/capas/${id}.json`, JSON.stringify(info, null, 2));
+// a capa escolhida (a que se baixa e vai para a biblioteca) é uma cópia: atualiza-a com a variante nova do mesmo layout
+if (info.escolhida && existsSync(`out/capas/${id}-${info.escolhida}.jpg`)) copyFileSync(`out/capas/${id}-${info.escolhida}.jpg`, `out/${id}.capa.jpg`);
 await browser.close({ silent: true });
 console.log(JSON.stringify(info));
