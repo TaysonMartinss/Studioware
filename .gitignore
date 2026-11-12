@@ -44,3 +44,6 @@ public/musicas/**/*.wav
 !public/musicas/lofi/tarde-fria.mp3
 !public/musicas/synthwave/neon-1985.mp3
 !public/musicas/tensa/contagem.mp3
+
+# modelos 3D do Poly Haven (CC0, ~1 GB): python scripts/baixar_polyhaven.py
+public/modelos/polyhaven/

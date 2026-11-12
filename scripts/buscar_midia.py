@@ -181,9 +181,24 @@ def e_modelo(m):
     return m["fonte"] in FORMATOS_3D or m.get("tipo") == "modelo3d" or (m["fonte"] in ("url", "arquivo") and consulta.endswith(".glb"))
 
 
+def de_polyhaven(m):
+    """Modelo realista do Poly Haven (CC0) já descarregado: o id do catálogo (ou o mais parecido)."""
+    catalogo = json.loads(Path("src/lowpoly/polyhaven.json").read_text(encoding="utf-8")) if Path("src/lowpoly/polyhaven.json").exists() else {}
+    pedido = (m.get("modelo") or m.get("consulta") or "").strip()
+    chave = pedido if pedido in catalogo else next((k for k in catalogo if k.lower() == pedido.lower()), None)
+    if not chave:
+        termos = pedido.lower().replace("_", " ").split()
+        chave = max(catalogo, key=lambda k: sum(t in (k.lower() + " " + " ".join(catalogo[k]["tags"])) for t in termos), default=None) if termos else None
+    if not chave or not (Path("public") / catalogo[chave]["arquivo"]).exists():
+        raise LookupError(f"modelo Poly Haven não encontrado: {pedido} (corra python scripts/baixar_polyhaven.py)")
+    m["arquivo"], m["formato"], m["credito"] = catalogo[chave]["arquivo"], "modelo3d", f"{catalogo[chave]['nome']} (Poly Haven, CC0)"
+
+
 def resolver(m, pasta, i, vid):
     for campo in ("arquivo", "formato", "duracaoS", "inicioS", "credito", "sketchfab"):
         m.pop(campo, None)
+    if m["fonte"] == "polyhaven":
+        return de_polyhaven(m)
     if e_modelo(m):
         # modelo 3D como mídia: o Remotion desenha-o a girar no lugar da foto ou do vídeo
         if m["fonte"] == "procedural":

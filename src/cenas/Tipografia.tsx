@@ -129,7 +129,7 @@ export const Tipografia: React.FC<{ cena: CenaTipografia; cor: string; destaques
             </div>
             {/* a palavra-chave em baixo, à esquerda, pesada e em itálico, com o resto pequeno por baixo à direita */}
             <div style={{ position: "absolute", left: 60, right: 80, top: A * 0.7, color: TINTA, transformStyle: "preserve-3d" }}>
-              <div style={{ fontFamily: FONTES.inter, fontWeight: 900, fontStyle: "italic", fontSize: tamanhoChave * 0.92, lineHeight: 1, letterSpacing: "-0.05em", textAlign: "left", opacity: visivel(chave) ? 1 : 0, transform: `translateZ(30px) scale(${0.8 + 0.2 * entra(chave)})`, transformOrigin: "0% 50%" }}>
+              <div style={{ fontFamily: FONTES.inter, fontWeight: 900, fontStyle: "italic", fontSize: tamanhoChave * 0.84, lineHeight: 1, letterSpacing: "-0.05em", textAlign: "left", paddingLeft: 12, opacity: visivel(chave) ? 1 : 0, transform: `translateZ(30px) scale(${0.8 + 0.2 * entra(chave)})`, transformOrigin: "0% 50%" }}>
                 {palavraChave}
               </div>
               {depois.length > 0 && <Linha ws={depois} estilo={{ justifyContent: "flex-end", fontFamily: FONTES.serif, fontStyle: "italic", fontSize: 50, lineHeight: 1.1, marginTop: 6, opacity: 0.85, ...z(-40) }} />}

@@ -34,7 +34,10 @@ como um editor de reels. Durante o apoio a pessoa **não aparece** (sem câmara 
    Use para as **frases de efeito, conclusões fortes e citações** (1 a 3 por corte), num trecho de 2,5 a 6,5 s que
    contém a frase inteira.
    `{"tipo": "editorial", "inicio": 8.2, "fim": 13.0, "chave": "perguntando" (a palavra da frase a pôr em grande), "layout": "centro" | "dividido", "objeto": {...}}`
-   - `objeto`: algo que remete à frase. De preferência um **modelo 3D realista** `{"fonte": "sketchfab", "consulta": "human brain"}`
+   - `objeto`: algo que remete à frase. Primeiro procure um **modelo 3D realista do Poly Haven** já no projeto
+     `{"fonte": "polyhaven", "modelo": "<id>"}` (lista por categoria em `.claude/skills/novo-video/modelos-polyhaven.md`:
+     objetos, comida, ferramentas, eletrónica, mobília, natureza…); se não houver, um modelo realista do Sketchfab
+     `{"fonte": "sketchfab", "consulta": "human brain"}`
      (termo em inglês, um objeto só: brain, heart, hourglass, smartphone, coin, trophy, clock, key, lightbulb…), ou um modelo
      **Kenney** já no projeto `{"fonte": "kenney", "modelo": "pack/nome"}` (lista em `.claude/skills/novo-video/modelos-lowpoly.md`),
      ou uma imagem de um objeto isolado `{"fonte": "pixabay", "consulta": "hourglass isolated"}`.

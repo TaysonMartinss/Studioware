@@ -26,6 +26,8 @@ function guia() {
 const KENNEY = Object.keys(JSON.parse(readFileSync("src/lowpoly/modelos.json", "utf-8")));
 function objetoDe(o) {
   if (!o || typeof o !== "object") return undefined;
+  // Poly Haven: o buscar_midia encontra o ficheiro pelo id (ou pelo mais parecido no catálogo)
+  if (o.fonte === "polyhaven" && typeof (o.modelo ?? o.consulta) === "string") return { fonte: "polyhaven", modelo: String(o.modelo ?? o.consulta).slice(0, 60), tipo: "modelo3d" };
   if (o.fonte === "sketchfab" && typeof o.consulta === "string") return { fonte: "sketchfab", consulta: o.consulta.slice(0, 80), tipo: "modelo3d" };
   if (o.fonte === "kenney" && typeof o.modelo === "string") {
     const n = o.modelo.toLowerCase().replace(/\.glb$/, "");
