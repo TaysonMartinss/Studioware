@@ -29,6 +29,7 @@ let OPCOES = {}, estado = { estilo: "neon", produtos: 3, narracao: "edge", forma
 const FORMATOS = [
   ["quiz", "circle-help", "Quiz", "Perguntas com contagem para o público jogar", "Tema do quiz", "Ex.: futebol nas Copas do Mundo, cada vez mais difícil"],
   ["livre", "sparkles", "Livre", "Sem molde: descreva o vídeo que imagina", "Descreva o vídeo", "Ex.: começa com o apito final, volta 90 minutos atrás e mostra lance a lance como o VAR mudou o jogo, com um gráfico da posse de bola no meio"],
+  ["animacao", "box", "Animação 3D", "Qualquer tema, tudo em low poly 3D", "Descreva o vídeo", "Ex.: como funciona um motor de carro, peça a peça, até o carro andar"],
   ["ese", "orbit", "E se?", "Hipótese levada ao extremo, com ciência", "A pergunta \"E se…?\"", "Ex.: E se a internet do mundo caísse por um dia inteiro?"],
   ["animado", "clapperboard", "E se? animado", "Animação 3D low poly, sem fotos", "A pergunta \"E se…?\"", "Ex.: E se você pudesse voltar dez segundos no tempo?"],
   ["storytelling", "clapperboard", "Storytelling de venda", "História que termina na compra de um produto", "O que quer vender e a quem", "Ex.: filtro de linha para quem tem PC gamer, mostrando o risco de um pico de energia"],
@@ -38,6 +39,9 @@ const FORMATOS = [
   ["longo", "monitor-play", "Vídeo longo (YouTube)", "5 a 10 min em 16:9, com capítulos e cortes para Shorts", "Tema do vídeo", "Ex.: a história da Nvidia, da quase falência à empresa mais valiosa do mundo"],
   ["clipe", "film", "Os meus clipes", "Cortes automáticos e legendas", "Título do vídeo", "Ex.: montei o meu PC gamer"],
 ];
+// "Animação 3D" é o formato livre com todas as cenas em low poly (o servidor já sabe fazer as duas coisas)
+const formatoEnvio = () => (estado.formato === "animacao" ? "livre" : estado.formato);
+const lowpolyEnvio = () => estado.formato === "animacao" || (!$("#campoLowpoly").hidden && $("#lowpoly").checked);
 
 function segmentado(el, chave, valorDe = (b) => b.dataset.v ?? Number(b.textContent), aoMudar) {
   const botoes = [...el.querySelectorAll("button")];
@@ -64,10 +68,11 @@ function mudarFormato() {
   // o vídeo longo tem duração e número de capítulos próprios
   const longo = estado.formato === "longo";
   $("#campoDuracao").hidden = longo;
-  $("#produtos").closest(".campo").hidden = longo || estado.formato === "livre";
+  $("#produtos").closest(".campo").hidden = longo || ["livre", "animacao"].includes(estado.formato);
   $("#rotuloItens").textContent = estado.formato === "quiz" ? "Perguntas" : "Itens";
   // o "E se? animado" já é todo em low poly
-  $("#campoLowpoly").hidden = estado.formato === "animado";
+  // o "E se? animado" e a "Animação 3D" já são todos em low poly
+  $("#campoLowpoly").hidden = ["animado", "animacao"].includes(estado.formato);
   $("#rotuloTema").textContent = rotulo;
   $("#tema").placeholder = dica;
   $("#textoCriar").textContent = origem === "outraia" ? "Preparar o prompt" : clipe ? ($("#modoCortes").checked ? "Encontrar momentos" : "Processar clipes") : $("#revisar").checked ? "Criar roteiro" : "Criar vídeo";
@@ -161,7 +166,7 @@ function linhasResumo() {
 const htmlResumo = (linhas) => linhas.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v || "—")}</dd></div>`).join("");
 function desenharResumo() {
   $("#resumo").innerHTML = htmlResumo(linhasResumo());
-  const ligadas = ["lowpoly", "editorChefe", "revisaoVisual", "revisar"].filter((id) => $(`#${id}`).checked && !$(`#${id}`).closest(".campo").hidden).length;
+  const ligadas = ["editorChefe", "revisaoVisual", "revisar"].filter((id) => $(`#${id}`).checked && !$(`#${id}`).closest(".campo").hidden).length;
   $("#resumoAvancado").textContent = `${ligadas} ${ligadas === 1 ? "ativa" : "ativas"}`;
 }
 // coluna da direita: canal, estilo e resumo, sempre atualizados (só aparece em ecrãs largos)
@@ -239,7 +244,7 @@ function faixaDe(escolha, estiloAtual) {
   if (escolha === "nenhuma") return null;
   if (escolha.includes("/")) return MUSICAS.faixas.find((f) => f.arquivo === escolha);
   // mesma regra do pipeline: o estilo manda quando tem sonoridade própria; senão, o formato
-  const clima = escolha === "auto" ? MUSICAS.porEstilo[estiloAtual] ?? MUSICAS.porFormato[estado.formato] ?? "energetica" : escolha;
+  const clima = escolha === "auto" ? MUSICAS.porEstilo[estiloAtual] ?? MUSICAS.porFormato[formatoEnvio()] ?? "energetica" : escolha;
   return MUSICAS.faixas.find((f) => f.clima === clima) ?? MUSICAS.faixas[0];
 }
 
@@ -747,9 +752,9 @@ async function enviarFicheiro(ficheiro) {
 // ---------- roteiro escrito noutra IA ----------
 // usa as mesmas escolhas do formulário (formato, estilo, narração, duração…)
 const pedidoAtual = () => ({
-  formato: estado.formato, tema: $("#tema").value.trim(), estilo: estado.estilo, produtos: estado.produtos, pais: $("#pais").value,
+  formato: formatoEnvio(), tema: $("#tema").value.trim(), estilo: estado.estilo, produtos: estado.produtos, pais: $("#pais").value,
   narracao: estado.narracao, voz: $("#voz").value, observacoes: $("#obs").value.trim(), musica: $("#musica").value, duracao: estado.duracao,
-  canal: $("#canal").value, lowpoly: $("#lowpoly").checked,
+  canal: $("#canal").value, lowpoly: lowpolyEnvio(),
 });
 function abrirOutraIA() {
   const p = pedidoAtual();
@@ -801,9 +806,9 @@ async function criar() {
     } else {
       if (estado.narracao === "elevenlabs" && !$("#voz").value) throw new Error("Escolha uma voz da ElevenLabs");
       await api("/api/jobs", { method: "POST", body: {
-        formato: estado.formato, tema, estilo: estado.estilo, produtos: estado.produtos, pais: $("#pais").value, narracao: estado.narracao,
+        formato: formatoEnvio(), tema, estilo: estado.estilo, produtos: estado.produtos, pais: $("#pais").value, narracao: estado.narracao,
         voz: $("#voz").value, observacoes: $("#obs").value.trim(), revisar: $("#revisar").checked, musica: $("#musica").value,
-        duracao: estado.duracao, editorChefe: $("#editorChefe").checked, revisaoVisual: $("#revisaoVisual").checked, canal: $("#canal").value, lowpoly: $("#lowpoly").checked,
+        duracao: estado.duracao, editorChefe: $("#editorChefe").checked, revisaoVisual: $("#revisaoVisual").checked, canal: $("#canal").value, lowpoly: lowpolyEnvio(),
       } });
       toast("Na fila. O Claude está pesquisando.", "search");
     }
