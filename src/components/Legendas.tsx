@@ -38,12 +38,12 @@ type Variante = {
 const VARIANTES: Record<Estilo["legenda"], Variante> = {
   padrao: {
     porPagina: 3, top: 1250, maiusculas: true,
-    bloco: (e) => ({ fontFamily: FONTES[e.titulo], fontSize: 108, lineHeight: 1.1, gap: "0 26px" }),
+    bloco: (e) => ({ fontFamily: FONTES[e.titulo], fontSize: 100, lineHeight: 1.15, gap: "0 40px" }),
     // destaque só pela cor da letra (sem caixa por trás): a palavra ativa na cor do estilo, os destaques a amarelo; sem glow
     palavra: (e, cor, { s, ativa, destaque }) => ({
       color: destaque ? AMARELO : ativa ? cor : "#fff",
       padding: "0 6px",
-      transform: `scale(${(0.7 + 0.3 * s) * (ativa ? 1.06 : 1)}) translateY(${(1 - s) * 24}px)`,
+      transform: `scale(${(0.7 + 0.3 * s) * (ativa ? 1.04 : 1)}) translateY(${(1 - s) * 24}px)`,
       WebkitTextStroke: "12px #000", paintOrder: "stroke fill",
       textShadow: "0 6px 0 #000",
     }),
