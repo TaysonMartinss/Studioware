@@ -92,7 +92,11 @@ export type CenaClipe = Base & {
   inicio?: number; fim?: number; // momento de um vídeo longo (segundos do original); o script recorta-o
   enquadrar?: boolean; // vídeo horizontal: seguir o rosto no vertical (padrão: sim)
   // preenchidos pelo script
-  enquadramento?: { modo: "seguir" | "geral" | "passa"; largura: number; altura: number; fps: number; cropLargura?: number; xs?: number[] };
+  enquadramento?: {
+    modo: "seguir" | "geral" | "passa" | "webcam"; largura: number; altura: number; fps: number; cropLargura?: number; xs?: number[];
+    // webcam: gameplay com webcam por cima; cada trecho diz onde está a webcam (cam), ou que a edição foi para a webcam em ecrã cheio (rosto), ou que não há rosto (geral)
+    segmentos?: { de: number; cam?: [number, number, number, number]; rosto?: [number, number, number, number]; geral?: boolean }[];
+  };
   arquivo?: string;
   largura?: number;
   altura?: number;
