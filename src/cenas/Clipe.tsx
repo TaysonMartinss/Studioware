@@ -19,7 +19,7 @@ const Recorte: React.FC<{ src: string; vl: number; va: number; r: Retangulo; cai
   );
 };
 
-const DESVANECER = 100; // px em que a base da webcam se funde com a gameplay
+const DESVANECER = 135; // px em que a base da webcam se funde com a gameplay
 // Gameplay com webcam: a webcam em cima e o jogo ao centro em baixo (o recorte do jogo foge da webcam, até 20% da largura)
 const Dividido: React.FC<{ src: string; enq: NonNullable<CenaClipe["enquadramento"]>; f: number; fps: number; L: number; A: number; zoom: number }> = ({ src, enq, f, fps, L, A, zoom }) => {
   const segs = enq.segmentos ?? [];
