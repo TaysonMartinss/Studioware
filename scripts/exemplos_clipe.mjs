@@ -66,12 +66,21 @@ function limpar(exemplos, duracaoS) {
     let ini = Math.max(1.5, Number(x.inicio)), fim = Math.min(duracaoS - 1.5, Number(x.fim));
     if (!Number.isFinite(ini) || !Number.isFinite(fim)) continue;
     fim = Math.min(fim, ini + 8);
-    if (fim - ini < 2) continue;
-    if (bons.length && ini < bons.at(-1).fimMs / 1000 + 1.2) continue;
+    if (fim - ini < (x.tipo === "palavras" ? 1.2 : 2)) continue;
+    if (bons.length && ini < bons.at(-1).fimMs / 1000 + 1) continue;
     const item = { inicioMs: Math.round(ini * 1000), fimMs: Math.round(fim * 1000), cheio: true };
     if (x.tipo === "midia" && FONTES.has(x.midia?.fonte) && typeof x.midia?.consulta === "string") {
       const fonte = x.midia.fonte === "pexels" && !temChave("PEXELS_API_KEY") ? "pixabay" : x.midia.fonte;
       item.midia = { fonte, consulta: x.midia.consulta.slice(0, 120), tipo: x.midia.tipo === "imagem" ? "imagem" : "video" };
+    } else if (x.tipo === "faixa" && FONTES.has(x.midia?.fonte) && typeof x.midia?.consulta === "string") {
+      const fonte = x.midia.fonte === "pexels" && !temChave("PEXELS_API_KEY") ? "pixabay" : x.midia.fonte;
+      item.midia = { fonte, consulta: x.midia.consulta.slice(0, 120), tipo: x.midia.tipo === "imagem" ? "imagem" : "video" };
+      item.layout = "faixa";
+      if (typeof x.titulo === "string" && x.titulo.trim()) item.titulo = x.titulo.trim().slice(0, 24);
+    } else if (x.tipo === "palavras" && Array.isArray(x.palavras)) {
+      const palavras = x.palavras.filter((w) => typeof w === "string" && w.trim()).map((w) => w.trim().slice(0, 18)).slice(0, 4);
+      if (!palavras.length) continue;
+      item.cena = { tipo: "palavras", fala: "", textos: palavras, fundo: x.fundo === "papel" ? "papel" : "escuro" };
     } else if (x.tipo === "lowpoly" && CENARIOS.has(x.cena?.cenario)) {
       const { titulo, fala, tipo, ...resto } = x.cena;
       item.cena = { ...resto, tipo: "lowpoly", fala: "" };
@@ -84,8 +93,8 @@ function limpar(exemplos, duracaoS) {
     bons.push(item);
   }
   // a pessoa tem de aparecer em pelo menos 40% do corte: corta os últimos exemplos se passar
-  while (bons.length && bons.reduce((t, b) => t + (b.fimMs - b.inicioMs), 0) > duracaoS * 600) bons.pop();
-  return bons.slice(0, 6);
+  while (bons.length && bons.reduce((t, b) => t + (b.fimMs - b.inicioMs), 0) > duracaoS * 550) bons.pop();
+  return bons.slice(0, 8);
 }
 
 let mudou = false;

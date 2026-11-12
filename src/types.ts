@@ -89,7 +89,8 @@ export type CenaClipe = Base & {
   margem?: number; // segundos mantidos à volta da fala
   titulo?: string;
   // b-roll: cartão por cima do vídeo, ou (cheio) exemplo de ecrã inteiro com a pessoa num canto e a voz a continuar
-  broll?: { inicioMs: number; fimMs: number; midia?: Midia; cena?: CenaLowPoly | CenaPincel; cheio?: boolean }[];
+  // layout "faixa": a mídia numa faixa 16:9 com título com brilho; cena "palavras": cartaz de palavras gigantes (estes dois cortam seco, sem a pessoa no canto)
+  broll?: { inicioMs: number; fimMs: number; midia?: Midia; cena?: CenaLowPoly | CenaPincel | CenaPalavras; cheio?: boolean; layout?: "faixa"; titulo?: string }[];
   exemplos?: boolean; // pedir ao Claude exemplos visuais (scripts/exemplos_clipe.mjs)
   exemplosFeitos?: boolean;
   inicio?: number; fim?: number; // momento de um vídeo longo (segundos do original); o script recorta-o
@@ -152,6 +153,20 @@ export type CenaCapitulo = Base & {
   numero?: number;
   titulo: string;
   kicker?: string;
+};
+
+// Faixa de cinema: mídia 16:9 a toda a largura sobre fundo escuro, título curto com brilho por cima
+export type CenaFaixa = Base & {
+  tipo: "faixa";
+  titulo?: string; // até ~3 palavras, ex. "475M VIEWS"
+};
+
+// Palavras gigantes de cartaz (1 a 4), vermelho e branco, sobre papel ou fundo escuro
+export type CenaPalavras = Base & {
+  tipo: "palavras";
+  textos: string[]; // 1 a 4 palavras (o campo "palavras" é o tempo da narração, comum a todas as cenas)
+  fundo?: "papel" | "escuro";
+  quando?: number[]; // segundo em que cada palavra entra (padrão: uma a cada 0,4 s)
 };
 
 export type CenaCta = Base & {
@@ -248,7 +263,7 @@ export type CenaPincel = Base & {
   tremer?: boolean; // o traço treme como numa animação desenhada (padrão: sim)
 };
 
-export type Cena = CenaGancho | CenaQuiz | CenaLowPoly | CenaPincel | CenaProduto | CenaFato | CenaGrafico | CenaLinhaTempo | CenaManim | CenaClipe | CenaNumero | CenaComparacao | CenaModelo3D | CenaCapitulo | CenaCta;
+export type Cena = CenaFaixa | CenaPalavras | CenaGancho | CenaQuiz | CenaLowPoly | CenaPincel | CenaProduto | CenaFato | CenaGrafico | CenaLinhaTempo | CenaManim | CenaClipe | CenaNumero | CenaComparacao | CenaModelo3D | CenaCapitulo | CenaCta;
 
 export type Manifest = {
   id: string;

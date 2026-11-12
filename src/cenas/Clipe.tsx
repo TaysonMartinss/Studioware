@@ -2,6 +2,8 @@ import { AbsoluteFill, OffthreadVideo, Sequence, interpolate, staticFile, useCur
 import { Conteudo, MidiaCartao } from "../components/MidiaReal";
 import { LowPolyCena } from "../lowpoly/LowPolyCena";
 import { PincelCena } from "../pincel/PincelCena";
+import { Faixa } from "./Faixa";
+import { Palavras } from "./Palavras";
 import { pop, useFontes, useFrame } from "../components/motion";
 import { useEstilo } from "../estilos";
 import { CenaClipe } from "../types";
@@ -75,6 +77,9 @@ const Exemplo: React.FC<{ b: Broll; cor: string; canto: React.ReactNode }> = ({ 
   const o = Math.min(entra, sai);
   const zoom = interpolate(f, [0, d], [1.04, 1.12]);
   const duracaoMs = b.fimMs - b.inicioMs;
+  // como nos reels: a faixa de cinema e as palavras gigantes entram em corte seco e tapam a pessoa (a voz continua)
+  if (b.layout === "faixa" && b.midia?.arquivo) return <AbsoluteFill><Faixa cena={{ tipo: "faixa", fala: "", midia: b.midia, titulo: b.titulo, duracaoMs }} cor={cor} /></AbsoluteFill>;
+  if (b.cena?.tipo === "palavras") return <AbsoluteFill><Palavras cena={{ ...b.cena, duracaoMs, palavras: [] }} cor={cor} /></AbsoluteFill>;
   let conteudo: React.ReactNode = null;
   if (b.midia?.arquivo) conteudo = <Conteudo midia={b.midia} estilo={{ width: "100%", height: "100%", objectFit: "cover", transform: `scale(${zoom})` }} />;
   else if (b.cena?.tipo === "lowpoly") conteudo = <LowPolyCena cena={{ ...b.cena, duracaoMs, palavras: [] }} cor={cor} />;

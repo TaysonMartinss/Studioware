@@ -14,14 +14,23 @@ está a ver perceber e não se aborrecer com uma cabeça a falar. Durante o exem
 
 ## Regras dos exemplos
 
-- Entre 2 e 5 exemplos num corte de 30 a 60 s (1 a 2 num corte de 20 s). Cada um dura **2,5 a 7 s**.
+- Edição de reel: **um corte a cada 4 a 8 s**, ou seja 4 a 8 exemplos num corte de 30 a 60 s (2 a 3 num de 20 s).
+  Cada um dura **2 a 6 s** (as `palavras` podem ter 1,2 a 3 s).
 - O exemplo começa **no momento em que a palavra é dita** (usa o tempo do trecho onde ela está) e acaba quando a ideia acaba.
-- Nunca nos primeiros 2 s (o gancho é a pessoa) nem nos últimos 2 s. Pelo menos 1,5 s de pessoa entre dois exemplos.
-- A pessoa tem de ficar visível em pelo menos 40% do corte.
+- Nunca nos primeiros 2 s (o gancho é a pessoa) nem nos últimos 2 s. Pelo menos 1 s de pessoa entre dois exemplos.
+- A pessoa tem de ficar visível em pelo menos 45% do corte.
 - Mostra **coisas concretas** que se dizem (um lugar, um objeto, um animal, uma marca, um número, uma ação), não ideias vagas.
 - Varia o tipo de exemplo quando faz sentido.
 
 ## Tipos de exemplo
+
+0. **`faixa`** (o mais usado, como nos reels de edição): vídeo ou foto **horizontal** numa faixa de cinema sobre fundo
+   escuro, com um título curto com brilho por cima. Para coisas reais: um lugar, um produto, uma cena de filme/jogo, um
+   número que aconteceu. `{"tipo": "faixa", "inicio": 6.0, "fim": 10.0, "titulo": "475M VIEWS" (opcional, até 3 palavras, quase sempre um número), "midia": {"fonte": "pixabay" | "wikimedia" | "steam", "consulta": "...", "tipo": "video" | "imagem"}}`.
+4. **`palavras`**: cartaz de 1 a 4 palavras gigantes (vermelho e branco) para o **conceito-chave** que a pessoa diz com
+   força ou para emoções/ideias abstratas (ex.: "PROCRASTINAÇÃO"; ou "ANSIEDADE", "MEDO", "FRUSTRAÇÃO" a entrar uma a uma).
+   `{"tipo": "palavras", "inicio": 14.0, "fim": 16.5, "palavras": ["ANSIEDADE", "MEDO"], "fundo": "escuro" | "papel"}`.
+   No máximo 2 por corte.
 
 1. **`midia`**: vídeo ou foto real. É o melhor para coisas reais e reconhecíveis.
    `{"fonte": "pixabay" | "pexels", "consulta": "termos em inglês, concretos (ex.: 'stock market traders screens')", "tipo": "video" | "imagem"}`

@@ -17,7 +17,9 @@ import { Clipe } from "./cenas/Clipe";
 import { Comparacao } from "./cenas/Comparacao";
 import { Cta } from "./cenas/Cta";
 import { Fato } from "./cenas/Fato";
+import { Faixa } from "./cenas/Faixa";
 import { Gancho } from "./cenas/Gancho";
+import { Palavras } from "./cenas/Palavras";
 import { Grafico } from "./cenas/Grafico";
 import { LinhaTempo } from "./cenas/LinhaTempo";
 import { ManimCena } from "./cenas/ManimCena";
@@ -31,6 +33,8 @@ import { Cena, FPS, Manifest, framesDaCena } from "./types";
 import { FiltroPixel } from "./components/Pixel";
 
 const ConteudoCena: React.FC<{ cena: Cena; cor: string }> = ({ cena, cor }) => {
+  if (cena.tipo === "faixa") return <Faixa cena={cena} cor={cor} />;
+  if (cena.tipo === "palavras") return <Palavras cena={cena} cor={cor} />;
   if (cena.tipo === "gancho") return <Gancho cena={cena} cor={cor} />;
   if (cena.tipo === "produto") return <Produto cena={cena} cor={cor} />;
   if (cena.tipo === "fato") return <Fato cena={cena} cor={cor} />;

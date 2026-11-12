@@ -32,6 +32,8 @@ Cada cena que abre um tópico (`fato` com título, `produto` de ranking, `capitu
 Algarismos só nos campos de tela (`texto_tela`, `valor`, `preco`, `dados`), nunca na `fala`.
 
 ## Tipos de cena
+- **faixa**: faixa de cinema (edição de reel). `midia` **horizontal** (vídeo de preferência: cena real, filme, jogo, notícia) a toda a largura sobre fundo escuro, e `titulo` opcional curto com brilho por cima (até 3 palavras, quase sempre um número: "475M VIEWS", "13 ANOS"). A legenda da fala fica por baixo. É a cena de conteúdo mais usada: troca a `fato` com foto quando o que importa é ver a coisa real.
+- **palavras**: cartaz de palavras gigantes. `textos` (1 a 4, curtas, em maiúsculas: o conceito-chave ou as emoções, ex. `["ANSIEDADE", "MEDO", "FRUSTRAÇÃO"]`), `fundo` (`escuro` padrão | `papel` amarrotado) e `quando` opcional (segundo em que cada palavra entra). Cena curta (uma frase), no máximo 2 por vídeo, no momento em que a fala diz a palavra com força.
 - **gancho**: `texto_tela` (3–5 palavras em maiúsculas), `icone`, `midia` (vira o fundo).
 - **fato**: `titulo` (até ~28 caracteres), `kicker` (etiqueta acima do título, ex. "Depois de uma hora"), `numero` opcional, `midia` (quase sempre).
 - **numero**: `valor` (número que conta na tela), `prefixo` (ex. "R$ "), `sufixo` (ex. "%", " mil", " Terras"), `texto` curto do que significa, `icone`, `alerta: true` para tom de perigo.

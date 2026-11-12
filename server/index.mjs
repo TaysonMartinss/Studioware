@@ -601,7 +601,7 @@ function lerRoteiroExterno(texto) {
   let r;
   try { r = JSON.parse(t.slice(ini, fim + 1)); } catch (e) { throw new Error(`O JSON tem um erro (${e.message}). Peça à IA para corrigir e responder só com o JSON.`); }
   if (!Array.isArray(r.cenas) || !r.cenas.length) throw new Error("O roteiro não tem cenas");
-  const tipos = new Set(["gancho", "quiz", "lowpoly", "pincel", "produto", "fato", "grafico", "linha_tempo", "manim", "numero", "comparacao", "modelo3d", "capitulo", "cta"]);
+  const tipos = new Set(["faixa", "palavras", "gancho", "quiz", "lowpoly", "pincel", "produto", "fato", "grafico", "linha_tempo", "manim", "numero", "comparacao", "modelo3d", "capitulo", "cta"]);
   const maus = r.cenas.map((c, i) => (tipos.has(c?.tipo) ? null : `cena ${i + 1} (${c?.tipo ?? "sem tipo"})`)).filter(Boolean);
   if (maus.length) throw new Error(`Tipos de cena desconhecidos: ${maus.join(", ")}`);
   r.cenas.forEach((c) => { if (typeof c.fala !== "string") c.fala = ""; });
