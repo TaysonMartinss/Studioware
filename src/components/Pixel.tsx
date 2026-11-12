@@ -1,6 +1,5 @@
-// Pixel 3D: a cena (3D low poly, fotos, vídeos) fica em blocos de pixel com dithering ordenado e paleta curta,
-// como uma cena 3D renderizada a baixa resolução num ecrã antigo. Só filtros SVG: funciona sobre qualquer conteúdo,
-// e o título e as legendas ficam fora do filtro (nítidos).
+// Pixel 3D: só a camada 3D (cenas low poly e modelo 3D) fica em blocos de pixel com dithering ordenado e paleta curta,
+// como uma cena 3D renderizada a baixa resolução num ecrã antigo. Títulos, etiquetas, legendas e marca ficam por cima, nítidos.
 //  1. pixelar: guarda um ponto de 2 px (1 px some nos renders a meia escala) no meio de cada bloco de `tamanho` px e dilata-o até encher o bloco;
 //  2. dithering: soma um padrão Bayer 4x4 (do tamanho dos blocos) e arredonda cada canal a `niveis` valores.
 
@@ -15,7 +14,7 @@ const padraoBayer = (t: number) => {
 };
 
 export const FiltroPixel: React.FC<{ tamanho: number; niveis: number }> = ({ tamanho: t, niveis }) => {
-  const forca = 1 / (niveis - 1); // o ruído do Bayer cobre um degrau da paleta
+  const forca = 0.55 / (niveis - 1); // o ruído do Bayer cobre meio degrau da paleta: pontos visíveis só nas transições
   const tabela = Array.from({ length: niveis }, (_, i) => (i / (niveis - 1)).toFixed(3)).join(" ");
   return (
     <svg width={0} height={0} style={{ position: "absolute" }}>

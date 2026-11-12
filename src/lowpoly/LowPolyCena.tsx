@@ -259,8 +259,9 @@ export const LowPolyCena: React.FC<{ cena: CenaLowPoly; cor: string; semTexto?: 
 
   return (
     <div style={{ position: "absolute", inset: 0 }}>
-      {/* estilo aquarela: o 3D é pintado a tinta e aguada (o filtro está em components/Aquarela.tsx) */}
-      <div style={{ position: "absolute", inset: 0, filter: e.textura === "aquarela" ? `url(#aquarela-${etapaTinta(f)})` : undefined }}>
+      {/* estilo aquarela: o 3D é pintado a tinta e aguada (o filtro está em components/Aquarela.tsx);
+          estilo Pixel 3D: só o 3D fica em pixel com dithering (título, etiquetas e legendas por cima, nítidos) */}
+      <div style={{ position: "absolute", inset: 0, filter: e.textura === "aquarela" ? `url(#aquarela-${etapaTinta(f)})` : e.pixel ? "url(#pixel)" : undefined }}>
       <ThreeCanvas width={L} height={A} gl={{ antialias: true, preserveDrawingBuffer: true }} camera={{ fov: vfov, position: [0, 2, 8], near: 0.1, far: 1500 }} style={{ position: "absolute", inset: 0 }}>
         <Camara pos={posCam} alvo={alvo} fov={vfov} />
         {noVazio && (

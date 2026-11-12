@@ -114,6 +114,8 @@ export const Modelo3DCena: React.FC<{ cena: CenaModelo3D; cor: string }> = ({ ce
     <AbsoluteFill>
       {/* sombra suave no "chão", por baixo do modelo */}
       <div style={{ position: "absolute", left: L * 0.18, right: L * 0.18, top: A * 0.552, height: 80, borderRadius: "50%", background: claro ? "#0f172a" : "#000", opacity: 0.35 * entrada, filter: "blur(30px)" }} />
+      {/* estilo Pixel 3D: só o modelo fica em pixel com dithering */}
+      <div style={{ position: "absolute", inset: 0, filter: e.pixel ? "url(#pixel)" : undefined }}>
       <ThreeCanvas width={L} height={A} gl={{ alpha: true, antialias: true, preserveDrawingBuffer: true }} camera={{ fov: FOV, position: [0, 0.25, camZ], near: 0.1, far: 100 }} style={{ position: "absolute", inset: 0 }}>
         <CameraSync z={camZ} />
         <hemisphereLight args={["#ffffff", "#30303a", claro ? 1.4 : 1.0]} />
@@ -131,6 +133,7 @@ export const Modelo3DCena: React.FC<{ cena: CenaModelo3D; cor: string }> = ({ ce
           {glb ? <Glb url={staticFile(glb)} t={explosao} aoMedir={medir} /> : <group scale={TAMANHO / Math.max(...CAIXA_PROCEDURAL[procedural])}><Hardware3D tipo={procedural} t={explosao} f={f} cor={cor} /></group>}
         </group>
       </ThreeCanvas>
+      </div>
 
       {(cena.titulo || cena.kicker) && (
         <div style={{ position: "absolute", top: TOPO, left: MARGEM, right: MARGEM, opacity: Math.min(1, sKicker * 1.4), transform: `translateY(${(1 - sKicker) * 20}px)` }}>
