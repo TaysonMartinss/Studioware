@@ -18,6 +18,7 @@ import { Comparacao } from "./cenas/Comparacao";
 import { Cta } from "./cenas/Cta";
 import { Fato } from "./cenas/Fato";
 import { Faixa } from "./cenas/Faixa";
+import { Tipografia } from "./cenas/Tipografia";
 import { Gancho } from "./cenas/Gancho";
 import { Palavras } from "./cenas/Palavras";
 import { Grafico } from "./cenas/Grafico";
@@ -32,7 +33,8 @@ import { Produto } from "./cenas/Produto";
 import { Cena, FPS, Manifest, framesDaCena } from "./types";
 import { FiltroPixel } from "./components/Pixel";
 
-const ConteudoCena: React.FC<{ cena: Cena; cor: string }> = ({ cena, cor }) => {
+const ConteudoCena: React.FC<{ cena: Cena; cor: string; destaques?: Set<string> }> = ({ cena, cor, destaques }) => {
+  if (cena.tipo === "tipografia") return <Tipografia cena={cena} cor={cor} destaques={destaques} />;
   if (cena.tipo === "faixa") return <Faixa cena={cena} cor={cor} />;
   if (cena.tipo === "palavras") return <Palavras cena={cena} cor={cor} />;
   if (cena.tipo === "gancho") return <Gancho cena={cena} cor={cor} />;
@@ -70,12 +72,13 @@ const CenaCompleta: React.FC<{ cena: Cena; indice: number; cor: string; destaque
       {pico && <SonsPico frame={pico.frame} principal={pico.principal} />}
       <Transicao indice={indice} zoom={zoomPunch(f, gatilhos)} filtro={rgbSplit ? "url(#rgb-split)" : undefined}>
         <RitmoCtx.Provider value={["gancho", "cta", "clipe"].includes(cena.tipo) ? 1 : ritmoDaFala(cena.fala)}>
-          <ConteudoCena cena={cena} cor={cor} />
+          <ConteudoCena cena={cena} cor={cor} destaques={destaques} />
         </RitmoCtx.Provider>
       </Transicao>
       {/* papel: um recorte novo a cada 3 palavras (o gancho já tem as letras de resgate e o CTA o botão) */}
       {tema === "papel" && !["gancho", "cta", "clipe"].includes(cena.tipo) && <ColagemPapel palavras={palavras} />}
-      <Legendas palavras={palavras} destaques={destaques} cor={cor} emojis={emojis} />
+      {/* a tipografia editorial já escreve a fala no ecrã */}
+      {cena.tipo !== "tipografia" && <Legendas palavras={palavras} destaques={destaques} cor={cor} emojis={emojis} />}
     </AbsoluteFill>
   );
 };

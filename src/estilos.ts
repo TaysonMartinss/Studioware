@@ -11,7 +11,7 @@ export type Estilo = {
   corTexto: string;
   sombra: string; // text-shadow dos títulos
   superficie: string; // painéis translúcidos (tags, barras)
-  tema: "grelha" | "gradiente" | "solido" | "papel" | "estrelas" | "claro" | "synthwave" | "hud" | "cartesiano" | "mundo3d";
+  tema: "grelha" | "gradiente" | "solido" | "papel" | "estrelas" | "claro" | "synthwave" | "hud" | "cartesiano" | "mundo3d" | "editorial";
   overlay: "scan" | "vhs" | "hud" | "papel" | "grao" | null;
   transicao: "whip" | "corte" | "suave" | "papel" | "forma" | "vhs" | "hud" | "voo" | "folha";
   legenda: "padrao" | "hormozi" | "papel" | "pilula" | "elegante" | "neon" | "hud" | "marcador" | "aquarela";

@@ -178,6 +178,13 @@ export const Fundo: React.FC<{ cor: string }> = ({ cor }) => {
       {/* fundos pretos: grelha de linhas brancas onduladas (o Neon mantém a luz da cor por cima) */}
       {e.tema === "grelha" && <><GrelhaOndulada opacidade={0.55} /><Luz cor={cor} /></>}
       {e.tema === "solido" && <GrelhaOndulada opacidade={0.55} />}
+      {/* editorial: papel milimétrico claro, com a luz a cair do centro */}
+      {e.tema === "editorial" && (
+        <>
+          <AbsoluteFill style={{ backgroundImage: "linear-gradient(#0000002e 2px, transparent 2px), linear-gradient(90deg, #0000002e 2px, transparent 2px)", backgroundSize: "60px 60px" }} />
+          <AbsoluteFill style={{ background: "radial-gradient(ellipse at 50% 40%, #ffffff99, transparent 65%)" }} />
+        </>
+      )}
       {e.tema === "gradiente" && <Luz cor={cor} forte />}
       {e.tema === "papel" && <Papel e={e} f={f} />}
       {e.tema === "estrelas" && <Estrelas e={e} f={f} />}
@@ -185,7 +192,7 @@ export const Fundo: React.FC<{ cor: string }> = ({ cor }) => {
       {e.tema === "synthwave" && <Synthwave e={e} f={f} />}
       {e.tema === "hud" && <Hud e={e} f={f} />}
       {e.tema === "cartesiano" && <Cartesiano e={e} />}
-      {e.tema !== "claro" && e.tema !== "papel" && (
+      {e.tema !== "claro" && e.tema !== "papel" && e.tema !== "editorial" && (
         <AbsoluteFill style={{ background: "radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,0.75) 100%)" }} />
       )}
     </AbsoluteFill>

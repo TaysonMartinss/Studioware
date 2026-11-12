@@ -430,5 +430,28 @@
       "tamanho": 10,
       "niveis": 8
     }
+  },
+  "editorial": {
+    "nome": "Editorial 3D",
+    "descricao": "Papel claro com grelha fina, tipografia de revista (serifa itálica e palavra-chave enorme) e objetos 3D a flutuar",
+    "cor": "#e5332a",
+    "cor2": "#111111",
+    "fundo": "#ecebe7",
+    "corTexto": "#111111",
+    "sombra": "none",
+    "superficie": "#0000000f",
+    "tema": "editorial",
+    "overlay": "grao",
+    "transicao": "corte",
+    "legenda": "padrao",
+    "titulo": "inter",
+    "corpo": "inter",
+    "glitch": false,
+    "shake": 0,
+    "flash": 0,
+    "passo": 1,
+    "raio": 4,
+    "brilho": false,
+    "tracking": "-0.04em"
   }
 }

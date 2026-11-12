@@ -320,6 +320,7 @@ def main():
         midias = [(str(i), cena.get("midia"))]
         midias += [(f"{i}-{lado}", (cena.get(lado) or {}).get("midia")) for lado in ("esquerda", "direita")]
         midias += [(f"{i}-b{k}", b.get("midia")) for k, b in enumerate(cena.get("broll") or [])]
+        midias += [(f"{i}-o", cena.get("objeto"))]  # objeto da tipografia editorial
         modelo = cena.get("modelo")
         if modelo and modelo.get("consulta") and (forcar or not modelo.get("arquivo") or not (Path("public") / modelo["arquivo"]).exists()):
             try:

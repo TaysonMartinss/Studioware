@@ -155,6 +155,13 @@ export type CenaCapitulo = Base & {
   kicker?: string;
 };
 
+// Tipografia editorial: a narração paginada como numa revista (serifa itálica + palavra-chave enorme), com um objeto a flutuar
+export type CenaTipografia = Base & {
+  tipo: "tipografia";
+  objeto?: Midia; // objeto 3D (sketchfab) ou imagem recortada que flutua ao lado do texto
+  chaves?: string[]; // palavras-chave a pôr em grande (padrão: um destaque do roteiro, senão a palavra mais comprida de cada frase)
+};
+
 // Faixa de cinema: mídia 16:9 a toda a largura sobre fundo escuro, título curto com brilho por cima
 export type CenaFaixa = Base & {
   tipo: "faixa";
@@ -263,7 +270,7 @@ export type CenaPincel = Base & {
   tremer?: boolean; // o traço treme como numa animação desenhada (padrão: sim)
 };
 
-export type Cena = CenaFaixa | CenaPalavras | CenaGancho | CenaQuiz | CenaLowPoly | CenaPincel | CenaProduto | CenaFato | CenaGrafico | CenaLinhaTempo | CenaManim | CenaClipe | CenaNumero | CenaComparacao | CenaModelo3D | CenaCapitulo | CenaCta;
+export type Cena = CenaTipografia | CenaFaixa | CenaPalavras | CenaGancho | CenaQuiz | CenaLowPoly | CenaPincel | CenaProduto | CenaFato | CenaGrafico | CenaLinhaTempo | CenaManim | CenaClipe | CenaNumero | CenaComparacao | CenaModelo3D | CenaCapitulo | CenaCta;
 
 export type Manifest = {
   id: string;

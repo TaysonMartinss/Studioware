@@ -1056,7 +1056,7 @@ let roteiroAberto = null;
 const campo = (rotulo, nome, valor, tipo = "input") =>
   `<div class="campo"><label class="rotulo">${rotulo}</label>${tipo === "textarea" ? `<textarea data-f="${nome}" rows="${nome === "json" ? 6 : 2}">${esc(valor)}</textarea>` : `<input data-f="${nome}" value="${esc(valor)}">`}</div>`;
 
-const NOME_CENA = { faixa: "Faixa de cinema", palavras: "Palavras gigantes", lowpoly: "Animação 3D", quiz: "Pergunta (quiz)", modelo3d: "Modelo 3D", numero: "Número", comparacao: "Comparação", gancho: "Gancho", cta: "Fecho", fato: "Curiosidade", grafico: "Gráfico", linha_tempo: "Linha do tempo", manim: "Manim", clipe: "Clipe", produto: "Produto" };
+const NOME_CENA = { tipografia: "Tipografia editorial", faixa: "Faixa de cinema", palavras: "Palavras gigantes", lowpoly: "Animação 3D", quiz: "Pergunta (quiz)", modelo3d: "Modelo 3D", numero: "Número", comparacao: "Comparação", gancho: "Gancho", cta: "Fecho", fato: "Curiosidade", grafico: "Gráfico", linha_tempo: "Linha do tempo", manim: "Manim", clipe: "Clipe", produto: "Produto" };
 const CAMPOS_JSON = { lowpoly: ["cenario", "hora", "variante", "plano", "camera", "festa", "personagens", "objetos", "corpos", "rotulos", "etiqueta"], numero: ["valor", "prefixo", "sufixo", "texto", "icone", "alerta"], comparacao: ["esquerda", "direita", "vencedor"], grafico: ["grafico", "dados", "unidade", "destaque"], linha_tempo: ["eventos"], manim: ["codigo"] };
 const FONTES_MIDIA = [["", "Sem mídia"], ["steam", "Steam (jogo)"], ["wikimedia", "Wikimedia (foto livre)"], ["pixabay", "Pixabay (stock)"], ["sketchfab", "Modelo 3D: Sketchfab"], ["procedural", "Modelo 3D do estúdio"], ["url", "Link direto (foto, vídeo ou .glb)"]];
 // o que escrever na pesquisa, por fonte
