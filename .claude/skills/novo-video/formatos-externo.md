@@ -112,6 +112,9 @@ Editorial (estilo Vox): tom de jornalismo explicativo, claro e com autoridade. U
 ## estilo: aquarela
 Livro ilustrado a tinta e aquarela: tom caloroso de contador de histórias, frases que pintam imagens. Combina muito bem com cenas `lowpoly` (ficam pintadas a aguada) e com histórias; prefira fotos com um assunto claro, porque ficam ilustradas.
 
+## estilo: pixel
+Pixel 3D (cenas 3D em pixel com dithering sobre fundo escuro, como um jogo antigo): tom de explicador direto, que responde a uma pergunta concreta. O gancho é uma pergunta curta em duas partes (o assunto numa palavra + a dúvida, ex.: "CAFÉ / faz mal mesmo?"). Quase todas as cenas são `lowpoly`, com iluminação escura (`hora: "noite"`) e um objeto ou personagem central em plano médio ou close; use os modelos prontos (`modelo`) para os objetos do tema e `molecula`/`atomo` para "o que tem dentro". Evite fotos e gráficos densos: o pixel apaga o detalhe.
+
 ## estilo: estudio3d
 Mundo 3D contínuo (estúdio escuro com chão espelhado; a câmara voa de estação em estação). Inclua pelo menos uma cena `modelo3d` com o objeto central do tema e prefira `midia` de imagem nítida, porque vira um ecrã suspenso.
 

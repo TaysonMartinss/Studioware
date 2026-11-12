@@ -28,6 +28,7 @@ import { Modelo3DCena } from "./cenas/Modelo3DCena";
 import { Numero } from "./cenas/Numero";
 import { Produto } from "./cenas/Produto";
 import { Cena, FPS, Manifest, framesDaCena } from "./types";
+import { FiltroPixel } from "./components/Pixel";
 
 const ConteudoCena: React.FC<{ cena: Cena; cor: string }> = ({ cena, cor }) => {
   if (cena.tipo === "gancho") return <Gancho cena={cena} cor={cor} />;
@@ -54,7 +55,7 @@ const CenaCompleta: React.FC<{ cena: Cena; indice: number; cor: string; destaque
   const f = useCurrentFrame();
   const palavras = cena.palavras ?? [];
   // zoom punch no início da cena e em cada palavra de destaque (estilos calmos ficam sem)
-  const { shake, rgbSplit, tema } = useEstilo();
+  const { shake, rgbSplit, tema, pixel } = useEstilo();
   const gatilhos = shake === 0 ? [] : [0, ...palavras.filter((p) => destaques.has(normalizar(p.texto))).map((p) => Math.round((p.inicioMs / 1000) * FPS)), ...(pico ? [pico.frame] : [])];
 
   return (
@@ -63,7 +64,7 @@ const CenaCompleta: React.FC<{ cena: Cena; indice: number; cor: string; destaque
       {cena.audio && <Html5Audio src={staticFile(cena.audio)} />}
       {/* revelação preparada com [pausa longa]: riser até ao golpe, impacto e (na principal) chime */}
       {pico && <SonsPico frame={pico.frame} principal={pico.principal} />}
-      <Transicao indice={indice} zoom={zoomPunch(f, gatilhos)} filtro={rgbSplit ? "url(#rgb-split)" : undefined}>
+      <Transicao indice={indice} zoom={zoomPunch(f, gatilhos)} filtro={pixel ? "url(#pixel)" : rgbSplit ? "url(#rgb-split)" : undefined}>
         <RitmoCtx.Provider value={["gancho", "cta", "clipe"].includes(cena.tipo) ? 1 : ritmoDaFala(cena.fala)}>
           <ConteudoCena cena={cena} cor={cor} />
         </RitmoCtx.Provider>
@@ -119,6 +120,7 @@ export const Video: React.FC<{ manifest: Manifest }> = ({ manifest }) => {
       <Overlay />
       {manifest.marcaDagua !== false && <MarcaDagua canal={manifest.canal} />}
       {estilo.rgbSplit ? <FiltroRgb d={estilo.rgbSplit} /> : null}
+      {estilo.pixel ? <FiltroPixel tamanho={estilo.pixel.tamanho} niveis={estilo.pixel.niveis} /> : null}
       {estilo.tema === "papel" && <FiltrosFerver />}
       {estilo.textura === "aquarela" && <FiltrosAquarela tinta={estilo.corTexto} />}
       <BarraProgresso cor={cor} />

@@ -38,15 +38,19 @@ const VARIANTES: Record<Estilo["legenda"], Variante> = {
   padrao: {
     porPagina: 3, top: 1250, maiusculas: true,
     bloco: (e) => ({ fontFamily: FONTES[e.titulo], fontSize: 108, lineHeight: 1.1, gap: "0 26px" }),
-    // palavra ativa numa caixa da cor do estilo (estilo CapCut); destaques a amarelo; sem glow
-    palavra: (e, cor, { s, ativa, destaque }) => ({
-      color: ativa ? "#0b0b0f" : destaque ? AMARELO : "#fff",
-      background: ativa ? (destaque ? AMARELO : cor) : "transparent",
-      borderRadius: Math.min(e.raio, 12), padding: "0 14px",
-      transform: `scale(${0.7 + 0.3 * s}) translateY(${(1 - s) * 24}px)`,
-      WebkitTextStroke: ativa ? "0" : "12px #000", paintOrder: "stroke fill",
-      textShadow: ativa ? "none" : "0 6px 0 #000",
-    }),
+    // destaque só pela cor da letra (sem caixa por trás): a palavra ativa na cor do estilo, os destaques a amarelo; sem glow.
+    // Tremor do papel stop motion (cada palavra ligeiramente torta e a saltar ~12 vezes por segundo), com a fonte do estilo.
+    palavra: (e, cor, { s, ativa, destaque, semente, etapa }) => {
+      const foto = e.passo > 1 ? etapa : Math.floor(etapa / 2.5);
+      const j = (eixo: string) => random(`${semente}${eixo}${foto}`) - 0.5;
+      return {
+        color: destaque ? AMARELO : ativa ? cor : "#fff",
+        padding: "0 6px",
+        transform: `translate(${j("x") * 7}px, ${(1 - s) * 24 + j("y") * 5}px) scale(${(0.7 + 0.3 * s) * (ativa ? 1.06 : 1)}) rotate(${(random(semente) - 0.5) * 5 + j("r") * 2.5}deg)`,
+        WebkitTextStroke: "12px #000", paintOrder: "stroke fill",
+        textShadow: "0 6px 0 #000",
+      };
+    },
   },
   hormozi: {
     porPagina: 2, top: 1210, maiusculas: true,

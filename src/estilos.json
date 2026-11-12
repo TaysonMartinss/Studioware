@@ -390,5 +390,32 @@
       "pop": "caneta",
       "popup": "caneta"
     }
+  },
+  "pixel": {
+    "nome": "Pixel 3D",
+    "descricao": "Cenas 3D low poly em pixel com dithering, fundo escuro e títulos em pergunta com destaque amarelo",
+    "cor": "#ffd23f",
+    "cor2": "#5aa9ff",
+    "fundo": "#0a0c11",
+    "corTexto": "#ffffff",
+    "sombra": "0 4px 18px #000c",
+    "superficie": "#ffffff14",
+    "tema": "solido",
+    "overlay": null,
+    "transicao": "suave",
+    "legenda": "padrao",
+    "titulo": "inter",
+    "corpo": "inter",
+    "glitch": false,
+    "shake": 0.3,
+    "flash": 0,
+    "passo": 1,
+    "raio": 10,
+    "brilho": false,
+    "tracking": "-0.02em",
+    "pixel": {
+      "tamanho": 10,
+      "niveis": 6
+    }
   }
 }
