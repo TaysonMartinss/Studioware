@@ -1,148 +1,201 @@
 <!doctype html>
-<html lang="pt">
+<html lang="pt-BR">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Estúdio de Shorts</title>
+<title>Studioware</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/painel.css">
+<script>try { if (localStorage.tema) document.documentElement.dataset.tema = localStorage.tema; } catch {}</script>
 </head>
 <body>
+<a class="saltar" href="#principal">Ir para o conteúdo</a>
+
 <header class="topo">
   <div class="marca">
-    <div class="logo"><i class="i" style="--u:url(/icones/clapperboard.svg);width:14px;height:14px"></i></div>
-    Estúdio <small>shorts verticais</small>
+    <div class="logo"><i class="i" style="--u:url(/icones/clapperboard.svg);width:15px;height:15px"></i></div>
+    <span>Studioware</span>
   </div>
-  <div class="linha">
-    <button class="btn fantasma" onclick="abrirAuto()" title="Modo automático" aria-label="Modo automático"><i class="i" style="--u:url(/icones/bot.svg)"></i><span class="txt-topo">Modo automático</span> <span class="meta" id="autoSelo"></span></button>
-    <button class="btn fantasma" onclick="abrirConfig()" title="Chaves de API" aria-label="Chaves de API"><i class="i" style="--u:url(/icones/key-round.svg)"></i><span class="txt-topo">Chaves de API</span></button>
+  <div class="topo-acoes">
+    <button class="chip-fila" id="chipFila" onclick="irPara('producao')" hidden><span class="ponto vivo"></span><span id="textoChipFila">0 em produção</span></button>
+    <div class="seletor-canal">
+      <i class="i" style="--u:url(/icones/tv.svg)" aria-hidden="true"></i>
+      <label class="sr" for="canal">Canal</label>
+      <select id="canal" onchange="mudouCanal()"></select>
+    </div>
+    <button class="btn fantasma icone" onclick="alternarTema()" title="Tema claro ou escuro" aria-label="Alternar tema claro ou escuro"><i class="i" id="iconeTema" style="--u:url(/icones/moon.svg)"></i></button>
   </div>
 </header>
 
 <div class="app">
-  <aside class="lateral">
-    <div class="lateral-corpo">
-      <section class="secao">
-        <h3 class="secao-titulo">Canal</h3>
-        <div class="linha">
-          <select id="canal" onchange="try { localStorage.canal = this.value } catch {}"></select>
-          <button class="btn icone" onclick="abrirCanais()" title="Criar ou editar canais" aria-label="Criar ou editar canais"><i class="i" style="--u:url(/icones/settings.svg)"></i></button>
-        </div>
-        <div class="dica">Define a marca d'água (logo e @) do vídeo e o nicho que guia as ideias e o roteiro.</div>
-      </section>
+  <nav class="nav" aria-label="Secções">
+    <a href="#criar" data-vista="criar"><i class="i" style="--u:url(/icones/sparkles.svg)"></i><span>Criar</span></a>
+    <a href="#producao" data-vista="producao"><i class="i" style="--u:url(/icones/loader.svg)"></i><span data-curto="Fila">Produção</span><span class="contador" id="contaFila">0</span></a>
+    <a href="#biblioteca" data-vista="biblioteca"><i class="i" style="--u:url(/icones/layout-grid.svg)"></i><span data-curto="Vídeos">Biblioteca</span><span class="contador" id="contaBib">0</span></a>
+    <a href="#ideias" data-vista="ideias"><i class="i" style="--u:url(/icones/lightbulb.svg)"></i><span>Ideias</span></a>
+    <div class="nav-sep"></div>
+    <a href="#canais" data-vista="canais"><i class="i" style="--u:url(/icones/badge-check.svg)"></i><span>Canais</span></a>
+    <a href="#automatico" data-vista="automatico"><i class="i" style="--u:url(/icones/bot.svg)"></i><span data-curto="Auto">Automático</span><span class="meta selo" id="autoSelo"></span></a>
+    <a href="#configuracoes" data-vista="configuracoes"><i class="i" style="--u:url(/icones/settings.svg)"></i><span data-curto="Ajustes">Configurações</span></a>
+  </nav>
 
-      <section class="secao">
-        <h3 class="secao-titulo">Formato</h3>
-        <div class="formatos" id="formato"></div>
-      </section>
+  <main class="principal" id="principal" tabindex="-1">
 
-      <section class="secao">
-        <div class="campo">
-          <label class="rotulo" for="tema" id="rotuloTema">Tema</label>
-          <textarea id="tema" rows="3"></textarea>
-        </div>
-        <div id="clipeBox" hidden>
+    <!-- ================= CRIAR ================= -->
+    <section class="vista" id="vista-criar" data-vista="criar">
+      <div class="cabeca-pagina">
+        <div><h1>Criar vídeo</h1><p class="sub">Em três passos: o vídeo, o visual e a voz, e uma revisão antes de criar.</p></div>
+      </div>
+      <ol class="passos" id="passos">
+        <li data-p="1"><button type="button" onclick="irParaPasso(1)"><b>1</b><span>O vídeo</span></button></li>
+        <li data-p="2"><button type="button" onclick="irParaPasso(2)"><b>2</b><span>Visual e voz</span></button></li>
+        <li data-p="3"><button type="button" onclick="irParaPasso(3)"><b>3</b><span>Rever e criar</span></button></li>
+      </ol>
+
+      <!-- passo 1: o vídeo -->
+      <div class="passo" id="passo-1">
+        <section class="superficie">
+          <h2 class="titulo-superficie">Como quer começar?</h2>
+          <div class="origens" id="origens" role="radiogroup" aria-label="Origem do vídeo">
+            <button type="button" role="radio" data-origem="ia"><i class="i" style="--u:url(/icones/sparkles.svg)"></i><b>Novo vídeo com IA</b><span>O Claude pesquisa, escreve e narra</span></button>
+            <button type="button" role="radio" data-origem="cortes"><i class="i" style="--u:url(/icones/scissors.svg)"></i><b>Cortes de vídeo longo</b><span>Podcast, live ou aula vira vários Shorts</span></button>
+            <button type="button" role="radio" data-origem="clipes"><i class="i" style="--u:url(/icones/film.svg)"></i><b>Meus clipes</b><span>Legendar e tirar os silêncios</span></button>
+            <button type="button" role="radio" data-origem="outraia"><i class="i" style="--u:url(/icones/clipboard-paste.svg)"></i><b>Roteiro de outra IA</b><span>ChatGPT, Gemini e outras</span></button>
+          </div>
+        </section>
+
+        <section class="superficie" id="blocoFormato">
+          <h2 class="titulo-superficie">Formato</h2>
+          <div class="formatos" id="formato"></div>
+        </section>
+
+        <section class="superficie" id="blocoTema">
           <div class="campo">
-            <label class="zona-ficheiros" id="zonaClipe">
-              <i class="i" style="--u:url(/icones/upload.svg);width:20px;height:20px"></i>
-              <div id="nomesClipe" style="margin-top:6px">Escolha os vídeos (pela ordem em que entram)</div>
-              <input type="file" id="ficheirosClipe" accept="video/*" multiple>
-            </label>
+            <label class="rotulo" for="tema" id="rotuloTema">Tema</label>
+            <textarea id="tema" rows="3"></textarea>
+            <div class="erro-campo" id="erroTema" hidden>Escreva o tema do vídeo para continuar.</div>
           </div>
-          <div class="campo">
-            <label class="interruptor"><span>Encontrar os melhores momentos (vídeo longo → vários Shorts)</span><input type="checkbox" id="modoCortes" onchange="mudarModoCortes()"></label>
-            <div class="dica">Para podcasts, entrevistas, lives e aulas: o Claude lê a transcrição, dá uma nota de viralidade a cada momento e escolhe os cortes; cada um sai enquadrado no rosto, sem silêncios e com legendas e emojis.</div>
-          </div>
-          <div id="opcoesCortes" hidden>
-            <div class="campo">
-              <label class="rotulo" for="duracaoCortes">Duração de cada Short</label>
-              <select id="duracaoCortes"><option value="15-35">15 a 35 s</option><option value="20-60" selected>20 a 60 s</option><option value="45-90">45 a 90 s</option></select>
-            </div>
-            <div class="campo">
-              <label class="rotulo" for="focoCortes">Foco (opcional)</label>
-              <input id="focoCortes" placeholder="ex.: as partes sobre dinheiro, as piadas, as polémicas">
-            </div>
-            <div class="campo"><label class="interruptor"><span>Gancho escrito na tela nos primeiros segundos</span><input type="checkbox" id="ganchoCortes" checked></label></div>
-          </div>
-          <div class="campo"><label class="interruptor"><span>Enquadrar no rosto (vídeos horizontais)</span><input type="checkbox" id="enquadrar" checked></label></div>
-          <div class="campo"><label class="interruptor"><span>Cortar silêncios automaticamente</span><input type="checkbox" id="cortar" checked></label></div>
-          <div class="campo">
-            <label class="rotulo" for="destaquesClipe">Palavras em destaque</label>
-            <input id="destaquesClipe" placeholder="grátis, segredo, nunca">
-            <div class="dica">As legendas são geradas pelo Whisper. Na primeira vez o modelo (cerca de 500 MB) é baixado.</div>
-          </div>
-        </div>
-      </section>
-
-      <section class="secao">
-        <h3 class="secao-titulo">Estilo de edição</h3>
-        <div class="estilos" id="estilos"></div>
-        <div class="estilo-desc" id="estiloDesc"></div>
-      </section>
-
-      <section class="secao">
-        <h3 class="secao-titulo">Música de fundo</h3>
-        <div class="linha">
-          <select id="musica"></select>
-          <button class="btn icone" id="ouvirMusica" title="Ouvir"><i class="i" style="--u:url(/icones/play.svg)"></i></button>
-        </div>
-        <div class="dica" id="dicaMusica"></div>
-        <button class="btn peq" style="margin-top:8px" onclick="abrirBiblioteca()"><i class="i" style="--u:url(/icones/library.svg);width:14px;height:14px"></i>Biblioteca de música <span class="meta" id="contaMusicas"></span></button>
-      </section>
-
-      <section class="secao" id="soRoteiro">
-        <details class="avancado" open>
-          <summary class="secao-titulo" style="margin:0">Roteiro e narração <i class="i seta" style="--u:url(/icones/chevron-right.svg);width:14px;height:14px"></i></summary>
-          <div style="margin-top:12px">
-            <div class="grid2">
+          <div id="blocoDetalhes">
+            <div class="grid3">
               <div class="campo"><label class="rotulo" id="rotuloItens">Itens</label><div class="seg" id="produtos"><button>3</button><button>4</button><button>5</button></div></div>
+              <div class="campo" id="campoDuracao">
+                <label class="rotulo">Duração</label>
+                <div class="seg" id="duracao"><button data-v="curto">30–45 s</button><button data-v="medio">45–60 s</button><button data-v="longo">60–90 s</button></div>
+              </div>
               <div class="campo"><label class="rotulo" for="pais">Mercado</label><select id="pais"><option>Brasil (R$)</option><option>Portugal (€)</option></select></div>
             </div>
             <div class="campo">
-              <label class="rotulo">Narração</label>
-              <div class="seg" id="narracao"><button data-v="edge">Voz grátis</button><button data-v="elevenlabs">ElevenLabs</button><button data-v="chatterbox">Chatterbox</button></div>
-              <div class="linha" style="margin-top:8px">
-                <select id="voz"></select>
-                <button class="btn icone" id="ouvir" title="Ouvir amostra" hidden><i class="i" style="--u:url(/icones/play.svg)"></i></button>
-              </div>
-              <div class="aviso" id="avisoVoz" hidden></div>
+              <label class="rotulo" for="obs">Instruções para o roteiro <span class="opcional">opcional</span></label>
+              <textarea id="obs" rows="2" placeholder="Público, tom, ângulo, o que evitar"></textarea>
             </div>
-            <div class="campo">
-              <label class="rotulo" for="obs">Instruções para o roteiro</label>
-              <textarea id="obs" rows="2" placeholder="Opcional: público, tom, ângulo, o que evitar…"></textarea>
-            </div>
-            <div class="campo" id="campoDuracao">
-              <label class="rotulo">Duração</label>
-              <div class="seg" id="duracao"><button data-v="curto">30–45 s</button><button data-v="medio">45–60 s</button><button data-v="longo">60–90 s</button></div>
-              <div class="dica">Mais tempo = mais profundidade. O alvo guia o tamanho das falas.</div>
-            </div>
-            <div class="campo" id="campoLowpoly"><label class="interruptor"><span>Animação 3D low poly em vez de fotos</span><input type="checkbox" id="lowpoly"></label></div>
-            <div class="campo"><label class="interruptor"><span>Revisão do editor-chefe (profundidade, fatos e preços)</span><input type="checkbox" id="editorChefe" checked></label></div>
-            <div class="campo"><label class="interruptor"><span>Revisão visual depois do render (o Claude vê os frames)</span><input type="checkbox" id="revisaoVisual" checked></label></div>
-            <div class="campo"><label class="interruptor"><span>Rever o roteiro antes de renderizar</span><input type="checkbox" id="revisar" checked></label></div>
           </div>
-        </details>
-      </section>
-    </div>
-    <div class="rodape-lateral">
-      <button class="btn primario" id="criar" title="Criar (Ctrl+Enter)" onclick="criar()"><i class="i" style="--u:url(/icones/sparkles.svg)"></i><span id="textoCriar">Criar roteiro</span></button>
-      <button class="btn fantasma" onclick="abrirIdeias()" title="Ideias de vídeos com base no que está acontecendo agora"><i class="i" style="--u:url(/icones/lightbulb.svg)"></i>Ideias de vídeos</button>
-      <button class="btn fantasma" id="outraIA" onclick="abrirOutraIA()" title="Escrever o roteiro no ChatGPT, Gemini ou outra IA e importar aqui"><i class="i" style="--u:url(/icones/clipboard-paste.svg)"></i>Usar outra IA</button>
-    </div>
-  </aside>
+        </section>
 
-  <main class="principal">
-    <section class="bloco">
-      <div class="cabeca"><h2>Fila <span class="contador" id="contaFila">0</span></h2></div>
+        <section class="superficie" id="clipeBox" hidden>
+          <div class="campo">
+            <label class="zona-ficheiros" id="zonaClipe">
+              <i class="i" style="--u:url(/icones/upload.svg);width:22px;height:22px"></i>
+              <b id="nomesClipe">Escolha os vídeos (pela ordem em que entram)</b>
+              <span class="meta">MP4, MOV, WEBM ou MKV</span>
+              <input type="file" id="ficheirosClipe" accept="video/*" multiple>
+            </label>
+            <div class="erro-campo" id="erroFicheiros" hidden>Escolha o vídeo para continuar.</div>
+          </div>
+          <input type="checkbox" id="modoCortes" hidden onchange="mudarModoCortes()">
+          <div id="opcoesCortes" hidden>
+            <div class="grid2">
+              <div class="campo">
+                <label class="rotulo" for="duracaoCortes">Duração de cada Short</label>
+                <select id="duracaoCortes"><option value="15-35">15 a 35 s</option><option value="20-60" selected>20 a 60 s</option><option value="45-90">45 a 90 s</option></select>
+              </div>
+              <div class="campo">
+                <label class="rotulo" for="focoCortes">Foco <span class="opcional">opcional</span></label>
+                <input id="focoCortes" placeholder="As partes sobre dinheiro, as piadas">
+              </div>
+            </div>
+            <div class="campo"><label class="interruptor"><span>Gancho escrito na tela nos primeiros segundos</span><input type="checkbox" id="ganchoCortes" checked></label></div>
+          </div>
+          <div class="campo"><label class="interruptor"><span>Enquadrar no rosto <small>vídeos horizontais viram verticais</small></span><input type="checkbox" id="enquadrar" checked></label></div>
+          <div class="campo"><label class="interruptor"><span>Cortar silêncios automaticamente</span><input type="checkbox" id="cortar" checked></label></div>
+          <div class="campo" id="campoDestaques">
+            <label class="rotulo" for="destaquesClipe">Palavras em destaque <span class="opcional">opcional</span></label>
+            <input id="destaquesClipe" placeholder="grátis, segredo, nunca">
+            <div class="dica">As legendas são geradas pelo Whisper. Na primeira vez o modelo (cerca de 500 MB) é baixado.</div>
+          </div>
+        </section>
+      </div>
+
+      <!-- passo 2: visual e voz -->
+      <div class="passo" id="passo-2" hidden>
+        <section class="superficie">
+          <h2 class="titulo-superficie">Estilo de edição</h2>
+          <div class="estilos" id="estilos"></div>
+          <div class="estilo-desc" id="estiloDesc"></div>
+        </section>
+        <section class="superficie" id="soRoteiro">
+          <h2 class="titulo-superficie">Narração</h2>
+          <div class="seg" id="narracao"><button data-v="edge">Voz grátis</button><button data-v="elevenlabs">ElevenLabs</button><button data-v="chatterbox">Chatterbox</button></div>
+          <div class="linha" style="margin-top:10px">
+            <label class="sr" for="voz">Voz</label>
+            <select id="voz"></select>
+            <button class="btn icone" id="ouvir" title="Ouvir amostra" aria-label="Ouvir amostra da voz" hidden><i class="i" style="--u:url(/icones/play.svg)"></i></button>
+          </div>
+          <div class="aviso" id="avisoVoz" hidden></div>
+        </section>
+        <section class="superficie">
+          <h2 class="titulo-superficie">Música de fundo</h2>
+          <div class="linha">
+            <label class="sr" for="musica">Música</label>
+            <select id="musica"></select>
+            <button class="btn icone" id="ouvirMusica" title="Ouvir" aria-label="Ouvir a música"><i class="i" style="--u:url(/icones/play.svg)"></i></button>
+          </div>
+          <div class="dica" id="dicaMusica"></div>
+          <button class="btn fantasma peq" style="margin-top:8px" onclick="abrirBiblioteca()"><i class="i" style="--u:url(/icones/library.svg);width:14px;height:14px"></i>Biblioteca de música <span class="meta" id="contaMusicas"></span></button>
+        </section>
+      </div>
+
+      <!-- passo 3: rever e criar -->
+      <div class="passo" id="passo-3" hidden>
+        <section class="superficie">
+          <h2 class="titulo-superficie">Resumo</h2>
+          <dl class="resumo" id="resumo"></dl>
+        </section>
+        <section class="superficie" id="blocoAvancado">
+          <details class="avancado">
+            <summary><span><b>Opções avançadas</b><small id="resumoAvancado"></small></span><i class="i seta" style="--u:url(/icones/chevron-right.svg);width:16px;height:16px"></i></summary>
+            <div class="avancado-corpo">
+              <div class="campo" id="campoLowpoly"><label class="interruptor"><span>Animação 3D low poly em vez de fotos</span><input type="checkbox" id="lowpoly"></label></div>
+              <div class="campo"><label class="interruptor"><span>Revisão do editor-chefe <small>confere profundidade, fatos e preços</small></span><input type="checkbox" id="editorChefe" checked></label></div>
+              <div class="campo"><label class="interruptor"><span>Revisão visual depois do render <small>o Claude vê os frames e aponta problemas</small></span><input type="checkbox" id="revisaoVisual" checked></label></div>
+              <div class="campo"><label class="interruptor"><span>Rever o roteiro antes de renderizar <small>você aprova antes de gastar narração e render</small></span><input type="checkbox" id="revisar" checked></label></div>
+            </div>
+          </details>
+        </section>
+      </div>
+
+      <div class="rodape-passos">
+        <button class="btn" id="btnVoltar" onclick="irParaPasso(passoAtual - 1)"><i class="i" style="--u:url(/icones/arrow-left.svg)"></i>Voltar</button>
+        <span class="meta" id="dicaAtalho">Ctrl+Enter cria o vídeo</span>
+        <button class="btn primario" id="btnContinuar" onclick="continuarPasso()">Continuar<i class="i" style="--u:url(/icones/arrow-right.svg)"></i></button>
+        <button class="btn primario" id="criar" title="Criar (Ctrl+Enter)" onclick="criarDoAssistente()" hidden><i class="i" style="--u:url(/icones/sparkles.svg)"></i><span id="textoCriar">Criar roteiro</span></button>
+      </div>
+    </section>
+
+    <!-- ================= PRODUÇÃO ================= -->
+    <section class="vista" id="vista-producao" data-vista="producao" hidden>
+      <div class="cabeca-pagina"><div><h1>Produção</h1><p class="sub">Os vídeos a ser feitos agora, etapa a etapa. Os prontos vão para a Biblioteca.</p></div></div>
       <div class="fila" id="jobs"><div class="vazio">Nada em produção.</div></div>
     </section>
-    <section class="bloco">
-      <div class="cabeca">
-        <h2>Biblioteca <span class="contador" id="contaBib">0</span></h2>
+
+    <!-- ================= BIBLIOTECA ================= -->
+    <section class="vista" id="vista-biblioteca" data-vista="biblioteca" hidden>
+      <div class="cabeca-pagina">
+        <div><h1>Biblioteca</h1><p class="sub">Os seus vídeos prontos, com capa, publicação e revisão.</p></div>
         <div class="linha">
+          <label class="sr" for="procurarBib">Procurar vídeos</label>
+          <input id="procurarBib" type="search" placeholder="Procurar vídeos" oninput="filtrarBiblioteca()" style="width:200px">
           <button class="btn fantasma peq" id="btnSelecionar" onclick="alternarSelecao()"><i class="i" style="--u:url(/icones/square-check.svg);width:14px;height:14px"></i>Selecionar</button>
-          <button class="btn fantasma peq" onclick="abrirPrecos()"><i class="i" style="--u:url(/icones/tag.svg);width:14px;height:14px"></i>Preços</button>
           <button class="btn fantasma peq" onclick="abrirLixeira()"><i class="i" style="--u:url(/icones/trash-2.svg);width:14px;height:14px"></i>Lixeira <span class="contador" id="contaLixo">0</span></button>
         </div>
       </div>
@@ -154,55 +207,146 @@
       </div>
       <div class="biblioteca" id="galeria"></div>
     </section>
+
+    <!-- ================= IDEIAS ================= -->
+    <section class="vista" id="vista-ideias" data-vista="ideias" hidden>
+      <div class="cabeca-pagina"><div><h1>Ideias <span class="meta" id="ideiasMeta"></span></h1><p class="sub" id="ideiasDica">O Claude pesquisa o que está acontecendo agora no nicho do canal e evita os temas que o canal já fez.</p></div></div>
+      <section class="superficie">
+        <div class="linha linha-larga">
+          <div class="campo" style="flex:1;margin:0">
+            <label class="rotulo" for="ideiasFoco">Foco <span class="opcional">opcional</span></label>
+            <input id="ideiasFoco" placeholder="Placas de vídeo baratas, GTA 6, E se? sobre o espaço">
+          </div>
+          <button class="btn primario" id="btnIdeias" onclick="gerarIdeias()"><i class="i" style="--u:url(/icones/lightbulb.svg)"></i>Gerar ideias</button>
+        </div>
+        <span class="meta" id="ideiasPasso"></span>
+      </section>
+      <div id="ideiasLista" class="lista"></div>
+    </section>
+
+    <!-- ================= CANAIS ================= -->
+    <section class="vista" id="vista-canais" data-vista="canais" hidden>
+      <div class="cabeca-pagina">
+        <div><h1>Canais</h1><p class="sub">A marca d'água (logo e @) de cada canal e o nicho que guia as ideias e os roteiros.</p></div>
+        <button class="btn primario" id="btnNovoCanal" onclick="editarCanal()"><i class="i" style="--u:url(/icones/plus.svg)"></i>Novo canal</button>
+      </div>
+      <div class="duas-colunas">
+        <div id="canaisLista" class="lista"></div>
+        <form id="formCanal" class="superficie" hidden onsubmit="event.preventDefault(); guardarCanal()">
+          <h2 class="titulo-superficie" id="tituloFormCanal">Novo canal</h2>
+          <div class="grid2">
+            <div class="campo"><label class="rotulo" for="canalNome">Nome do canal</label><input id="canalNome" maxlength="60" placeholder="Duck Explica" required oninput="previsualizarMarca()"></div>
+            <div class="campo"><label class="rotulo" for="canalArroba">@ do canal</label><input id="canalArroba" maxlength="40" placeholder="@duckexplica" required oninput="previsualizarMarca()"></div>
+          </div>
+          <div class="campo">
+            <label class="rotulo" for="canalNicho">Nicho</label>
+            <textarea id="canalNicho" rows="3" maxlength="600" placeholder="Futebol: lances polêmicos, arbitragem e VAR, regras explicadas, curiosidades e recordes"></textarea>
+            <div class="dica">As Ideias e o modo automático só procuram temas dentro deste nicho, e o roteiro é escrito para este público. Seja específico: temas, formatos e o que evitar.</div>
+          </div>
+          <div class="campo">
+            <label class="rotulo" for="canalCategoria">Categoria no YouTube</label>
+            <select id="canalCategoria">
+              <option value="20">Jogos</option><option value="28">Ciência e tecnologia</option><option value="27">Educação</option><option value="17">Esportes</option>
+              <option value="24">Entretenimento</option><option value="22">Pessoas e blogs</option><option value="26">Tutoriais e estilo</option><option value="23">Comédia</option>
+              <option value="10">Música</option><option value="25">Notícias e política</option><option value="2">Automóveis e veículos</option><option value="15">Animais</option>
+              <option value="19">Viagens e eventos</option><option value="1">Cinema e animação</option>
+            </select>
+          </div>
+          <div class="campo">
+            <span class="rotulo">Logo</span>
+            <label class="zona-ficheiros">
+              <i class="i" style="--u:url(/icones/image-up.svg);width:22px;height:22px"></i>
+              <b>Escolher a logo</b>
+              <span class="meta">PNG, JPG ou WEBP, de preferência quadrada</span>
+              <input type="file" id="canalLogo" accept="image/png,image/jpeg,image/webp" onchange="enviarLogoCanal()">
+            </label>
+            <label class="interruptor" style="margin-top:10px"><span>Remover o fundo liso da imagem</span><input type="checkbox" id="canalSemFundo" checked onchange="enviarLogoCanal()"></label>
+            <label class="interruptor" style="margin-top:10px"><span>Logo em pixel art <small>sem suavizar ao aumentar</small></span><input type="checkbox" id="canalPixelado" onchange="previsualizarMarca()"></label>
+          </div>
+          <div class="campo">
+            <span class="rotulo">Como fica no vídeo</span>
+            <div class="previa-marca"><div class="marca-pilula" id="marcaPrevia"></div></div>
+          </div>
+          <div class="linha">
+            <button class="btn primario" type="submit" id="btnGuardarCanal"><i class="i" style="--u:url(/icones/check.svg)"></i>Salvar canal</button>
+            <button class="btn fantasma" type="button" onclick="fecharFormCanal()">Cancelar</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ================= AUTOMÁTICO ================= -->
+    <section class="vista" id="vista-automatico" data-vista="automatico" hidden>
+      <div class="cabeca-pagina">
+        <div><h1>Modo automático</h1><p class="sub">Todos os dias, à hora escolhida: pesquisa os temas do momento de cada canal, produz os vídeos e agenda no YouTube.</p></div>
+        <div class="linha">
+          <button class="btn" id="btnAutoAgora" onclick="correrAutoAgora()"><i class="i" style="--u:url(/icones/play.svg)"></i>Rodar agora</button>
+          <button class="btn primario" onclick="guardarAuto()">Salvar</button>
+        </div>
+      </div>
+      <div id="autoCorpo"></div>
+    </section>
+
+    <!-- ================= CONFIGURAÇÕES ================= -->
+    <section class="vista" id="vista-configuracoes" data-vista="configuracoes" hidden>
+      <div class="cabeca-pagina"><div><h1>Configurações</h1><p class="sub">Chaves de API, bibliotecas e manutenção. Tudo fica só neste computador.</p></div></div>
+      <div class="duas-colunas">
+        <section class="superficie">
+          <h2 class="titulo-superficie">Chaves de API</h2>
+          <div class="campo">
+            <label class="rotulo" for="chave">ElevenLabs <span id="estadoEleven" class="estado-chave"></span></label>
+            <input id="chave" type="password" placeholder="Deixe vazio para manter" autocomplete="off">
+          </div>
+          <div class="campo">
+            <label class="rotulo" for="chavePixabay">Pixabay <span id="estadoPixabay" class="estado-chave"></span></label>
+            <input id="chavePixabay" type="password" placeholder="Deixe vazio para manter" autocomplete="off">
+            <div class="dica">B-rolls e fotos de stock, com uso comercial. A chave é grátis em pixabay.com/api/docs.</div>
+          </div>
+          <div class="campo">
+            <label class="rotulo" for="chaveSketchfab">Sketchfab <span id="estadoSketchfab" class="estado-chave"></span></label>
+            <input id="chaveSketchfab" type="password" placeholder="Deixe vazio para manter" autocomplete="off">
+            <div class="dica">Modelos 3D. O token está em sketchfab.com → Settings → Password &amp; API.</div>
+          </div>
+          <div class="campo">
+            <label class="rotulo" for="tokenClaude">Claude, para os roteiros <span id="estadoClaude" class="estado-chave"></span></label>
+            <input id="tokenClaude" type="password" placeholder="Deixe vazio para manter" autocomplete="off">
+            <div class="dica">Opcional: evita que os roteiros parem quando o login do Claude expira. Num terminal, rode <b>claude setup-token</b> e cole aqui o token.</div>
+          </div>
+          <div class="campo">
+            <label class="rotulo" for="googleId">Google, para publicar no YouTube <span id="estadoGoogle" class="estado-chave"></span></label>
+            <input id="googleId" placeholder="ID do cliente (termina em .apps.googleusercontent.com)" autocomplete="off">
+            <input id="googleSegredo" type="password" placeholder="Chave secreta do cliente (começa por GOCSPX-)" autocomplete="off" style="margin-top:6px">
+            <details class="ajuda"><summary>Como conseguir estas credenciais</summary>
+              <p>Em console.cloud.google.com: crie um projeto, ative a "YouTube Data API v3", configure a tela de consentimento (tipo Externo, com o seu e-mail como usuário de teste) e em Credenciais → Criar credenciais → <b>ID do cliente OAuth</b> → tipo "App para computador" (a "Chave de API" não publica). Por fim, na tela de consentimento, clique em "Publicar app": em modo de teste a Google desconecta o canal após 7 dias. O aviso "app não verificado" ao conectar é normal, porque o app é seu.</p>
+            </details>
+          </div>
+          <div class="linha" style="justify-content:space-between;margin-top:16px">
+            <span class="meta">Ficam só no arquivo <code>.env</code> deste computador.</span>
+            <button class="btn primario" onclick="guardarChave()">Salvar chaves</button>
+          </div>
+        </section>
+        <div class="lista">
+          <button class="superficie superficie-link" onclick="abrirBiblioteca()"><i class="i" style="--u:url(/icones/library.svg)"></i><span><b>Biblioteca de música</b><small>Importar faixas e escolher o clima de cada uma</small></span><i class="i" style="--u:url(/icones/chevron-right.svg)"></i></button>
+          <button class="superficie superficie-link" onclick="abrirPrecos()"><i class="i" style="--u:url(/icones/tag.svg)"></i><span><b>Catálogo de preços</b><small>Os preços que os rankings usam, com loja e data</small></span><i class="i" style="--u:url(/icones/chevron-right.svg)"></i></button>
+          <button class="superficie superficie-link" onclick="abrirLixeira()"><i class="i" style="--u:url(/icones/trash-2.svg)"></i><span><b>Lixeira</b><small>Restaurar vídeos ou liberar espaço em disco</small></span><i class="i" style="--u:url(/icones/chevron-right.svg)"></i></button>
+        </div>
+      </div>
+    </section>
   </main>
 </div>
 
-<dialog id="dlgConfig" class="modal">
-  <div class="modal-caixa">
-    <div class="gaveta-topo"><b>Chaves de API</b><button class="btn fantasma icone" onclick="dlgConfig.close()" title="Fechar"><i class="i" style="--u:url(/icones/x.svg)"></i></button></div>
-    <div class="gaveta-corpo">
-      <div class="campo">
-        <label class="rotulo" for="chave">ElevenLabs <span id="estadoEleven"></span></label>
-        <input id="chave" type="password" placeholder="Deixe vazio para manter" autocomplete="off">
-      </div>
-      <div class="campo">
-        <label class="rotulo" for="chavePixabay">Pixabay <span id="estadoPixabay"></span></label>
-        <input id="chavePixabay" type="password" placeholder="Deixe vazio para manter" autocomplete="off">
-        <div class="dica">B-rolls e fotos de stock, com uso comercial. A chave é grátis: crie conta em pixabay.com e copie-a em pixabay.com/api/docs.</div>
-      </div>
-      <div class="campo">
-        <label class="rotulo" for="chaveSketchfab">Sketchfab <span id="estadoSketchfab"></span></label>
-        <input id="chaveSketchfab" type="password" placeholder="Deixe vazio para manter" autocomplete="off">
-        <div class="dica">Modelos 3D. O token está em sketchfab.com → Settings → Password &amp; API.</div>
-      </div>
-      <div class="campo">
-        <label class="rotulo" for="tokenClaude">Claude (roteiros) <span id="estadoClaude"></span></label>
-        <input id="tokenClaude" type="password" placeholder="Deixe vazio para manter (começa por sk-ant-oat)" autocomplete="off">
-        <div class="dica">Opcional, para os roteiros não pararem quando o login do Claude expira (importante no modo automático). Num terminal corra <b>claude setup-token</b>, entre com a sua conta e cole aqui o token que aparece. Fica só no arquivo .env deste computador.</div>
-      </div>
-      <div class="campo">
-        <label class="rotulo" for="googleId">Google (YouTube) <span id="estadoGoogle"></span></label>
-        <input id="googleId" placeholder="ID do cliente (termina em .apps.googleusercontent.com)" autocomplete="off">
-        <input id="googleSegredo" type="password" placeholder="Chave secreta do cliente (começa por GOCSPX-)" autocomplete="off" style="margin-top:6px">
-        <div class="dica">Para publicar no YouTube. Em console.cloud.google.com: crie um projeto, ative a "YouTube Data API v3", configure a tela de consentimento (tipo Externo, junte o seu e-mail como usuário de teste) e em Credenciais → Criar credenciais → <b>ID do cliente OAuth</b> → tipo "App para computador" (não use "Chave de API": essa não publica). Cole aqui o ID do cliente e a chave secreta do cliente. Por fim, na tela de consentimento, carregue em "Publicar app": em modo de teste a Google desliga o canal ao fim de 7 dias (o aviso "app não verificada" ao ligar é normal, porque a app é sua).</div>
-      </div>
-      <div class="dica" style="margin-top:14px">As chaves ficam só neste computador, no arquivo <code>.env</code> do projeto.</div>
-    </div>
-    <div class="gaveta-rodape"><button class="btn" onclick="dlgConfig.close()">Cancelar</button><button class="btn primario" onclick="guardarChave()">Salvar</button></div>
-  </div>
-</dialog>
-
+<!-- ================= JANELAS (ações dentro de uma página) ================= -->
 <dialog id="dlgOutraIA" class="modal" style="width:min(560px, calc(100vw - 32px))">
   <div class="modal-caixa">
-  <div class="gaveta-topo"><b>Roteiro feito noutra IA</b><button class="btn fantasma icone" onclick="dlgOutraIA.close()" title="Fechar"><i class="i" style="--u:url(/icones/x.svg)"></i></button></div>
+  <div class="gaveta-topo"><b>Roteiro feito em outra IA</b><button class="btn fantasma icone" onclick="dlgOutraIA.close()" title="Fechar" aria-label="Fechar"><i class="i" style="--u:url(/icones/x.svg)"></i></button></div>
   <div class="gaveta-corpo" style="display:flex;flex-direction:column;gap:14px">
     <div class="campo">
-      <label class="rotulo">1. Copie o prompt e cole no ChatGPT, Gemini ou outra IA (de preferência com pesquisa na web)</label>
+      <span class="rotulo">1. Copie o prompt e cole no ChatGPT, Gemini ou outra IA (de preferência com pesquisa na web)</span>
       <div class="dica" id="outraIAResumo"></div>
       <div><button class="btn" onclick="copiarPromptExterno()"><i class="i" style="--u:url(/icones/copy.svg)"></i>Copiar prompt</button></div>
     </div>
     <div class="campo">
-      <label class="rotulo">2. Cole aqui a resposta (o JSON)</label>
+      <label class="rotulo" for="respostaIA">2. Cole aqui a resposta (o JSON)</label>
       <textarea id="respostaIA" rows="10" placeholder='{"titulo": "...", "cenas": [...]}' style="font-family:var(--mono, monospace);font-size:12px"></textarea>
       <div class="dica">O estúdio valida o roteiro, busca a mídia e o deixa aguardando sua revisão antes de narrar e renderizar.</div>
     </div>
@@ -211,96 +355,23 @@
   </div>
 </dialog>
 
-<dialog id="dlgAuto" class="gaveta">
-  <div class="gaveta-caixa">
-    <div class="gaveta-topo"><b>Modo automático</b><button class="btn fantasma icone" onclick="dlgAuto.close()" title="Fechar"><i class="i" style="--u:url(/icones/x.svg)"></i></button></div>
-    <div class="gaveta-corpo" id="autoCorpo"></div>
-    <div class="gaveta-rodape">
-      <button class="btn" id="btnAutoAgora" onclick="correrAutoAgora()"><i class="i" style="--u:url(/icones/play.svg)"></i>Correr agora</button>
-      <button class="btn primario" onclick="guardarAuto()">Salvar</button>
-    </div>
-  </div>
-</dialog>
-
-<dialog id="dlgCanais" class="gaveta">
-  <div class="gaveta-caixa">
-    <div class="gaveta-topo"><b>Canais e marca d'água</b><button class="btn fantasma icone" onclick="dlgCanais.close()" title="Fechar" aria-label="Fechar"><i class="i" style="--u:url(/icones/x.svg)"></i></button></div>
-    <div class="gaveta-corpo">
-      <div id="canaisLista" style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px"></div>
-      <button class="btn" id="btnNovoCanal" onclick="editarCanal()"><i class="i" style="--u:url(/icones/plus.svg)"></i>Novo canal</button>
-      <form id="formCanal" hidden onsubmit="event.preventDefault(); guardarCanal()" style="margin-top:14px;border-top:1px solid var(--borda);padding-top:14px">
-        <h3 class="secao-titulo" id="tituloFormCanal">Novo canal</h3>
-        <div class="grid2">
-          <div class="campo"><label class="rotulo" for="canalNome">Nome do canal</label><input id="canalNome" maxlength="60" placeholder="Ex.: Duck Explica" required oninput="previsualizarMarca()"></div>
-          <div class="campo"><label class="rotulo" for="canalArroba">@ do canal</label><input id="canalArroba" maxlength="40" placeholder="@duckexplica" required oninput="previsualizarMarca()"></div>
-        </div>
-        <div class="campo">
-          <label class="rotulo" for="canalNicho">Nicho</label>
-          <textarea id="canalNicho" rows="3" maxlength="600" placeholder="Ex.: futebol: lances polémicos, arbitragem e VAR, regras explicadas, curiosidades e recordes"></textarea>
-          <div class="dica">As <b>Ideias de vídeos</b> e o <b>modo automático</b> só procuram temas dentro deste nicho, e o roteiro é escrito para este público. Seja específico: temas, formatos e o que evitar.</div>
-        </div>
-        <div class="campo">
-          <label class="rotulo" for="canalCategoria">Categoria no YouTube</label>
-          <select id="canalCategoria">
-            <option value="20">Jogos</option><option value="28">Ciência e tecnologia</option><option value="27">Educação</option><option value="17">Desporto</option>
-            <option value="24">Entretenimento</option><option value="22">Pessoas e blogues</option><option value="26">Tutoriais e estilo</option><option value="23">Comédia</option>
-            <option value="10">Música</option><option value="25">Notícias e política</option><option value="2">Automóveis e veículos</option><option value="15">Animais</option>
-            <option value="19">Viagens e eventos</option><option value="1">Cinema e animação</option>
-          </select>
-        </div>
-        <div class="campo">
-          <label class="rotulo">Logo</label>
-          <label class="zona-ficheiros" style="padding:14px">
-            <i class="i" style="--u:url(/icones/image-up.svg);width:20px;height:20px"></i>
-            <div style="margin-top:6px">PNG, JPG ou WEBP (de preferência quadrado, com fundo transparente)</div>
-            <input type="file" id="canalLogo" accept="image/png,image/jpeg,image/webp" onchange="enviarLogoCanal()">
-          </label>
-          <label class="interruptor" style="margin-top:8px"><span>Remover o fundo liso da imagem</span><input type="checkbox" id="canalSemFundo" checked onchange="enviarLogoCanal()"></label>
-          <label class="interruptor" style="margin-top:8px"><span>Logo em pixel art (sem suavizar ao aumentar)</span><input type="checkbox" id="canalPixelado" onchange="previsualizarMarca()"></label>
-        </div>
-        <div class="campo">
-          <label class="rotulo">Como fica no vídeo</label>
-          <div class="previa-marca"><div class="marca-pilula" id="marcaPrevia"></div></div>
-        </div>
-        <div class="linha" style="gap:10px">
-          <button class="btn primario" type="submit" id="btnGuardarCanal"><i class="i" style="--u:url(/icones/check.svg)"></i>Salvar canal</button>
-          <button class="btn fantasma" type="button" onclick="$('#formCanal').hidden = true; $('#btnNovoCanal').hidden = false">Cancelar</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</dialog>
 <dialog id="dlgCortes" class="gaveta">
   <div class="gaveta-caixa">
-    <div class="gaveta-topo"><b>Melhores momentos <span class="meta" id="cortesMeta"></span></b><button class="btn fantasma icone" onclick="dlgCortes.close()" title="Fechar"><i class="i" style="--u:url(/icones/x.svg)"></i></button></div>
+    <div class="gaveta-topo"><b>Melhores momentos <span class="meta" id="cortesMeta"></span></b><button class="btn fantasma icone" onclick="dlgCortes.close()" title="Fechar" aria-label="Fechar"><i class="i" style="--u:url(/icones/x.svg)"></i></button></div>
     <div class="gaveta-corpo">
-      <div class="linha" style="margin-bottom:12px;gap:10px"><span class="meta" id="cortesPasso"></span></div>
-      <div id="cortesLista" style="display:flex;flex-direction:column;gap:12px"></div>
-      <div class="linha" style="margin-top:14px;gap:10px;position:sticky;bottom:0;background:var(--bg);padding:10px 0">
-        <button class="btn primario" id="btnProduzirCortes" onclick="produzirCortes()" disabled><i class="i" style="--u:url(/icones/scissors.svg)"></i><span id="textoProduzirCortes">Produzir</span></button>
-        <span class="meta">Os de nota 60 ou mais já vêm marcados.</span>
-      </div>
+      <div class="linha" style="margin-bottom:12px"><span class="meta" id="cortesPasso"></span></div>
+      <div id="cortesLista" class="lista"></div>
     </div>
-  </div>
-</dialog>
-<dialog id="dlgIdeias" class="gaveta">
-  <div class="gaveta-caixa">
-    <div class="gaveta-topo"><b>Ideias de vídeos <span class="meta" id="ideiasMeta"></span></b><button class="btn fantasma icone" onclick="dlgIdeias.close()" title="Fechar"><i class="i" style="--u:url(/icones/x.svg)"></i></button></div>
-    <div class="gaveta-corpo">
-      <div class="campo">
-        <label class="rotulo" for="ideiasFoco">Foco (opcional)</label>
-        <input id="ideiasFoco" placeholder="ex.: placas de vídeo baratas, GTA 6, E se? sobre o espaço">
-        <div class="dica" id="ideiasDica">O Claude pesquisa o que está acontecendo agora no nicho do canal e evita os temas que o canal já fez.</div>
-      </div>
-      <div class="linha" style="margin-bottom:14px"><button class="btn primario" id="btnIdeias" onclick="gerarIdeias()"><i class="i" style="--u:url(/icones/lightbulb.svg)"></i>Gerar ideias</button><span class="meta" id="ideiasPasso"></span></div>
-      <div id="ideiasLista" style="display:flex;flex-direction:column;gap:10px"></div>
+    <div class="gaveta-rodape">
+      <span class="meta">Os de nota 60 ou mais já vêm marcados.</span>
+      <button class="btn primario" id="btnProduzirCortes" onclick="produzirCortes()" disabled><i class="i" style="--u:url(/icones/scissors.svg)"></i><span id="textoProduzirCortes">Produzir</span></button>
     </div>
   </div>
 </dialog>
 
 <dialog id="dlgPrecos" class="gaveta">
   <div class="gaveta-caixa">
-    <div class="gaveta-topo"><b>Catálogo de preços <span class="meta" id="precosTotal"></span></b><button class="btn fantasma icone" onclick="dlgPrecos.close()" title="Fechar"><i class="i" style="--u:url(/icones/x.svg)"></i></button></div>
+    <div class="gaveta-topo"><b>Catálogo de preços <span class="meta" id="precosTotal"></span></b><button class="btn fantasma icone" onclick="dlgPrecos.close()" title="Fechar" aria-label="Fechar"><i class="i" style="--u:url(/icones/x.svg)"></i></button></div>
     <div class="gaveta-corpo">
       <div class="dica" style="margin:0 0 12px" id="precosRegra"></div>
       <div id="precosCorpo"></div>
@@ -310,9 +381,9 @@
 
 <dialog id="dlgLixeira" class="gaveta">
   <div class="gaveta-caixa">
-    <div class="gaveta-topo"><b>Lixeira <span class="meta" id="lixoTotal"></span></b><button class="btn fantasma icone" onclick="dlgLixeira.close()" title="Fechar"><i class="i" style="--u:url(/icones/x.svg)"></i></button></div>
+    <div class="gaveta-topo"><b>Lixeira <span class="meta" id="lixoTotal"></span></b><button class="btn fantasma icone" onclick="dlgLixeira.close()" title="Fechar" aria-label="Fechar"><i class="i" style="--u:url(/icones/x.svg)"></i></button></div>
     <div class="gaveta-corpo">
-      <div class="dica" style="margin:0 0 12px">Os vídeos na lixeira saem da biblioteca mas não são apagados: pode restaurá-los. "Apagar de vez" liberta o espaço em disco.</div>
+      <div class="dica" style="margin:0 0 12px">Os vídeos na lixeira saem da biblioteca mas não são apagados: dá para restaurá-los. "Apagar de vez" libera o espaço em disco.</div>
       <div id="lixoCorpo"></div>
     </div>
     <div class="gaveta-rodape"><button class="btn perigo" id="btnEsvaziar" onclick="esvaziarLixeira()"><i class="i" style="--u:url(/icones/trash-2.svg)"></i>Esvaziar lixeira</button></div>
@@ -321,14 +392,14 @@
 
 <dialog id="dlgMusicas" class="gaveta">
   <div class="gaveta-caixa">
-    <div class="gaveta-topo"><b>Biblioteca de música</b><button class="btn fantasma icone" onclick="dlgMusicas.close()" title="Fechar"><i class="i" style="--u:url(/icones/x.svg)"></i></button></div>
+    <div class="gaveta-topo"><b>Biblioteca de música</b><button class="btn fantasma icone" onclick="dlgMusicas.close()" title="Fechar" aria-label="Fechar"><i class="i" style="--u:url(/icones/x.svg)"></i></button></div>
     <div class="gaveta-corpo" id="bibCorpo"></div>
   </div>
 </dialog>
 
 <dialog id="dlgEditor" class="gaveta">
   <div class="gaveta-caixa">
-    <div class="gaveta-topo"><b id="edTitulo">Roteiro</b><button class="btn fantasma icone" onclick="dlgEditor.close()" title="Fechar"><i class="i" style="--u:url(/icones/x.svg)"></i></button></div>
+    <div class="gaveta-topo"><b id="edTitulo">Roteiro</b><button class="btn fantasma icone" onclick="dlgEditor.close()" title="Fechar" aria-label="Fechar"><i class="i" style="--u:url(/icones/x.svg)"></i></button></div>
     <div class="gaveta-corpo" id="edCorpo"></div>
     <div class="gaveta-rodape">
       <button class="btn" onclick="guardarRoteiro(false)">Salvar</button>

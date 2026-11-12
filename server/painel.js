@@ -47,7 +47,7 @@ function segmentado(el, chave, valorDe = (b) => b.dataset.v ?? Number(b.textCont
 }
 
 function desenharFormatos() {
-  $("#formato").innerHTML = FORMATOS.map(([k, icone, nome, desc]) => `
+  $("#formato").innerHTML = FORMATOS.filter(([k]) => k !== "clipe").map(([k, icone, nome, desc]) => `
     <button class="formato ${k === estado.formato ? "ativo" : ""}" data-k="${k}">${ic(icone)}<div><b>${nome}</b><span>${desc}</span></div></button>`).join("");
   document.querySelectorAll(".formato").forEach((b) => (b.onclick = () => { estado.formato = b.dataset.k; desenharFormatos(); mudarFormato(); atualizarDicaMusica(); }));
 }
@@ -56,6 +56,11 @@ function mudarFormato() {
   const [, , , , rotulo, dica] = FORMATOS.find(([k]) => k === estado.formato);
   $("#clipeBox").hidden = !clipe;
   $("#soRoteiro").hidden = clipe;
+  $("#blocoFormato").hidden = clipe;
+  $("#blocoDetalhes").hidden = clipe;
+  $("#blocoAvancado").hidden = clipe;
+  // nos cortes de vídeo longo não há título: os títulos vêm de cada momento
+  $("#blocoTema").hidden = clipe && $("#modoCortes").checked;
   // o vídeo longo tem duração e número de capítulos próprios
   const longo = estado.formato === "longo";
   $("#campoDuracao").hidden = longo;
@@ -65,13 +70,128 @@ function mudarFormato() {
   $("#campoLowpoly").hidden = estado.formato === "animado";
   $("#rotuloTema").textContent = rotulo;
   $("#tema").placeholder = dica;
-  $("#textoCriar").textContent = clipe ? ($("#modoCortes").checked ? "Encontrar momentos" : "Processar clipes") : $("#revisar").checked ? "Criar roteiro" : "Criar vídeo";
+  $("#textoCriar").textContent = origem === "outraia" ? "Preparar o prompt" : clipe ? ($("#modoCortes").checked ? "Encontrar momentos" : "Processar clipes") : $("#revisar").checked ? "Criar roteiro" : "Criar vídeo";
 }
 $("#revisar").onchange = mudarFormato;
 $("#ficheirosClipe").onchange = (ev) => {
   const n = ev.target.files.length;
+  $("#erroFicheiros").hidden = true;
   $("#nomesClipe").textContent = n ? [...ev.target.files].map((f) => f.name).join(", ") : "Escolha os vídeos (pela ordem em que entram)";
 };
+
+// ---------- navegação entre páginas (o endereço guarda a página: #criar, #producao…) ----------
+const VISTAS = ["criar", "producao", "biblioteca", "ideias", "canais", "automatico", "configuracoes"];
+const AO_ENTRAR = { ideias: () => abrirIdeias(), canais: () => abrirCanais(), automatico: () => abrirAuto(), configuracoes: () => abrirConfig(), biblioteca: () => atualizarGaleria() };
+function irPara(vista, { historico = true } = {}) {
+  if (!VISTAS.includes(vista)) vista = "criar";
+  document.querySelectorAll(".vista").forEach((v) => (v.hidden = v.dataset.vista !== vista));
+  document.querySelectorAll(".nav a").forEach((a) => (a.getAttribute("aria-current") === "page") !== (a.dataset.vista === vista) && (a.dataset.vista === vista ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current")));
+  if (historico && location.hash !== `#${vista}`) history.pushState(null, "", `#${vista}`);
+  try { AO_ENTRAR[vista]?.(); } catch (e) { console.error(e); }
+  $("#principal").scrollTop = 0;
+}
+window.addEventListener("popstate", () => irPara(location.hash.slice(1), { historico: false }));
+document.querySelectorAll(".nav a").forEach((a) => a.addEventListener("click", (e) => { e.preventDefault(); irPara(a.dataset.vista); }));
+
+// ---------- criar em 3 passos ----------
+let origem = "ia", passoAtual = 1;
+function escolherOrigem(o) {
+  origem = o;
+  document.querySelectorAll("#origens button").forEach((b) => { const on = b.dataset.origem === o; b.classList.toggle("ativo", on); b.setAttribute("aria-checked", on); });
+  const clipe = o === "clipes" || o === "cortes";
+  if (clipe) estado.formato = "clipe";
+  else if (estado.formato === "clipe") estado.formato = "ese";
+  $("#modoCortes").checked = o === "cortes";
+  mudarModoCortes();
+  desenharFormatos();
+  mudarFormato();
+  atualizarDicaMusica();
+  $("#erroTema").hidden = true; $("#erroFicheiros").hidden = true;
+}
+document.querySelectorAll("#origens button").forEach((b) => (b.onclick = () => escolherOrigem(b.dataset.origem)));
+$("#tema").addEventListener("input", () => ($("#erroTema").hidden = true));
+
+function passoValido(n) {
+  if (n !== 1) return true;
+  const clipe = origem === "clipes" || origem === "cortes";
+  if (clipe && !$("#ficheirosClipe").files.length) { $("#erroFicheiros").hidden = false; $("#zonaClipe").focus?.(); return false; }
+  if (origem !== "cortes" && !$("#tema").value.trim()) {
+    $("#erroTema").textContent = origem === "clipes" ? "Dê um título ao vídeo para continuar." : "Escreva o tema do vídeo para continuar.";
+    $("#erroTema").hidden = false; $("#tema").focus(); return false;
+  }
+  return true;
+}
+function irParaPasso(n) {
+  n = Math.min(3, Math.max(1, n));
+  // avançar exige os passos anteriores válidos; voltar é sempre livre
+  for (let k = passoAtual; k < n; k++) if (!passoValido(k)) return;
+  passoAtual = n;
+  [1, 2, 3].forEach((k) => ($(`#passo-${k}`).hidden = k !== n));
+  document.querySelectorAll("#passos li").forEach((li) => {
+    const k = Number(li.dataset.p);
+    li.classList.toggle("atual", k === n); li.classList.toggle("feito", k < n);
+    li.querySelector("button").setAttribute("aria-current", k === n ? "step" : "false");
+  });
+  $("#btnVoltar").style.visibility = n === 1 ? "hidden" : "visible";
+  $("#btnContinuar").hidden = n === 3;
+  $("#criar").hidden = n !== 3;
+  if (n === 3) desenharResumo();
+  $("#principal").scrollTop = 0;
+}
+function continuarPasso() { irParaPasso(passoAtual + 1); }
+
+const NOMES_ORIGEM = { ia: "Novo vídeo com IA", cortes: "Cortes de vídeo longo", clipes: "Meus clipes", outraia: "Roteiro de outra IA" };
+function desenharResumo() {
+  const canal = OPCOES.canais?.[$("#canal").value];
+  const clipe = origem === "clipes" || origem === "cortes";
+  const voz = $("#voz").selectedOptions[0]?.textContent ?? "";
+  const linhas = [
+    ["Canal", canal ? `${canal.nome} (${canal.arroba})` : "Sem marca d'água"],
+    ["Origem", NOMES_ORIGEM[origem]],
+    !clipe && ["Formato", nomeFormato(estado.formato)],
+    origem !== "cortes" && [clipe ? "Título" : "Tema", $("#tema").value.trim()],
+    clipe && ["Arquivos", [...$("#ficheirosClipe").files].map((f) => f.name).join(", ")],
+    !clipe && estado.formato !== "longo" && ["Duração", { curto: "30–45 s", medio: "45–60 s", longo: "60–90 s" }[estado.duracao]],
+    ["Estilo", OPCOES.estilos[estado.estilo]?.nome ?? estado.estilo],
+    !clipe && ["Narração", `${{ edge: "Voz grátis", elevenlabs: "ElevenLabs", chatterbox: "Chatterbox" }[estado.narracao]}${voz ? ` · ${voz}` : ""}`],
+    ["Música", $("#musica").selectedOptions[0]?.textContent ?? "Automática"],
+  ].filter(Boolean);
+  $("#resumo").innerHTML = linhas.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v || "—")}</dd></div>`).join("");
+  const ligadas = ["lowpoly", "editorChefe", "revisaoVisual", "revisar"].filter((id) => $(`#${id}`).checked && !$(`#${id}`).closest(".campo").hidden).length;
+  $("#resumoAvancado").textContent = `${ligadas} ${ligadas === 1 ? "ativa" : "ativas"}`;
+}
+function criarDoAssistente() {
+  if (!passoValido(1)) return irParaPasso(1);
+  if (origem === "outraia") return abrirOutraIA();
+  criar();
+}
+
+// canal no topo: muda o contexto de todas as páginas
+function mudouCanal() {
+  try { localStorage.canal = $("#canal").value; } catch {}
+  const vista = location.hash.slice(1);
+  if (vista === "ideias") abrirIdeias();
+  if (vista === "canais") desenharListaCanais();
+  if (passoAtual === 3) desenharResumo();
+}
+
+// biblioteca: procurar pelo título
+function filtrarBiblioteca() {
+  const q = ($("#procurarBib")?.value ?? "").trim().toLowerCase();
+  document.querySelectorAll("#galeria .cartao").forEach((c) => (c.hidden = q && !c.querySelector(".cartao-titulo")?.textContent.toLowerCase().includes(q)));
+}
+
+// tema claro ou escuro (o escolhido fica guardado; sem escolha segue o sistema)
+function alternarTema() {
+  const escuro = document.documentElement.dataset.tema ? document.documentElement.dataset.tema === "escuro" : !matchMedia("(prefers-color-scheme: light)").matches;
+  document.documentElement.dataset.tema = escuro ? "claro" : "escuro";
+  try { localStorage.tema = document.documentElement.dataset.tema; } catch {}
+  desenharIconeTema();
+}
+function desenharIconeTema() {
+  const claro = document.documentElement.dataset.tema ? document.documentElement.dataset.tema === "claro" : matchMedia("(prefers-color-scheme: light)").matches;
+  $("#iconeTema").style.setProperty("--u", `url(/icones/${claro ? "moon" : "sun"}.svg)`);
+}
 
 // ---------- música ----------
 const opcoesMusica = (atual = "auto") => `
@@ -226,10 +346,7 @@ function desenharEstilos() {
 
 // ---------- modo automático ----------
 let autoDados = null;
-async function abrirAuto() {
-  dlgAuto.showModal();
-  await carregarAuto();
-}
+async function abrirAuto() { await carregarAuto(); }
 async function carregarAuto() {
   try { autoDados = await api("/api/automatico"); desenharAuto(); } catch (e) { toast(e.message, "triangle-alert"); }
 }
@@ -287,7 +404,7 @@ async function guardarAuto() {
   try {
     await api("/api/automatico", { method: "PUT", body: lerAuto() });
     toast($("#autoAtivo").checked ? `Modo automático ativado: roda todos os dias às ${$("#autoHora").value}` : "Modo automático desligado", "check");
-    atualizarSeloAuto(); dlgAuto.close();
+    atualizarSeloAuto();
   } catch (e) { toast(e.message, "triangle-alert"); }
 }
 async function correrAutoAgora() {
@@ -303,8 +420,7 @@ async function correrAutoAgora() {
 async function ligarYoutube(canal) {
   // sem as credenciais da app Google não há como ligar: leva o criador ao sítio onde as põe
   if (!autoDados?.youtube.configurado) {
-    dlgAuto.close();
-    abrirConfig();
+    irPara("configuracoes");
     $("#googleId").focus();
     return toast("Primeiro cole o Client ID e o Client secret da Google (as instruções estão por baixo do campo). Depois volte ao Modo automático.", "key-round");
   }
@@ -345,9 +461,9 @@ function desenharCanais(escolher) {
 let canalEmEdicao = null, logoRascunho = null;
 function abrirCanais() {
   desenharListaCanais();
-  $("#formCanal").hidden = true; $("#btnNovoCanal").hidden = false;
-  dlgCanais.showModal();
+  fecharFormCanal();
 }
+function fecharFormCanal() { $("#formCanal").hidden = true; $("#btnNovoCanal").hidden = false; }
 function desenharListaCanais() {
   const atual = $("#canal").value;
   $("#canaisLista").innerHTML = Object.entries(OPCOES.canais ?? {}).map(([id, c]) => `
@@ -403,7 +519,7 @@ async function guardarCanal() {
     OPCOES.canais = d.canais;
     desenharCanais(d.id);
     desenharListaCanais();
-    $("#formCanal").hidden = true; $("#btnNovoCanal").hidden = false;
+    fecharFormCanal();
     toast(canalEmEdicao ? "Canal atualizado" : "Canal criado e em uso", "check");
   } catch (e) { toast(e.message, "triangle-alert"); }
   $("#btnGuardarCanal").disabled = false;
@@ -499,7 +615,6 @@ function abrirConfig() {
   $("#estadoEleven").textContent = OPCOES.temElevenLabs ? "· configurada" : "";
   $("#estadoPixabay").textContent = OPCOES.temPixabay ? "· configurada" : "";
   $("#estadoGoogle").textContent = OPCOES.temGoogle ? "· configurada" : ""; $("#estadoClaude").textContent = OPCOES.temClaudeToken ? "· configurado" : ""; $("#tokenClaude").value = ""; $("#googleId").value = ""; $("#googleSegredo").value = "";
-  dlgConfig.showModal();
 }
 async function guardarChave() {
   try {
@@ -511,7 +626,7 @@ async function guardarChave() {
     if (sketchfab) OPCOES.temSketchfab = true;
     if (eleven) { OPCOES.temElevenLabs = true; vozesEleven = null; }
     if (pixabay) OPCOES.temPixabay = true;
-    dlgConfig.close(); toast("Chaves salvas", "check");
+    abrirConfig(); toast("Chaves salvas", "check");
     desenharVozes();
   } catch (e) { toast(e.message, "triangle-alert"); }
 }
@@ -622,7 +737,9 @@ async function atualizarJobs() {
   const ativos = jobs.filter((j) => j.estado !== "pronto" || Date.now() - j.criado < 10 * 60e3);
   const emCurso = ativos.filter((j) => !["pronto", "erro"].includes(j.estado)).length;
   $("#contaFila").textContent = emCurso;
-  document.title = emCurso ? `(${emCurso}) Estúdio de Shorts` : "Estúdio de Shorts";
+  $("#chipFila").hidden = !emCurso;
+  $("#textoChipFila").textContent = `${emCurso} em produção`;
+  document.title = emCurso ? `(${emCurso}) Studioware` : "Studioware";
   avisarSistema(jobs);
   const assinatura = JSON.stringify([ativos.map((j) => [j.id, j.estado, j.progresso, j.log.length]), [...logsAbertos]]);
   if (assinatura === filaDesenhada) return finalizarJobs(jobs);
@@ -805,7 +922,8 @@ async function atualizarGaleria() {
         ${v.video ? `<a class="btn fantasma peq" href="${v.video}" download="${v.id}.mp4">${ic("download", 14)}Baixar</a>` : `<button class="btn fantasma peq" onclick="produzir('${v.id}')">${ic("play", 14)}Renderizar</button>`}
         <button class="btn fantasma icone peq" style="margin-left:auto" title="Mover para a lixeira" onclick="paraLixeira(['${v.id}'])">${ic("trash-2", 14)}</button>
       </div>
-    </div>`).join("") : '<div class="vazio" style="grid-column:1/-1">Ainda não há vídeos.</div>';
+    </div>`).join("") : `<div class="vazio vazio-grande" style="grid-column:1/-1">${ic("clapperboard", 28)}<b>A sua biblioteca está vazia</b><span>Os vídeos prontos aparecem aqui, com capa e publicação.</span><button class="btn primario" onclick="irPara('criar')">${ic("sparkles", 16)}Criar o primeiro vídeo</button></div>`;
+  filtrarBiblioteca();
   api("/api/lixeira").then((l) => ($("#contaLixo").textContent = l.length));
 }
 
@@ -907,7 +1025,7 @@ function mudarModoCortes() {
   $("#opcoesCortes").hidden = !on;
   $("#ficheirosClipe").multiple = !on;
   $("#nomesClipe").textContent = on ? "Escolha o vídeo longo" : "Escolha os vídeos (pela ordem em que entram)";
-  $("#textoCriar").textContent = on ? "Encontrar momentos" : "Processar clipes";
+  mudarFormato();
 }
 const tempo = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
 async function analisarCortes() {
@@ -978,11 +1096,10 @@ let ideiasAtuais = [];
 // as ideias seguem o canal escolhido no topo do formulário (cada canal tem o seu nicho e a sua lista)
 const canalAtual = () => $("#canal").value === "nenhum" ? primeiroCanal() : $("#canal").value;
 async function abrirIdeias() {
-  dlgIdeias.showModal();
   const c = OPCOES.canais?.[canalAtual()];
   $("#ideiasDica").textContent = !c ? $("#ideiasDica").textContent : c.nicho
-    ? `Ideias para ${c.nome} (${c.arroba}), só dentro do nicho: ${c.nicho}. O Claude pesquisa o que está acontecendo agora e evita os temas que o canal já fez. Troque de canal no topo do formulário.`
-    : `${c.nome} ainda não tem nicho: as ideias vão sair genéricas. Defina o nicho no botão ⚙ ao lado do canal, no topo do formulário.`;
+    ? `Ideias para ${c.nome} (${c.arroba}), só dentro do nicho: ${c.nicho}. O Claude pesquisa o que está acontecendo agora e evita os temas que o canal já fez. Para outro canal, troque no seletor do topo.`
+    : `${c.nome} ainda não tem nicho: as ideias vão sair genéricas. Defina o nicho na página Canais.`;
   $("#ideiasFoco").value = "";
   try { desenharIdeias(await api(`/api/ideias?canal=${encodeURIComponent(canalAtual())}`)); } catch (e) { toast(e.message, "triangle-alert"); }
 }
@@ -1013,9 +1130,11 @@ function usarIdeia(k) {
   const x = ideiasAtuais[k];
   $("#tema").value = x.tema || x.titulo;
   if (FORMATOS.some(([f]) => f === x.formato)) { estado.formato = x.formato; desenharFormatos(); mudarFormato(); atualizarDicaMusica(); }
-  dlgIdeias.close();
+  escolherOrigem("ia");
+  irPara("criar");
+  irParaPasso(1);
   $("#tema").focus();
-  toast("Ideia no formulário: reveja e clique em Criar roteiro", "lightbulb");
+  toast("Ideia no formulário: reveja e continue", "lightbulb");
 }
 
 // pacote de publicação (títulos, descrição, tags, legendas): fica guardado em out/<id>.publicacao.json
@@ -1520,6 +1639,10 @@ async function guardarRoteiro(depoisProduzir) {
   desenharVozes();
   atualizarGaleria();
   atualizarJobs();
+  escolherOrigem("ia");
+  irParaPasso(1);
+  desenharIconeTema();
+  irPara(location.hash.slice(1) || "criar", { historico: false });
   // a fila atualiza de 2 em 2 s com o painel à vista; escondido, de 10 em 10 s (chega para os avisos do Windows)
   let ultimaFila = Date.now();
   setInterval(() => {
@@ -1530,6 +1653,6 @@ async function guardarRoteiro(depoisProduzir) {
   document.addEventListener("visibilitychange", () => { if (!document.hidden) atualizarJobs().catch(() => {}); });
   // Ctrl+Enter no formulário cria o vídeo (ou procura os momentos, no modo cortes)
   document.addEventListener("keydown", (e) => {
-    if ((e.ctrlKey || e.metaKey) && e.key === "Enter" && e.target.closest?.(".lateral") && !$("#criar").disabled) { e.preventDefault(); criar(); }
+    if ((e.ctrlKey || e.metaKey) && e.key === "Enter" && e.target.closest?.("#vista-criar") && !$("#criar").disabled) { e.preventDefault(); criarDoAssistente(); }
   });
 })();
