@@ -90,7 +90,7 @@ export type CenaClipe = Base & {
   titulo?: string;
   // b-roll: cartão por cima do vídeo, ou (cheio) exemplo de ecrã inteiro com a pessoa num canto e a voz a continuar
   // layout "faixa": a mídia numa faixa 16:9 com título com brilho; cena "palavras": cartaz de palavras gigantes (estes dois cortam seco, sem a pessoa no canto)
-  broll?: { inicioMs: number; fimMs: number; midia?: Midia; cena?: CenaLowPoly | CenaPincel | CenaPalavras | CenaNumero; cheio?: boolean; layout?: "faixa"; titulo?: string }[];
+  broll?: { inicioMs: number; fimMs: number; midia?: Midia; cena?: CenaLowPoly | CenaPincel | CenaPalavras | CenaNumero | CenaTipografia | CenaDado; cheio?: boolean; layout?: "faixa"; titulo?: string }[];
   exemplos?: boolean; // pedir ao Claude exemplos visuais (scripts/exemplos_clipe.mjs)
   exemplosFeitos?: boolean;
   inicio?: number; fim?: number; // momento de um vídeo longo (segundos do original); o script recorta-o
@@ -159,7 +159,19 @@ export type CenaCapitulo = Base & {
 export type CenaTipografia = Base & {
   tipo: "tipografia";
   objeto?: Midia; // objeto 3D (sketchfab) ou imagem recortada que flutua ao lado do texto
+  layout?: "centro" | "dividido"; // dividido: frase no topo à direita, objeto grande ao centro, palavra-chave em baixo à esquerda
   chaves?: string[]; // palavras-chave a pôr em grande (padrão: um destaque do roteiro, senão a palavra mais comprida de cada frase)
+};
+
+// Dado em formato editorial: número enorme a contar, rótulo em serifa e, se houver, barras a crescer
+export type CenaDado = Base & {
+  tipo: "dado";
+  valor: number;
+  prefixo?: string;
+  sufixo?: string; // ex.: "%", " mil", "x"
+  rotulo: string; // o que o número significa (curto)
+  barras?: { rotulo: string; valor: number; formato?: string }[]; // até 6; a última (ou "destaque") a vermelho
+  destaque?: number;
 };
 
 // Faixa de cinema: mídia 16:9 a toda a largura sobre fundo escuro, título curto com brilho por cima
@@ -270,7 +282,7 @@ export type CenaPincel = Base & {
   tremer?: boolean; // o traço treme como numa animação desenhada (padrão: sim)
 };
 
-export type Cena = CenaTipografia | CenaFaixa | CenaPalavras | CenaGancho | CenaQuiz | CenaLowPoly | CenaPincel | CenaProduto | CenaFato | CenaGrafico | CenaLinhaTempo | CenaManim | CenaClipe | CenaNumero | CenaComparacao | CenaModelo3D | CenaCapitulo | CenaCta;
+export type Cena = CenaDado | CenaTipografia | CenaFaixa | CenaPalavras | CenaGancho | CenaQuiz | CenaLowPoly | CenaPincel | CenaProduto | CenaFato | CenaGrafico | CenaLinhaTempo | CenaManim | CenaClipe | CenaNumero | CenaComparacao | CenaModelo3D | CenaCapitulo | CenaCta;
 
 export type Manifest = {
   id: string;

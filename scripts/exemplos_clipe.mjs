@@ -10,21 +10,35 @@ const caminho = process.argv[2];
 if (!caminho) { console.error("uso: node scripts/exemplos_clipe.mjs roteiros/x.json"); process.exit(1); }
 const roteiro = JSON.parse(readFileSync(caminho, "utf-8"));
 
-// o guia + os campos das cenas lowpoly e pincel tirados do esquema dos roteiros (para não haver duas versões)
+// o guia + os campos da cena lowpoly tirados do esquema dos roteiros (para não haver duas versões)
 function guia() {
   const base = readFileSync(".claude/skills/novo-video/exemplos-clipe.md", "utf-8");
   const esquema = readFileSync(".claude/skills/novo-video/esquema-roteiro.md", "utf-8").split(/\r?\n/);
   const ini = esquema.findIndex((l) => l.startsWith("- **lowpoly**"));
-  let fim = esquema.findIndex((l) => l.startsWith("- **pincel**"));
-  if (ini < 0 || fim < 0) return base;
-  while (fim + 1 < esquema.length && /^\s+\S/.test(esquema[fim + 1])) fim++;
-  return `${base}\n\n## Campos das cenas\n\n${esquema.slice(ini, fim + 1).join("\n")}`;
+  if (ini < 0) return base;
+  let fim = ini;
+  while (fim + 1 < esquema.length && !esquema[fim + 1].startsWith("- **") && !esquema[fim + 1].startsWith("#")) fim++;
+  return `${base}\n\n## Campos da cena lowpoly\n\n${esquema.slice(ini, fim + 1).join("\n")}`;
+}
+
+// objeto da frase de efeito: modelo 3D do Sketchfab (só licenças comerciais, via buscar_midia), modelo Kenney já
+// no projeto (nome do catálogo) ou imagem de um objeto isolado
+const KENNEY = Object.keys(JSON.parse(readFileSync("src/lowpoly/modelos.json", "utf-8")));
+function objetoDe(o) {
+  if (!o || typeof o !== "object") return undefined;
+  if (o.fonte === "sketchfab" && typeof o.consulta === "string") return { fonte: "sketchfab", consulta: o.consulta.slice(0, 80), tipo: "modelo3d" };
+  if (o.fonte === "kenney" && typeof o.modelo === "string") {
+    const n = o.modelo.toLowerCase().replace(/\.glb$/, "");
+    const nome = KENNEY.find((k) => k === n) ?? KENNEY.find((k) => k.endsWith(`/${n.split("/").pop()}`)) ?? KENNEY.find((k) => k.includes(n.split("/").pop()));
+    return nome ? { fonte: "arquivo", consulta: `modelos/kenney/${nome}.glb`, arquivo: `modelos/kenney/${nome}.glb`, formato: "modelo3d" } : undefined;
+  }
+  if (FONTES.has(o.fonte) && typeof o.consulta === "string") return { fonte: o.fonte === "pexels" && !temChave("PEXELS_API_KEY") ? "pixabay" : o.fonte, consulta: o.consulta.slice(0, 120), tipo: "imagem" };
+  return undefined;
 }
 
 // os cenários low poly válidos, lidos do tipo (um cenário inventado partia o render)
 const tipos = readFileSync("src/types.ts", "utf-8");
 const CENARIOS = new Set([...(tipos.match(/tipo: "lowpoly";\s*cenario: ([^;]+);/)?.[1] ?? "").matchAll(/"(\w+)"/g)].map((m) => m[1]));
-const ELEMENTOS = new Set(["icone", "texto", "seta", "circulo", "sublinhado", "x", "visto", "barras", "linha"]);
 const FONTES = new Set(["pexels", "pixabay", "wikimedia", "steam"]);
 const temChave = (nome) => !!process.env[nome] || readFileSync(".env", "utf-8").split(/\r?\n/).some((l) => l.startsWith(`${nome}=`) && l.length > nome.length + 1);
 
@@ -65,8 +79,8 @@ function limpar(exemplos, duracaoS) {
   for (const x of [...(exemplos ?? [])].sort((a, b) => a.inicio - b.inicio)) {
     let ini = Math.max(1.5, Number(x.inicio)), fim = Math.min(duracaoS - 1.5, Number(x.fim));
     if (!Number.isFinite(ini) || !Number.isFinite(fim)) continue;
-    fim = Math.min(fim, ini + 5); // nada fica mais de 5 s no ecrã
-    if (fim - ini < (["palavras", "numero"].includes(x.tipo) ? 1.2 : 1.8)) continue;
+    fim = Math.min(fim, ini + (x.tipo === "editorial" ? 6.5 : 5)); // nada fica muito tempo no ecrã (a frase de efeito pode ir a 6,5 s)
+    if (fim - ini < (["palavras", "numero", "dado"].includes(x.tipo) ? 1.2 : 1.8)) continue;
     if (bons.length && ini < bons.at(-1).fimMs / 1000 + 1) continue;
     const item = { inicioMs: Math.round(ini * 1000), fimMs: Math.round(fim * 1000), cheio: true };
     if (x.tipo === "midia" && FONTES.has(x.midia?.fonte) && typeof x.midia?.consulta === "string") {
@@ -77,9 +91,16 @@ function limpar(exemplos, duracaoS) {
       item.midia = { fonte, consulta: x.midia.consulta.slice(0, 120), tipo: x.midia.tipo === "imagem" ? "imagem" : "video" };
       item.layout = "faixa";
       if (typeof x.titulo === "string" && x.titulo.trim()) item.titulo = x.titulo.trim().slice(0, 24);
-    } else if (x.tipo === "numero" && Number.isFinite(Number(x.valor)) && typeof x.texto === "string") {
+    } else if ((x.tipo === "dado" || x.tipo === "numero") && Number.isFinite(Number(x.valor))) {
+      // dado em formato editorial (número a contar + gráfico de barras opcional)
       const curto = (v, n) => (typeof v === "string" ? v.slice(0, n) : undefined);
-      item.cena = { tipo: "numero", fala: "", valor: Number(x.valor), prefixo: curto(x.prefixo, 8), sufixo: curto(x.sufixo, 10), texto: x.texto.slice(0, 40), alerta: x.alerta === true };
+      const barras = (Array.isArray(x.barras) ? x.barras : []).filter((b) => b && Number.isFinite(Number(b.valor))).slice(0, 6)
+        .map((b) => ({ rotulo: String(b.rotulo ?? "").slice(0, 12), valor: Number(b.valor), formato: curto(b.formato, 10) }));
+      item.cena = { tipo: "dado", fala: "", valor: Number(x.valor), prefixo: curto(x.prefixo, 8), sufixo: curto(x.sufixo, 10), rotulo: String(x.rotulo ?? x.texto ?? "").slice(0, 48), ...(barras.length ? { barras } : {}) };
+    } else if (x.tipo === "editorial") {
+      // frase de efeito em tipografia editorial com um objeto (3D ou imagem); a legenda some enquanto ela está no ecrã
+      const objeto = objetoDe(x.objeto);
+      item.cena = { tipo: "tipografia", fala: "", layout: x.layout === "dividido" && objeto ? "dividido" : "centro", ...(typeof x.chave === "string" && x.chave.trim() ? { chaves: [x.chave.trim()] } : {}), ...(objeto ? { objeto } : {}) };
     } else if (x.tipo === "palavras" && Array.isArray(x.palavras)) {
       const palavras = x.palavras.filter((w) => typeof w === "string" && w.trim()).map((w) => w.trim().slice(0, 18)).slice(0, 4);
       if (!palavras.length) continue;
@@ -87,12 +108,7 @@ function limpar(exemplos, duracaoS) {
     } else if (x.tipo === "lowpoly" && CENARIOS.has(x.cena?.cenario)) {
       const { titulo, fala, tipo, ...resto } = x.cena;
       item.cena = { ...resto, tipo: "lowpoly", fala: "" };
-    } else if (x.tipo === "pincel" && Array.isArray(x.cena?.elementos)) {
-      const elementos = x.cena.elementos.filter((e) => ELEMENTOS.has(e?.tipo)).slice(0, 6);
-      if (!elementos.length) continue;
-      const { titulo, fala, tipo, ...resto } = x.cena;
-      item.cena = { ...resto, elementos, tipo: "pincel", fala: "" };
-    } else continue;
+    } else continue; // o pincel foi descontinuado
     bons.push(item);
   }
   // a pessoa tem de aparecer em pelo menos 40% do corte: corta os últimos exemplos se passar

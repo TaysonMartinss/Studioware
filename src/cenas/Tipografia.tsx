@@ -1,6 +1,7 @@
 import { AbsoluteFill, Easing, Sequence, interpolate, random, useVideoConfig } from "remotion";
 import { Sfx } from "../components/Sfx";
 import { Decoracoes } from "./Decoracoes";
+import { PAPEL, TINTA, VERMELHO } from "./DadoEditorial";
 import { Conteudo } from "../components/MidiaReal";
 import { FONTES, normalizar, pop, useFrame } from "../components/motion";
 import { useEstilo } from "../estilos";
@@ -29,10 +30,12 @@ const blocos = (ws: Palavra[]) => {
 
 const limpar = (t: string) => t.replace(/[.,;:!?…"]+$/g, "");
 
-export const Tipografia: React.FC<{ cena: CenaTipografia; cor: string; destaques?: Set<string> }> = ({ cena, cor, destaques }) => {
+export const Tipografia: React.FC<{ cena: CenaTipografia; cor: string; destaques?: Set<string> }> = ({ cena, destaques }) => {
   const f = useFrame();
   const { fps, width: L, height: A } = useVideoConfig();
-  const e = useEstilo();
+  // paleta editorial fixa (papel, tinta e vermelho), também quando entra num vídeo de outro estilo (cortes)
+  const e = { ...useEstilo(), fundo: PAPEL, corTexto: TINTA };
+  const cor = VERMELHO;
   const ms = (f / fps) * 1000;
   const lista = blocos(cena.palavras ?? []);
   const indice = Math.max(0, lista.findLastIndex((b) => b[0].inicioMs <= ms));
@@ -49,6 +52,9 @@ export const Tipografia: React.FC<{ cena: CenaTipografia; cor: string; destaques
   const antes = bloco.slice(0, k), chave = bloco[k], depois = bloco.slice(k + 1);
 
   const temObjeto = Boolean(cena.objeto?.arquivo);
+  // composição: "centro" (texto centrado, objeto acima ou abaixo) ou "dividido" (frase no topo à direita, objeto
+  // grande ao centro, palavra-chave em baixo à esquerda, arcos e textos verticais); sem pedido, a cada 3 frases uma dividida
+  const dividido = temObjeto && (cena.layout ? cena.layout === "dividido" : indice % 3 === 2);
   const acima = indice % 2 === 1; // alterna: texto em cima e objeto em baixo, e ao contrário
   const topoTexto = !temObjeto ? A * 0.33 : acima ? A * 0.16 : A * 0.56;
   const topoObjeto = acima ? A * 0.44 : A * 0.1;
@@ -103,7 +109,34 @@ export const Tipografia: React.FC<{ cena: CenaTipografia; cor: string; destaques
           filter: "blur(1.2px)", // profundidade de campo: o fundo fica ligeiramente desfocado
         }} />
         {/* elementos decorativos (formas, setas, códigos de barras, textos) a várias profundidades, com desfoque */}
-        <Decoracoes bloco={indice} inicio={iniBloco} f={f} fps={fps} L={L} A={A} tinta={e.corTexto} cor={cor} evitar={[topoTexto - 40, topoTexto + 520]} />
+        {!dividido && <Decoracoes bloco={indice} inicio={iniBloco} f={f} fps={fps} L={L} A={A} tinta={e.corTexto} cor={cor} evitar={[topoTexto - 40, topoTexto + 520]} />}
+        {dividido ? (
+          <>
+            {/* arcos cinzentos grossos e textos verticais nas margens (variante do print) */}
+            <svg width={L} height={A} style={{ position: "absolute", inset: 0, transform: "translateZ(-200px)", overflow: "visible" }}>
+              <circle cx={L * 1.02} cy={A * 0.16} r={L * 0.5} fill="none" stroke="#d9d7d1" strokeWidth={72} />
+              <circle cx={-L * 0.05} cy={A * 0.98} r={L * 0.48} fill="none" stroke="#d9d7d1" strokeWidth={72} />
+            </svg>
+            <div style={{ position: "absolute", left: 34, top: A * 0.5, transform: "translateZ(60px) rotate(-90deg)", transformOrigin: "0 0", fontFamily: FONTES.mono, fontSize: 20, letterSpacing: "0.3em", color: TINTA, opacity: 0.6, whiteSpace: "nowrap" }}>{`${etiqueta} • EDIÇÃO •`}</div>
+            <div style={{ position: "absolute", right: 34, top: A * 0.62, transform: "translateZ(60px) rotate(90deg)", transformOrigin: "100% 0", fontFamily: FONTES.mono, fontSize: 20, letterSpacing: "0.3em", color: TINTA, opacity: 0.6, whiteSpace: "nowrap" }}>{`• ${etiqueta} • VOL. 01`}</div>
+            {/* objeto grande ao centro, à frente */}
+            <div style={{ position: "absolute", left: L * 0.06, width: L * 0.88, top: A * 0.3, height: A * 0.38, transform: `translateZ(180px) translateY(${flutua}px) rotate(${Math.sin(f / 40) * 3}deg)`, filter: "drop-shadow(0 40px 40px #0000004d)" }}>
+              <Conteudo midia={cena.objeto!} estilo={{ width: "100%", height: "100%", objectFit: "contain", background: "none" }} />
+            </div>
+            {/* a frase no topo, à direita, em serifa itálica */}
+            <div style={{ position: "absolute", right: 80, width: L * 0.72, top: A * 0.11, textAlign: "right", color: TINTA, transformStyle: "preserve-3d", opacity: Math.min(1, sBloco * 1.5) }}>
+              {antes.length > 0 && <Linha ws={antes} estilo={{ justifyContent: "flex-end", fontFamily: FONTES.serif, fontStyle: "italic", fontSize: 84, lineHeight: 1.02, letterSpacing: "-0.01em", ...z(60) }} />}
+            </div>
+            {/* a palavra-chave em baixo, à esquerda, pesada e em itálico, com o resto pequeno por baixo à direita */}
+            <div style={{ position: "absolute", left: 60, right: 80, top: A * 0.7, color: TINTA, transformStyle: "preserve-3d" }}>
+              <div style={{ fontFamily: FONTES.inter, fontWeight: 900, fontStyle: "italic", fontSize: tamanhoChave * 0.92, lineHeight: 1, letterSpacing: "-0.05em", textAlign: "left", opacity: visivel(chave) ? 1 : 0, transform: `translateZ(30px) scale(${0.8 + 0.2 * entra(chave)})`, transformOrigin: "0% 50%" }}>
+                {palavraChave}
+              </div>
+              {depois.length > 0 && <Linha ws={depois} estilo={{ justifyContent: "flex-end", fontFamily: FONTES.serif, fontStyle: "italic", fontSize: 50, lineHeight: 1.1, marginTop: 6, opacity: 0.85, ...z(-40) }} />}
+            </div>
+          </>
+        ) : (
+          <>
         {/* camada do objeto: à frente do texto */}
         {temObjeto && (
           <div style={{ position: "absolute", left: L * 0.14, width: L * 0.72, top: topoObjeto, height: A * 0.42, transform: `translateZ(180px) translateY(${flutua}px) rotate(${Math.sin(f / 40) * 3}deg)`, filter: "drop-shadow(0 40px 40px #0000004d)" }}>
@@ -124,6 +157,8 @@ export const Tipografia: React.FC<{ cena: CenaTipografia; cor: string; destaques
           </svg>
           {depois.length > 0 && <Linha ws={depois} estilo={{ fontFamily: FONTES.serif, fontStyle: "italic", fontSize: 54, lineHeight: 1.1, opacity: 0.85, ...z(-60) }} />}
         </div>
+          </>
+        )}
       </div>
     </AbsoluteFill>
   );

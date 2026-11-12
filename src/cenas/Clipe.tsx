@@ -4,11 +4,14 @@ import { LowPolyCena } from "../lowpoly/LowPolyCena";
 import { PincelCena } from "../pincel/PincelCena";
 import { GrelhaOndulada } from "../components/GrelhaOndulada";
 import { Faixa } from "./Faixa";
+import { Tipografia } from "./Tipografia";
+import { DadoEditorial } from "./DadoEditorial";
+import { Sfx } from "../components/Sfx";
 import { Numero } from "./Numero";
 import { Palavras } from "./Palavras";
 import { pop, useFontes, useFrame } from "../components/motion";
 import { useEstilo } from "../estilos";
-import { CenaClipe } from "../types";
+import { CenaClipe, Palavra } from "../types";
 
 type Retangulo = [number, number, number, number];
 // mostra o retângulo [x, y, w, h] do vídeo original a encher uma caixa (como object-fit: cover, centrado no retângulo)
@@ -69,9 +72,10 @@ const Dividido: React.FC<{ src: string; enq: NonNullable<CenaClipe["enquadrament
   );
 };
 
-// Exemplo visual de ecrã inteiro por cima da fala (vídeo/foto, low poly ou pincel); a pessoa fica num canto
+// Exemplo visual de ecrã inteiro por cima da fala (vídeo/foto, low poly, faixa, palavras, número, frase editorial, dado);
+// a voz continua e a pessoa não aparece por baixo
 type Broll = NonNullable<CenaClipe["broll"]>[number];
-const Exemplo: React.FC<{ b: Broll; cor: string; canto: React.ReactNode }> = ({ b, cor, canto }) => {
+const Exemplo: React.FC<{ b: Broll; cor: string; palavras: Palavra[] }> = ({ b, cor, palavras }) => {
   const f = useCurrentFrame();
   const { durationInFrames: d } = useVideoConfig();
   // transição leve: 3 frames (quase um corte seco)
@@ -80,6 +84,12 @@ const Exemplo: React.FC<{ b: Broll; cor: string; canto: React.ReactNode }> = ({ 
   const o = Math.min(entra, sai);
   const zoom = interpolate(f, [0, d], [1.04, 1.12]);
   const duracaoMs = b.fimMs - b.inicioMs;
+  // frase de efeito em tipografia editorial: as palavras ditas nesse trecho, no tempo do exemplo
+  if (b.cena?.tipo === "tipografia") {
+    const ws = palavras.filter((p) => p.inicioMs >= b.inicioMs - 60 && p.inicioMs < b.fimMs).map((p) => ({ ...p, inicioMs: Math.max(0, p.inicioMs - b.inicioMs), fimMs: p.fimMs - b.inicioMs }));
+    return <AbsoluteFill><Tipografia cena={{ ...b.cena, duracaoMs, palavras: ws }} cor={cor} /></AbsoluteFill>;
+  }
+  if (b.cena?.tipo === "dado") return <AbsoluteFill><DadoEditorial cena={{ ...b.cena, duracaoMs, palavras: [] }} /></AbsoluteFill>;
   // como nos reels: a faixa de cinema e as palavras gigantes entram em corte seco e tapam a pessoa (a voz continua)
   if (b.layout === "faixa" && b.midia?.arquivo) return <AbsoluteFill><Faixa cena={{ tipo: "faixa", fala: "", midia: b.midia, titulo: b.titulo, duracaoMs }} cor={cor} /></AbsoluteFill>;
   if (b.cena?.tipo === "numero") {
@@ -100,9 +110,6 @@ const Exemplo: React.FC<{ b: Broll; cor: string; canto: React.ReactNode }> = ({ 
   return (
     <AbsoluteFill style={{ opacity: o }}>
       <AbsoluteFill style={{ background: "#000", overflow: "hidden", transform: `scale(${1.03 - 0.03 * entra})` }}>{conteudo}</AbsoluteFill>
-      <div style={{ position: "absolute", left: 40, top: 1480, width: 270, height: 350, borderRadius: 28, overflow: "hidden", border: `5px solid ${cor}`, boxShadow: "0 18px 40px #000a", transform: `scale(${0.85 + 0.15 * entra})`, transformOrigin: "0% 100%" }}>
-        {canto}
-      </div>
     </AbsoluteFill>
   );
 };
@@ -168,14 +175,11 @@ export const Clipe: React.FC<{ cena: CenaClipe; cor: string }> = ({ cena, cor })
       {(cena.broll ?? []).map((b, i) => {
         const ini = Math.round((b.inicioMs / 1000) * fps);
         if (b.cheio) {
-          // a pessoa no canto: o mesmo recorte do enquadramento (o rosto), sem som (a voz vem do vídeo principal)
-          const vl = enq?.largura ?? cena.largura ?? 1080, va = enq?.altura ?? cena.altura ?? 1920;
-          const k = Math.min(enq?.xs?.length ? enq.xs.length - 1 : 0, Math.max(0, Math.round((f / fps) * (enq?.fps ?? fps))));
-          const cw = Math.min(vl, va * (270 / 350));
-          const r: Retangulo = seguir ? [enq!.xs![k], 0, enq!.cropLargura!, va] : [vl / 2 - cw / 2, 0, cw, va];
           return (
             <Sequence key={i} from={ini} durationInFrames={Math.max(1, Math.round(((b.fimMs - b.inicioMs) / 1000) * fps))} layout="none">
-              <Exemplo b={b} cor={cor} canto={<Recorte src={src} vl={vl} va={va} r={r} caixa={{ top: 0, altura: 350, largura: 270 }} mudo />} />
+              {/* sound design: woosh em cada corte para o apoio (a tipografia e o dado têm os seus próprios sons por dentro) */}
+              {b.cena?.tipo !== "dado" && <Sequence durationInFrames={Math.round(fps)} layout="none"><Sfx nome="whoosh" volume={0.34} /></Sequence>}
+              <Exemplo b={b} cor={cor} palavras={cena.palavras ?? []} />
             </Sequence>
           );
         }

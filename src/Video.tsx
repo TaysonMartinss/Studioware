@@ -19,6 +19,7 @@ import { Cta } from "./cenas/Cta";
 import { Fato } from "./cenas/Fato";
 import { Faixa } from "./cenas/Faixa";
 import { Tipografia } from "./cenas/Tipografia";
+import { DadoEditorial } from "./cenas/DadoEditorial";
 import { Gancho } from "./cenas/Gancho";
 import { Palavras } from "./cenas/Palavras";
 import { Grafico } from "./cenas/Grafico";
@@ -34,6 +35,7 @@ import { Cena, FPS, Manifest, framesDaCena } from "./types";
 import { FiltroPixel } from "./components/Pixel";
 
 const ConteudoCena: React.FC<{ cena: Cena; cor: string; destaques?: Set<string> }> = ({ cena, cor, destaques }) => {
+  if (cena.tipo === "dado") return <DadoEditorial cena={cena} />;
   if (cena.tipo === "tipografia") return <Tipografia cena={cena} cor={cor} destaques={destaques} />;
   if (cena.tipo === "faixa") return <Faixa cena={cena} cor={cor} />;
   if (cena.tipo === "palavras") return <Palavras cena={cena} cor={cor} />;
@@ -60,6 +62,9 @@ const CenaCompleta: React.FC<{ cena: Cena; indice: number; cor: string; destaque
 }) => {
   const f = useCurrentFrame();
   const palavras = cena.palavras ?? [];
+  // nos cortes, enquanto um exemplo editorial (frase de efeito ou dado) está no ecrã, a frase já está escrita: sem legenda
+  const editoriais = cena.tipo === "clipe" ? (cena.broll ?? []).filter((b) => b.cena?.tipo === "tipografia" || b.cena?.tipo === "dado") : [];
+  const palavrasLegenda = editoriais.length ? palavras.filter((p) => !editoriais.some((b) => p.inicioMs >= b.inicioMs - 60 && p.inicioMs < b.fimMs)) : palavras;
   // zoom punch no início da cena e em cada palavra de destaque (estilos calmos ficam sem)
   const { shake, rgbSplit, tema } = useEstilo();
   const gatilhos = shake === 0 ? [] : [0, ...palavras.filter((p) => destaques.has(normalizar(p.texto))).map((p) => Math.round((p.inicioMs / 1000) * FPS)), ...(pico ? [pico.frame] : [])];
@@ -78,7 +83,7 @@ const CenaCompleta: React.FC<{ cena: Cena; indice: number; cor: string; destaque
       {/* papel: um recorte novo a cada 3 palavras (o gancho já tem as letras de resgate e o CTA o botão) */}
       {tema === "papel" && !["gancho", "cta", "clipe"].includes(cena.tipo) && <ColagemPapel palavras={palavras} />}
       {/* a tipografia editorial já escreve a fala no ecrã */}
-      {cena.tipo !== "tipografia" && <Legendas palavras={palavras} destaques={destaques} cor={cor} emojis={emojis} />}
+      {cena.tipo !== "tipografia" && cena.tipo !== "dado" && <Legendas palavras={palavrasLegenda} destaques={destaques} cor={cor} emojis={emojis} />}
     </AbsoluteFill>
   );
 };
@@ -102,7 +107,8 @@ export const Video: React.FC<{ manifest: Manifest }> = ({ manifest }) => {
   const estilo = ESTILOS[manifest.estilo ?? "neon"] ?? ESTILOS.neon;
   const cor = manifest.cor ?? estilo.cor;
   const destaques = new Set([...(manifest.destaques ?? []), ...Object.keys(manifest.emojis ?? {})].map(normalizar));
-  const emojis = manifest.emojis ? Object.fromEntries(Object.entries(manifest.emojis).map(([k, v]) => [normalizar(k), v])) : undefined;
+  // legendas com emoji desligadas a pedido (as palavras-chave dos cortes continuam a ser destaque de cor)
+  const emojis = undefined;
   const inicios = manifest.cenas.reduce<number[]>((a, c, i) => [...a, i ? a[i - 1] + framesDaCena(manifest.cenas[i - 1]) : 0], []);
   const picos = calcularPicos(manifest.cenas, 3);
   let inicio = 0;

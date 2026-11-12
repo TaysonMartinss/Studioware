@@ -601,7 +601,7 @@ function lerRoteiroExterno(texto) {
   let r;
   try { r = JSON.parse(t.slice(ini, fim + 1)); } catch (e) { throw new Error(`O JSON tem um erro (${e.message}). Peça à IA para corrigir e responder só com o JSON.`); }
   if (!Array.isArray(r.cenas) || !r.cenas.length) throw new Error("O roteiro não tem cenas");
-  const tipos = new Set(["tipografia", "faixa", "palavras", "gancho", "quiz", "lowpoly", "pincel", "produto", "fato", "grafico", "linha_tempo", "manim", "numero", "comparacao", "modelo3d", "capitulo", "cta"]);
+  const tipos = new Set(["dado", "tipografia", "faixa", "palavras", "gancho", "quiz", "lowpoly", "pincel", "produto", "fato", "grafico", "linha_tempo", "manim", "numero", "comparacao", "modelo3d", "capitulo", "cta"]);
   const maus = r.cenas.map((c, i) => (tipos.has(c?.tipo) ? null : `cena ${i + 1} (${c?.tipo ?? "sem tipo"})`)).filter(Boolean);
   if (maus.length) throw new Error(`Tipos de cena desconhecidos: ${maus.join(", ")}`);
   r.cenas.forEach((c) => { if (typeof c.fala !== "string") c.fala = ""; });
@@ -992,7 +992,7 @@ const rotas = async (req, res) => {
       writeFileSync(caminhoRoteiro(videoId), JSON.stringify({
         id: videoId, titulo, formato: "clipe", estilo: d.estilo ?? "hormozi", musica: d.musica ?? "auto",
         ...(canalDe(d.canal) === "nenhum" ? { marcaDagua: false } : canalDe(d.canal) && { canal: d.canal }),
-        destaques: [], emojis, legenda_post: x.legenda_post, nota: x.nota,
+        destaques: Object.keys(emojis), legenda_post: x.legenda_post, nota: x.nota,
         cenas: [{ tipo: "clipe", bruto: d.arquivo, inicio: x.inicio, fim: x.fim, fala: "", titulo: d.gancho === false ? undefined : x.gancho, cortar: d.cortar !== false, enquadrar: d.enquadrar !== false, exemplos: d.exemplos !== false }],
       }, null, 2));
       const job = novoJob({ tipo: "render", formato: "clipe", videoId, tema: titulo, estilo: d.estilo, narracao: "clipe" });

@@ -158,13 +158,15 @@ const VARIANTES: Record<Estilo["legenda"], Variante> = {
 const paginar = (palavras: Palavra[], max: number) => {
   const paginas: Palavra[][] = [];
   let atual: Palavra[] = [];
-  for (const p of palavras) {
+  palavras.forEach((p, i) => {
     atual.push(p);
-    if (atual.length >= max || /[.,!?;:]$/.test(p.texto)) {
+    // também parte quando a fala para mais de 0,7 s (uma página nunca atravessa um silêncio ou um apoio editorial)
+    const prox = palavras[i + 1];
+    if (atual.length >= max || /[.,!?;:]$/.test(p.texto) || (prox && prox.inicioMs - p.fimMs > 700)) {
       paginas.push(atual);
       atual = [];
     }
-  }
+  });
   if (atual.length) paginas.push(atual);
   return paginas;
 };
@@ -187,7 +189,8 @@ export const Legendas: React.FC<{ palavras: Palavra[]; destaques: Set<string>; c
   const indice = paginas.findLastIndex((pg) => pg[0].inicioMs <= ms);
   const pagina = paginas[indice];
   if (!pagina) return null;
-  if (ms > pagina[pagina.length - 1].fimMs + 600 && indice === paginas.length - 1) return null;
+  // a página sai 0,8 s depois da última palavra (no fim do vídeo e quando a fala para, ex. num apoio editorial)
+  if (ms > pagina[pagina.length - 1].fimMs + 800) return null;
 
   const inicioPagina = Math.round((pagina[0].inicioMs / 1000) * fps);
   const abrir = spring({ frame: f - inicioPagina + 2, fps, config: { damping: 20, stiffness: 220 } });
