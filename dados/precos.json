@@ -1,0 +1,71 @@
+{
+  "regra": "Preço de referência = menor preço à vista (Pix) encontrado em loja confiável (KaBuM, Pichau, Terabyte, Amazon BR vendido pela Amazon, loja oficial no Mercado Livre), em R$. Válido por 7 dias a partir de 'data'. Na fala, arredondar para baixo à centena (acima de mil) ou à unidade (abaixo de mil) e dizer 'a partir de' ou 'uns'.",
+  "produtos": {
+    "logitech-g29": {
+      "nome": "Volante Logitech G29 Driving Force (PS5, PS4, PS3 e PC)",
+      "preco": 1494.59,
+      "loja": "KaBuM",
+      "url": "https://www.kabum.com.br/produto/69305/volante-logitech-g29-driving-force-para-ps5-ps4-ps3-e-pc-941-000111",
+      "data": "2026-11-08",
+      "fontes": [
+        {
+          "loja": "KaBuM (à vista, via Zoom)",
+          "preco": 1494.59,
+          "url": "https://www.zoom.com.br/controle-joystick/cockpit-ps3-ps4-driving-force-g29-logitech",
+          "data": "2026-11-08"
+        },
+        {
+          "loja": "Amazon (via Zoom)",
+          "preco": 1599.0,
+          "url": "https://www.zoom.com.br/controle-joystick/cockpit-ps3-ps4-driving-force-g29-logitech",
+          "data": "2026-11-08"
+        }
+      ]
+    },
+    "suporte-celular-moto-amortecedor": {
+      "nome": "Suporte Universal para Celular com Amortecedor Antivibração (moto)",
+      "preco": 189.91,
+      "loja": "Motorshopp",
+      "url": "https://www.motorshopp.com.br/acessorios-e-pecas/suporte-universal-para-celular-com-amortecedor-antivibracao",
+      "data": "2026-11-03",
+      "fontes": [
+        {
+          "loja": "WR Acessórios & Cia (M26C-Bk)",
+          "preco": 221.04,
+          "url": "https://www.wracessoriosecia.com.br/suporte-de-celular-para-moto-com-amortecedor-de-vibracao",
+          "data": "2026-11-03"
+        }
+      ]
+    },
+    "suporte-celular-moto-garra-simples": {
+      "nome": "Suporte Universal de Bike/Moto para GPS e Celular (garra simples)",
+      "preco": 20.9,
+      "loja": "Amazon (via Buscapé)",
+      "url": "https://www.buscape.com.br/outros-acessorios-para-celular-e-smartphone/suporte-universal-de-bike-bicicleta-moto-para-gps-celular",
+      "data": "2026-11-03",
+      "fontes": [
+        {
+          "loja": "Amazon (via Buscapé) - Suporte giratório BT-87",
+          "preco": 21.12,
+          "url": "https://www.buscape.com.br/lead?oid=160456283",
+          "data": "2026-11-03"
+        }
+      ]
+    },
+    "reparo-camera-iphone-17-pro": {
+      "nome": "Reparo da câmera traseira do iPhone 17 Pro (tabela oficial Apple Brasil)",
+      "preco": 2329,
+      "loja": "Apple (tabela oficial de reparo)",
+      "url": "https://macmagazine.com.br/post/2025/09/12/apple-divulga-valores-de-reparos-dos-novos-iphones-no-brasil-e-eles-podem-assustar/",
+      "data": "2026-11-03",
+      "fontes": [
+        {
+          "loja": "Apple (iPhone 17 Pro Max, mesma tabela)",
+          "preco": 2329,
+          "url": "https://macmagazine.com.br/post/2025/09/12/apple-divulga-valores-de-reparos-dos-novos-iphones-no-brasil-e-eles-podem-assustar/",
+          "data": "2026-11-03"
+        }
+      ]
+    }
+  }
+}

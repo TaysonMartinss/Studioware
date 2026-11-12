@@ -1,0 +1,44 @@
+# ---------- segredos (NUNCA no git) ----------
+.env
+.env.*
+dados/youtube-tokens.json
+.claude/settings.local.json
+
+# ---------- dependências e ambientes instalados ----------
+node_modules/
+.venv-voz/
+.whisper/
+__pycache__/
+*.pyc
+
+# ---------- gerados pelo estúdio (refazem-se) ----------
+out/
+lixeira/
+media/
+roteiros/*.json
+public/videos/
+public/uploads/
+public/marca/rascunho-*.png
+
+# ---------- conteúdo com licença ou dono próprio (não redistribuir) ----------
+# modelos do Sketchfab: cada um tem a sua licença, que não permite publicá-los num repositório
+public/modelos3d/
+# amostras de voz para clonar: são vozes de pessoas reais
+public/vozes/
+# logos de redes sociais do criador (não fazem parte do produto)
+marca-insta/
+
+# ---------- sistema ----------
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# música: só as faixas geradas pelo estúdio (scripts/gerar_musicas.py) entram no git;
+# as importadas (YouTube Audio Library, etc.) podem usar-se nos vídeos mas não se redistribuem
+public/musicas/**/*.mp3
+public/musicas/**/*.wav
+!public/musicas/ambiente/orbita.mp3
+!public/musicas/energetica/pulso-a.mp3
+!public/musicas/lofi/tarde-fria.mp3
+!public/musicas/synthwave/neon-1985.mp3
+!public/musicas/tensa/contagem.mp3

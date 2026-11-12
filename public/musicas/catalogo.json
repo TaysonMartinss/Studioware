@@ -1,0 +1,38 @@
+{
+  "musicas/energetica/when-i-m-movin-vyasa-dodson.mp3": {
+    "titulo": "When I'm Movin'",
+    "artista": "Vyasa Dodson",
+    "origem": "YouTube Audio Library",
+    "credito": "",
+    "bpm": 117,
+    "duracaoS": 210.0,
+    "climaSugerido": "energetica"
+  },
+  "musicas/energetica/habanera-from-carmen-georges-bizet-golden-cut-reborn.mp3": {
+    "titulo": "Habanera from Carmen (Georges Bizet)",
+    "artista": "Golden Cut Reborn",
+    "origem": "YouTube Audio Library",
+    "credito": "",
+    "bpm": 123,
+    "duracaoS": 240.1,
+    "climaSugerido": "energetica"
+  },
+  "musicas/lofi/secunda-jeremy-soule.mp3": {
+    "titulo": "Secunda",
+    "artista": "Jeremy Soule",
+    "origem": "YouTube Audio Library",
+    "credito": "",
+    "bpm": 89,
+    "duracaoS": 123.3,
+    "climaSugerido": "lofi"
+  },
+  "musicas/energetica/drop-of-a-hat-the-grey-room-density-time.mp3": {
+    "titulo": "Drop Of A Hat",
+    "artista": "The Grey Room   Density & Time",
+    "origem": "YouTube Audio Library",
+    "credito": "",
+    "bpm": 89,
+    "duracaoS": 178.7,
+    "climaSugerido": "energetica"
+  }
+}

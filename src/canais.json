@@ -1,0 +1,17 @@
+{
+  "duckexplica": {
+    "nome": "Duck Explica",
+    "arroba": "@duckexplica",
+    "logo": "marca/logo.png",
+    "pixelado": true,
+    "nicho": "games, hardware (rankings de compra com links de afiliado), curiosidades de games e tecnologia, ciência e espaço explicados, vídeos \"E se?\"",
+    "categoriaYoutube": 28
+  },
+  "ovaranalisa": {
+    "nome": "O VAR Analisa",
+    "arroba": "@ovaranalisa",
+    "logo": "marca/ovaranalisa.png",
+    "nicho": "futebol: análise de lances polémicos, arbitragem e VAR, regras explicadas, curiosidades, recordes e histórias do futebol",
+    "categoriaYoutube": 17
+  }
+}

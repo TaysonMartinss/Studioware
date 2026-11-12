@@ -1,0 +1,38 @@
+{
+  "name": "canal-hardware-videos",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "video": "node scripts/produzir.mjs",
+    "painel": "node server/index.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@react-three/drei": "10.7.9",
+    "@react-three/fiber": "9.8.2",
+    "@remotion/bundler": "4.0.540",
+    "@remotion/cli": "^4.0.540",
+    "@remotion/google-fonts": "^4.0.540",
+    "@remotion/install-whisper-cpp": "4.0.540",
+    "@remotion/paths": "4.0.540",
+    "@remotion/renderer": "4.0.540",
+    "@remotion/three": "4.0.540",
+    "lucide-react": "1.66.0",
+    "lucide-static": "1.66.0",
+    "p5.brush": "3.0.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "remotion": "^4.0.540",
+    "three": "0.187.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "@types/three": "^0.187.0",
+    "typescript": "^7.0.2"
+  },
+  "private": true
+}

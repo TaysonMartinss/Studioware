@@ -1,0 +1,106 @@
+{
+  "geradoEm": "2026-11-08T00:53:48.683Z",
+  "foco": "",
+  "ideias": [
+    {
+      "titulo": "SSD para PS5: os 5 melhores para caber o GTA 6",
+      "tema": "Ranking de SSDs NVMe compatíveis com PS5 (com dissipador) em várias faixas de preço em reais, partindo do facto de o GTA 6 pedir até 212 GB e de o pré-download começar a 10/11. Explicar o requisito mínimo da Sony e mostrar quanto espaço sobra no SSD de fábrica.",
+      "formato": "ranking",
+      "estrategia": "venda",
+      "gancho": "O GTA 6 vai ocupar até 212 GB, e o teu PS5 talvez não tenha esse espaço livre.",
+      "porque": "A Rockstar confirmou o pré-download a 10/11, que pode chegar a 212 GB, e o jogo sai a 19/11. Quem comprou na pré-venda vai procurar SSD esta semana.",
+      "urgencia": "até 19/11",
+      "nota": 9
+    },
+    {
+      "titulo": "GTA 6: por que demorou 13 anos para sair?",
+      "tema": "Explicar o intervalo entre o GTA V (2013) e o GTA 6 (19/11/2026): o lucro do GTA Online, a escala da produção, os dois adiamentos (2025 → maio de 2026 → novembro de 2026) e o vazamento. Só usar factos com fonte.",
+      "formato": "curiosidades",
+      "estrategia": "tendencia",
+      "gancho": "Uma criança que nasceu quando saiu o GTA V já está a entrar na adolescência, e só agora vai jogar o seguinte.",
+      "porque": "O lançamento é a 19/11 e a Take-Two reafirmou a data. É o assunto de games mais procurado do mês.",
+      "urgencia": "até 19/11",
+      "nota": 9
+    },
+    {
+      "titulo": "Placa de vídeo na Black Friday 2026: as 5 que valem",
+      "tema": "Ranking de GPUs por faixa de preço (RX 7600, RTX 5060, RTX 5070, RX 9070 XT…) com preço-alvo em reais, baseado no histórico (ex.: RTX 5060 a R$ 2.699 em outubro, mínimo de R$ 1.823 em janeiro). Ensinar a identificar desconto falso.",
+      "formato": "ranking",
+      "estrategia": "venda",
+      "gancho": "Na Black Friday do ano passado esta placa estava mais barata do que está hoje. Vê o preço certo antes de pagar.",
+      "porque": "A Black Friday é a 27/11 e há várias matérias sobre o preço-alvo da RTX 5060 e o histórico de preços das GPUs.",
+      "urgencia": "até 27/11",
+      "nota": 8
+    },
+    {
+      "titulo": "Memória RAM cara: por que o preço disparou em 2026?",
+      "tema": "Explicar em estilo Kurzgesagt como a procura dos data centers de IA (HBM) tirou capacidade de fabrico à RAM e aos SSDs de consumo, com os números da Gartner (+130% em DRAM e SSD) e da TrendForce, e o que isso significa para quem vai montar um PC.",
+      "formato": "explicativo",
+      "estrategia": "busca",
+      "gancho": "A inteligência artificial está a comer a memória do teu próximo PC, literalmente.",
+      "porque": "Gartner, TrendForce e Counterpoint registaram altas recorde em DRAM e NAND em 2026, e 'por que a RAM está cara' é uma pergunta frequente antes da Black Friday.",
+      "urgencia": "sempre",
+      "nota": 8
+    },
+    {
+      "titulo": "E se o GTA 6 se passasse no Brasil?",
+      "tema": "Exercício 'E se?' que imagina a Vice City brasileira: que cidade seria (Rio, São Paulo, Recife), as missões, a rádio, o trânsito e a polícia, comparando com o que já se sabe da Leonida real do jogo.",
+      "formato": "ese",
+      "estrategia": "feed",
+      "gancho": "E se, em vez de Miami, a Rockstar tivesse escolhido o Rio de Janeiro?",
+      "porque": "O GTA 6 domina o feed até ao lançamento a 19/11, e os temas com o Brasil geram muitos comentários e partilhas no público PT-BR.",
+      "urgencia": "até 19/11",
+      "nota": 8
+    },
+    {
+      "titulo": "GTA 6 a R$ 449: por que os jogos estão tão caros?",
+      "tema": "Partir do preço oficial no Brasil (R$ 449,90 na edição padrão, R$ 549,90 na Ultimate, sem disco na versão física) para explicar o custo de produção, o câmbio e os impostos, e comparar com o preço do GTA V em 2013, corrigido pela inflação.",
+      "formato": "explicativo",
+      "estrategia": "tendencia",
+      "gancho": "O GTA 6 custa R$ 449, e a caixa física nem traz disco.",
+      "porque": "O preço da pré-venda saiu há pouco e gerou manchetes como 'preço que vai fazer você chorar'. A polémica está quente.",
+      "urgencia": "esta semana",
+      "nota": 7
+    },
+    {
+      "titulo": "PC gamer com R$ 4 mil na Black Friday: a história",
+      "tema": "Storytelling de alguém que quer jogar no PC com um orçamento de R$ 4 mil e passa pelas armadilhas (preço inflacionado antes da promoção, RAM cara, fonte fraca) até chegar a uma configuração recomendada com links.",
+      "formato": "storytelling",
+      "estrategia": "venda",
+      "gancho": "Ele tinha 4 mil reais e quase os gastou todos num PC que nem rodava jogos em 1080p.",
+      "porque": "A Black Friday a 27/11 e a alta da RAM e dos SSDs em 2026 fazem crescer as pesquisas por 'PC gamer barato' e por 'vale a pena montar agora'.",
+      "urgencia": "até 27/11",
+      "nota": 7
+    },
+    {
+      "titulo": "E se a internet caísse no mundo inteiro por 1 dia?",
+      "tema": "Cenário 'E se?' hora a hora: o que acontece com o Pix, os jogos online, os aviões, os hospitais e as bolsas se a internet global desligar 24 horas, com base em apagões reais (como o da CrowdStrike em 2024).",
+      "formato": "ese",
+      "estrategia": "feed",
+      "gancho": "Às 9 da manhã, o Pix para. Às 10, já não dá para pagar nada.",
+      "porque": "É um formato 'E se?' que já funciona no canal (insetos), e os apagões globais recentes tornam o cenário credível e fácil de ilustrar.",
+      "urgencia": "sempre",
+      "nota": 7
+    },
+    {
+      "titulo": "Steam Machine: por que custaria quase R$ 8 mil no Brasil?",
+      "tema": "Explicar o que é a Steam Machine (PC-console da Valve, a partir de US$ 1.049), por que a Valve diz que ficou mais cara do que o previsto (componentes), por que não há venda oficial no Brasil e quanto custaria importada com impostos.",
+      "formato": "explicativo",
+      "estrategia": "busca",
+      "gancho": "A Valve lançou um console que custa mais do que um PS5 Pro e um Xbox juntos, e nem vende no Brasil.",
+      "porque": "A Steam Machine saiu em junho sem previsão para o Brasil, e matérias como a do TecMundo falam em 'quase R$ 8.000' importada. A dúvida 'vale importar' continua a ser pesquisada.",
+      "urgencia": "sempre",
+      "nota": 6
+    },
+    {
+      "titulo": "História do GTA: de 1997 até ao GTA 6",
+      "tema": "Vídeo longo com 6 capítulos: o GTA de vista de cima (1997), a revolução 3D do GTA III, Vice City e San Andreas, o GTA IV, o fenómeno GTA V/Online e o que se sabe do GTA 6. Fechar com dados de vendas que tenham fonte.",
+      "formato": "longo",
+      "estrategia": "busca",
+      "gancho": "Começou como um jogo visto de cima, quase abandonado durante o desenvolvimento, e tornou-se o produto de entretenimento mais lucrativo da história.",
+      "porque": "Com o lançamento a 19/11, as pesquisas por 'história do GTA' e 'todos os GTA' sobem, e o tema dá para 5 a 10 minutos com capítulos claros.",
+      "urgencia": "até 19/11",
+      "nota": 6
+    }
+  ]
+}
