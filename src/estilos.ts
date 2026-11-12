@@ -38,6 +38,7 @@ export type Estilo = {
   rgbSplit?: number; // aberração cromática no ecrã inteiro (px)
   pilula?: { fundo: string; texto: string };
   textura?: "jornal" | "aquarela"; // editorial (Vox): papel creme, pontos de meio-tom, fotos em meio-tom com sombra dura
+  oculto?: boolean; // fora do painel (continua a renderizar os vídeos antigos que o usam)
   pixel?: { tamanho: number; niveis: number }; // Pixel 3D: blocos de `tamanho` px com dithering e `niveis` tons por canal
   sons?: Partial<Record<"whoosh" | "impacto" | "pop" | "clique" | "popup", string>>;
 };

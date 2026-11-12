@@ -370,8 +370,11 @@ async function apagarFaixa(arquivo) {
   } catch (e) { toast(e.message, "triangle-alert"); }
 }
 
+// só os estilos em uso aparecem para escolher (os ocultos continuam a renderizar vídeos antigos)
+const estilosVisiveis = (atual) => Object.entries(OPCOES.estilos).filter(([k, e]) => !e.oculto || k === atual);
 function desenharEstilos() {
-  $("#estilos").innerHTML = Object.entries(OPCOES.estilos).map(([k, e]) => `
+  if (OPCOES.estilos[estado.estilo]?.oculto) estado.estilo = "neon";
+  $("#estilos").innerHTML = estilosVisiveis().map(([k, e]) => `
     <button class="estilo ${k === estado.estilo ? "ativo" : ""}" data-k="${k}" title="${esc(e.descricao)}">
       <img src="/miniaturas/${k}.jpg" alt="" loading="lazy"><span>${esc(e.nome)}</span>
     </button>`).join("");
@@ -387,7 +390,7 @@ async function carregarAuto() {
 }
 function desenharAuto() {
   const { config: cfg, estado: est, youtube: yt } = autoDados;
-  const opcoesEstilo = (atual) => Object.entries(OPCOES.estilos).map(([k, e]) => `<option value="${k}" ${k === atual ? "selected" : ""}>${esc(e.nome)}</option>`).join("");
+  const opcoesEstilo = (atual) => estilosVisiveis(atual).map(([k, e]) => `<option value="${k}" ${k === atual ? "selected" : ""}>${esc(e.nome)}</option>`).join("");
   const canaisHtml = Object.entries(cfg.canais).map(([id, c]) => {
     const info = OPCOES.canais?.[id] ?? { nome: id, arroba: "" };
     const ligado = yt.canais[id];
@@ -1632,7 +1635,7 @@ async function abrirEditor(id, roteiro) {
   roteiroAberto = roteiro ?? await api(`/api/roteiros/${id}`);
   const r = roteiroAberto;
   $("#edTitulo").textContent = r.titulo || id;
-  const opcoesEstilo = Object.entries(OPCOES.estilos).map(([k, e]) => `<option value="${k}" ${k === (r.estilo ?? "neon") ? "selected" : ""}>${esc(e.nome)}</option>`).join("");
+  const opcoesEstilo = estilosVisiveis(r.estilo ?? "neon").map(([k, e]) => `<option value="${k}" ${k === (r.estilo ?? "neon") ? "selected" : ""}>${esc(e.nome)}</option>`).join("");
   $("#edCorpo").innerHTML = `
     <div class="grid2">
       ${campo("Título", "titulo", r.titulo)}

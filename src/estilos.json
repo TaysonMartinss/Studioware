@@ -41,7 +41,8 @@
     "flash": 0.35,
     "passo": 1,
     "raio": 4,
-    "brilho": false
+    "brilho": false,
+    "oculto": true
   },
   "hormozi": {
     "nome": "Kinetic (Hormozi)",
@@ -66,7 +67,8 @@
     "brilho": false,
     "tracking": "-0.03em",
     "entrada": "bounce",
-    "iconesPalavras": true
+    "iconesPalavras": true,
+    "oculto": true
   },
   "papel": {
     "nome": "Papel / Stop Motion",
@@ -95,7 +97,8 @@
       "pop": "fita",
       "clique": "obturador",
       "popup": "caneta"
-    }
+    },
+    "oculto": true
   },
   "explicativo": {
     "nome": "Explicativo (Kurzgesagt)",
@@ -133,7 +136,8 @@
       0.5,
       1
     ],
-    "sombraInterna": true
+    "sombraInterna": true,
+    "oculto": true
   },
   "corporativo": {
     "nome": "Flat Corporativo",
@@ -161,7 +165,8 @@
     "pilula": {
       "fundo": "#e1f5fe",
       "texto": "#0288d1"
-    }
+    },
+    "oculto": true
   },
   "vhs": {
     "nome": "Retro VHS / Synthwave",
@@ -184,7 +189,8 @@
     "passo": 1,
     "raio": 0,
     "brilho": true,
-    "rgbSplit": 4
+    "rgbSplit": 4,
+    "oculto": true
   },
   "hud": {
     "nome": "HUD Sci-Fi",
@@ -206,7 +212,8 @@
     "flash": 0.3,
     "passo": 1,
     "raio": 0,
-    "brilho": true
+    "brilho": true,
+    "oculto": true
   },
   "matematica": {
     "nome": "Ciência (3Blue1Brown)",
@@ -236,7 +243,8 @@
       0,
       0.6,
       1
-    ]
+    ],
+    "oculto": true
   },
   "clean": {
     "nome": "Clean Tech",
@@ -258,7 +266,8 @@
     "flash": 0.5,
     "passo": 1,
     "raio": 16,
-    "brilho": false
+    "brilho": false,
+    "oculto": true
   },
   "cyber": {
     "nome": "Cyber",
@@ -280,7 +289,8 @@
     "flash": 0.35,
     "passo": 1,
     "raio": 0,
-    "brilho": true
+    "brilho": true,
+    "oculto": true
   },
   "estudio3d": {
     "nome": "Estúdio 3D",
@@ -304,7 +314,8 @@
     "raio": 20,
     "brilho": false,
     "tracking": "-0.02em",
-    "entrada": "mascara"
+    "entrada": "mascara",
+    "oculto": true
   },
   "vox": {
     "nome": "Editorial (Vox)",
@@ -346,7 +357,8 @@
     "sons": {
       "whoosh": "cartao",
       "pop": "fita"
-    }
+    },
+    "oculto": true
   },
   "aquarela": {
     "nome": "Aquarela (livro ilustrado)",
@@ -389,7 +401,8 @@
       "whoosh": "fita",
       "pop": "caneta",
       "popup": "caneta"
-    }
+    },
+    "oculto": true
   },
   "pixel": {
     "nome": "Pixel 3D",
