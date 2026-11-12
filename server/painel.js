@@ -820,9 +820,10 @@ const nomeFormato = (k) => FORMATOS.find(([f]) => f === k)?.[2] ?? "";
 let jobsAntes = {}, logsAbertos = new Set();
 let filaDesenhada = "";
 async function atualizarJobs() {
+  const analisando = await seguirAnalises().catch(() => 0);
   const jobs = await api("/api/jobs");
   const ativos = jobs.filter((j) => j.estado !== "pronto" || Date.now() - j.criado < 10 * 60e3);
-  const emCurso = ativos.filter((j) => !["pronto", "erro"].includes(j.estado)).length;
+  const emCurso = ativos.filter((j) => !["pronto", "erro"].includes(j.estado)).length + analisando;
   $("#contaFila").textContent = emCurso;
   $("#chipFila").hidden = !emCurso;
   $("#textoChipFila").textContent = `${emCurso} em produção`;
@@ -1123,17 +1124,115 @@ async function analisarCortes() {
   try {
     toast("Enviando o vídeo…", "upload");
     const arquivo = await enviarFicheiro(f);
-    cortesAtuais = { arquivo, cortes: [] };
-    $("#cortesLista").innerHTML = ""; $("#cortesMeta").textContent = f.name; $("#btnProduzirCortes").disabled = true;
-    dlgCortes.showModal();
-    const t = await api("/api/cortes", { method: "POST", body: { arquivo, min, max, foco: $("#focoCortes").value.trim() } });
-    const r = await esperarTarefa(t, (passo) => { $("#cortesPasso").textContent = passo ?? ""; });
-    cortesAtuais = r;
-    $("#cortesPasso").textContent = `${r.cortes.length} momentos em ${tempo(r.duracao)} de vídeo`;
-    desenharCortes();
-  } catch (e) { $("#cortesPasso").textContent = ""; toast(e.message, "triangle-alert"); }
+    await iniciarAnalise({ arquivo, nome: f.name, min, max, foco: $("#focoCortes").value.trim() });
+  } catch (e) { toast(e.message, "triangle-alert"); }
   $("#criar").disabled = false;
 }
+
+// ---------- análises de cortes: correm no servidor e aparecem na Produção até serem vistas ----------
+// guardadas no browser (id da tarefa + vídeo), para sobreviverem a fechar a gaveta ou recarregar a página
+let analises = [];
+try { analises = JSON.parse(localStorage.analisesCortes || "[]"); } catch {}
+let analiseNaGaveta = null; // id da análise que a gaveta está a mostrar
+const gravarAnalises = () => { try { localStorage.analisesCortes = JSON.stringify(analises.slice(0, 10)); } catch {} };
+async function iniciarAnalise(a) {
+  const t = await api("/api/cortes", { method: "POST", body: { arquivo: a.arquivo, min: a.min, max: a.max, foco: a.foco } });
+  const nova = { ...a, id: t.id, inicio: Date.now(), estado: "a correr", passo: t.passo };
+  analises = [nova, ...analises.filter((x) => x.arquivo !== a.arquivo)];
+  gravarAnalises();
+  abrirAnalise(nova.id);
+  desenharAnalises();
+}
+function abrirAnalise(id) {
+  const a = analises.find((x) => x.id === id);
+  if (!a) return;
+  analiseNaGaveta = id;
+  $("#cortesMeta").textContent = a.nome;
+  $("#cortesLista").innerHTML = "";
+  $("#btnProduzirCortes").disabled = true;
+  if (!dlgCortes.open) dlgCortes.showModal();
+  if (a.estado === "pronto") return mostrarMomentos(a);
+  $("#cortesPasso").textContent = a.estado === "erro" ? `Falhou: ${a.erro}` : a.passo ?? "";
+}
+async function mostrarMomentos(a) {
+  $("#cortesPasso").textContent = "A carregar os momentos…";
+  // o resultado fica gravado em disco: serve mesmo depois de o painel ser reiniciado
+  const r = a.resultado ?? await api(`/api/cortes?arquivo=${encodeURIComponent(a.arquivo)}`);
+  if (!r?.cortes?.length) { $("#cortesPasso").textContent = "Não encontrei o resultado desta análise. Analise o vídeo de novo."; return; }
+  cortesAtuais = r;
+  $("#cortesPasso").textContent = `${r.cortes.length} momentos em ${tempo(r.duracao)} de vídeo`;
+  desenharCortes();
+}
+async function seguirAnalises() {
+  const vivas = analises.filter((a) => a.estado === "a correr");
+  for (const a of vivas) {
+    let t;
+    try { t = await api(`/api/tarefas/${a.id}`); }
+    catch {
+      // a tarefa já não existe no servidor (painel reiniciado): vê se o resultado chegou a ser gravado
+      const r = await api(`/api/cortes?arquivo=${encodeURIComponent(a.arquivo)}`).catch(() => null);
+      t = r?.cortes?.length && new Date(r.geradoEm).getTime() > a.inicio ? { estado: "pronto", resultado: r }
+        : { estado: "erro", erro: "A análise parou porque o painel foi reiniciado." };
+    }
+    Object.assign(a, { estado: t.estado, passo: t.passo ?? a.passo, erro: t.erro, fim: t.estado !== "a correr" ? Date.now() : undefined });
+    if (t.estado === "pronto") { a.n = t.resultado?.cortes?.length ?? 0; a.duracao = t.resultado?.duracao; a.resultado = t.resultado; }
+    if (analiseNaGaveta === a.id && dlgCortes.open) {
+      if (t.estado === "pronto") mostrarMomentos(a);
+      else $("#cortesPasso").textContent = t.estado === "erro" ? `Falhou: ${t.erro}` : a.passo ?? "";
+    }
+    if (t.estado !== "a correr") avisarAnalise(a);
+  }
+  if (vivas.length) { gravarAnalises(); desenharAnalises(); }
+  return analises.filter((a) => a.estado === "a correr").length;
+}
+function avisarAnalise(a) {
+  if (analiseNaGaveta === a.id && dlgCortes.open) return; // já está a ver
+  const msg = a.estado === "pronto" ? `${a.n} momentos encontrados em ${a.nome}` : `A análise de ${a.nome} falhou`;
+  toast(`${msg}. Veja em Produção.`, a.estado === "pronto" ? "scissors" : "triangle-alert");
+  if (document.hidden && "Notification" in window && Notification.permission === "granted") {
+    new Notification(a.estado === "pronto" ? "Cortes prontos" : "Análise de cortes falhou", { body: msg, icon: "/icones/scissors.svg" });
+  }
+}
+function descartarAnalise(id) {
+  analises = analises.filter((a) => a.id !== id);
+  gravarAnalises();
+  desenharAnalises();
+}
+async function repetirAnalise(id) {
+  const a = analises.find((x) => x.id === id);
+  if (!a) return;
+  try { await iniciarAnalise({ arquivo: a.arquivo, nome: a.nome, min: a.min, max: a.max, foco: a.foco }); }
+  catch (e) { toast(e.message, "triangle-alert"); }
+}
+const decorrido = (ms) => { const s = Math.round(ms / 1000); return s < 60 ? `${s} s` : `${Math.floor(s / 60)} min ${String(s % 60).padStart(2, "0")} s`; };
+function desenharAnalises() {
+  const caixa = $("#analises");
+  caixa.hidden = !analises.length;
+  caixa.innerHTML = analises.map((a) => {
+    const ponto = a.estado === "pronto" ? "ok" : a.estado === "erro" ? "erro" : "vivo";
+    const estado = a.estado === "pronto" ? `${a.n} momentos` : a.estado === "erro" ? "Falhou" : `A analisar · ${decorrido(Date.now() - a.inicio)}`;
+    const id = esc(a.id);
+    return `<div class="job">
+      <div class="job-linha">
+        <div class="job-titulo">${ic("scissors", 15)} ${esc(a.nome)}</div>
+        <span class="meta">Cortes automáticos</span>
+        <span class="estado"><span class="ponto ${ponto}"></span>${estado}</span>
+        ${a.estado === "pronto" ? `<button class="btn primario peq" onclick="abrirAnalise('${id}')">Ver momentos</button>` : ""}
+        ${a.estado === "a correr" ? `<button class="btn peq" onclick="abrirAnalise('${id}')">Abrir</button>` : ""}
+        ${a.estado === "erro" ? `<button class="btn peq" onclick="repetirAnalise('${id}')">${ic("rotate-ccw", 14)}Tentar de novo</button>` : ""}
+        ${a.estado !== "a correr" ? `<button class="btn fantasma icone peq" title="Tirar da lista" aria-label="Tirar da lista" onclick="descartarAnalise('${id}')">${ic("x", 14)}</button>` : ""}
+      </div>
+      ${a.estado === "a correr" ? `<div class="analise-passo">${esc(a.passo ?? "")}</div><div class="barra-viva"><b></b></div>` : ""}
+      ${a.estado === "erro" ? `<div class="analise-passo erro">${esc(a.erro ?? "")}</div>` : ""}
+    </div>`;
+  }).join("");
+}
+// fechar a gaveta não para nada: avisa onde continuar a acompanhar
+dlgCortes.addEventListener("close", () => {
+  const a = analises.find((x) => x.id === analiseNaGaveta);
+  analiseNaGaveta = null;
+  if (a?.estado === "a correr") toast("A análise continua. Acompanhe em Produção.", "scissors");
+});
 function desenharCortes() {
   const src = `/public/${cortesAtuais.arquivo}`;
   $("#cortesLista").innerHTML = cortesAtuais.cortes.map((c, i) => `
@@ -1730,6 +1829,7 @@ async function guardarRoteiro(depoisProduzir) {
   irParaPasso(1);
   desenharIconeTema();
   desenharLado();
+  desenharAnalises();
   irPara(location.hash.slice(1) || "criar", { historico: false });
   // a fila atualiza de 2 em 2 s com o painel à vista; escondido, de 10 em 10 s (chega para os avisos do Windows)
   let ultimaFila = Date.now();

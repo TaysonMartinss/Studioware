@@ -22,7 +22,9 @@ if (existsSync(saida) && JSON.parse(readFileSync(saida, "utf-8")).assinatura ===
 mkdirSync(dirname(saida), { recursive: true });
 
 const correr = (cmd, args) => {
-  const r = spawnSync(cmd, args, { encoding: "utf-8", shell: cmd === "npx" });
+  // com a shell (npx no Windows) os caminhos com espaços ("Tayson Martins") têm de ir entre aspas
+  const shell = cmd === "npx";
+  const r = spawnSync(cmd, shell ? args.map((a) => (/[\s&()^"]/.test(a) ? `"${a}"` : a)) : args, { encoding: "utf-8", shell });
   if (r.status !== 0) throw new Error(`${cmd} falhou: ${(r.stderr || r.stdout || "").slice(-800)}`);
   return r.stdout;
 };

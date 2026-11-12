@@ -10,7 +10,9 @@ const WHISPER_VERSAO = "1.5.5";
 const MODELO = process.env.WHISPER_MODELO ?? "small"; // "medium" é mais preciso em PT, mas ~1.5 GB
 
 const correr = (cmd, args, opcoes = {}) => {
-  const r = spawnSync(cmd, args, { encoding: "utf-8", shell: cmd === "npx", ...opcoes });
+  // com a shell (npx no Windows) os caminhos com espaços ("Tayson Martins") têm de ir entre aspas
+  const shell = cmd === "npx";
+  const r = spawnSync(cmd, shell ? args.map((a) => (/[\s&()^"]/.test(a) ? `"${a}"` : a)) : args, { encoding: "utf-8", shell, ...opcoes });
   if (r.status !== 0) throw new Error(`${cmd} falhou: ${(r.stderr || r.stdout || "").slice(-800)}`);
   return r.stdout;
 };

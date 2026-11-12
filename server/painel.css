@@ -241,6 +241,12 @@ select { appearance: none; background-image: linear-gradient(45deg, transparent 
 .fila { border: 1px solid var(--borda); border-radius: var(--raio-grande); background: var(--painel); }
 .job { padding: 16px 18px; border-bottom: 1px solid var(--borda); }
 .job:last-child { border-bottom: 0; }
+.analises { margin-bottom: 16px; }
+.analise-passo { margin-top: 6px; font-size: 13px; color: var(--suave); }
+.analise-passo.erro { color: var(--erro); }
+.barra-viva { height: 3px; margin-top: 10px; border-radius: 2px; background: var(--elevado); overflow: hidden; }
+.barra-viva b { display: block; height: 100%; width: 30%; background: var(--acento); border-radius: 2px; animation: deslizar 1.6s ease-in-out infinite; }
+@keyframes deslizar { 0% { transform: translateX(-100%); } 100% { transform: translateX(340%); } }
 .job-linha { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .job-titulo { font-weight: 600; flex: 1; min-width: 160px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .meta { color: var(--suave); font-size: 13px; }
