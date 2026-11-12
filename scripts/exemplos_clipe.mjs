@@ -65,8 +65,8 @@ function limpar(exemplos, duracaoS) {
   for (const x of [...(exemplos ?? [])].sort((a, b) => a.inicio - b.inicio)) {
     let ini = Math.max(1.5, Number(x.inicio)), fim = Math.min(duracaoS - 1.5, Number(x.fim));
     if (!Number.isFinite(ini) || !Number.isFinite(fim)) continue;
-    fim = Math.min(fim, ini + 8);
-    if (fim - ini < (x.tipo === "palavras" ? 1.2 : 2)) continue;
+    fim = Math.min(fim, ini + 5); // nada fica mais de 5 s no ecrã
+    if (fim - ini < (["palavras", "numero"].includes(x.tipo) ? 1.2 : 1.8)) continue;
     if (bons.length && ini < bons.at(-1).fimMs / 1000 + 1) continue;
     const item = { inicioMs: Math.round(ini * 1000), fimMs: Math.round(fim * 1000), cheio: true };
     if (x.tipo === "midia" && FONTES.has(x.midia?.fonte) && typeof x.midia?.consulta === "string") {
@@ -77,6 +77,9 @@ function limpar(exemplos, duracaoS) {
       item.midia = { fonte, consulta: x.midia.consulta.slice(0, 120), tipo: x.midia.tipo === "imagem" ? "imagem" : "video" };
       item.layout = "faixa";
       if (typeof x.titulo === "string" && x.titulo.trim()) item.titulo = x.titulo.trim().slice(0, 24);
+    } else if (x.tipo === "numero" && Number.isFinite(Number(x.valor)) && typeof x.texto === "string") {
+      const curto = (v, n) => (typeof v === "string" ? v.slice(0, n) : undefined);
+      item.cena = { tipo: "numero", fala: "", valor: Number(x.valor), prefixo: curto(x.prefixo, 8), sufixo: curto(x.sufixo, 10), texto: x.texto.slice(0, 40), alerta: x.alerta === true };
     } else if (x.tipo === "palavras" && Array.isArray(x.palavras)) {
       const palavras = x.palavras.filter((w) => typeof w === "string" && w.trim()).map((w) => w.trim().slice(0, 18)).slice(0, 4);
       if (!palavras.length) continue;
@@ -93,8 +96,8 @@ function limpar(exemplos, duracaoS) {
     bons.push(item);
   }
   // a pessoa tem de aparecer em pelo menos 40% do corte: corta os últimos exemplos se passar
-  while (bons.length && bons.reduce((t, b) => t + (b.fimMs - b.inicioMs), 0) > duracaoS * 550) bons.pop();
-  return bons.slice(0, 8);
+  while (bons.length && bons.reduce((t, b) => t + (b.fimMs - b.inicioMs), 0) > duracaoS * 600) bons.pop();
+  return bons.slice(0, 12);
 }
 
 let mudou = false;

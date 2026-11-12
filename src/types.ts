@@ -90,7 +90,7 @@ export type CenaClipe = Base & {
   titulo?: string;
   // b-roll: cartão por cima do vídeo, ou (cheio) exemplo de ecrã inteiro com a pessoa num canto e a voz a continuar
   // layout "faixa": a mídia numa faixa 16:9 com título com brilho; cena "palavras": cartaz de palavras gigantes (estes dois cortam seco, sem a pessoa no canto)
-  broll?: { inicioMs: number; fimMs: number; midia?: Midia; cena?: CenaLowPoly | CenaPincel | CenaPalavras; cheio?: boolean; layout?: "faixa"; titulo?: string }[];
+  broll?: { inicioMs: number; fimMs: number; midia?: Midia; cena?: CenaLowPoly | CenaPincel | CenaPalavras | CenaNumero; cheio?: boolean; layout?: "faixa"; titulo?: string }[];
   exemplos?: boolean; // pedir ao Claude exemplos visuais (scripts/exemplos_clipe.mjs)
   exemplosFeitos?: boolean;
   inicio?: number; fim?: number; // momento de um vídeo longo (segundos do original); o script recorta-o

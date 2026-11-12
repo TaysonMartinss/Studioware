@@ -3,6 +3,7 @@ import { Conteudo, MidiaCartao } from "../components/MidiaReal";
 import { LowPolyCena } from "../lowpoly/LowPolyCena";
 import { PincelCena } from "../pincel/PincelCena";
 import { Faixa } from "./Faixa";
+import { Numero } from "./Numero";
 import { Palavras } from "./Palavras";
 import { pop, useFontes, useFrame } from "../components/motion";
 import { useEstilo } from "../estilos";
@@ -72,13 +73,21 @@ type Broll = NonNullable<CenaClipe["broll"]>[number];
 const Exemplo: React.FC<{ b: Broll; cor: string; canto: React.ReactNode }> = ({ b, cor, canto }) => {
   const f = useCurrentFrame();
   const { durationInFrames: d } = useVideoConfig();
-  const entra = interpolate(f, [0, 7], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-  const sai = interpolate(f, [d - 7, d], [1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  // transição leve: 3 frames (quase um corte seco)
+  const entra = interpolate(f, [0, 3], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const sai = interpolate(f, [d - 3, d], [1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
   const o = Math.min(entra, sai);
   const zoom = interpolate(f, [0, d], [1.04, 1.12]);
   const duracaoMs = b.fimMs - b.inicioMs;
   // como nos reels: a faixa de cinema e as palavras gigantes entram em corte seco e tapam a pessoa (a voz continua)
   if (b.layout === "faixa" && b.midia?.arquivo) return <AbsoluteFill><Faixa cena={{ tipo: "faixa", fala: "", midia: b.midia, titulo: b.titulo, duracaoMs }} cor={cor} /></AbsoluteFill>;
+  if (b.cena?.tipo === "numero") {
+    return (
+      <AbsoluteFill style={{ background: `radial-gradient(ellipse 90% 60% at 50% 40%, ${cor}30, transparent 70%), #050507` }}>
+        <Numero cena={{ ...b.cena, duracaoMs, palavras: [] }} cor={cor} />
+      </AbsoluteFill>
+    );
+  }
   if (b.cena?.tipo === "palavras") return <AbsoluteFill><Palavras cena={{ ...b.cena, duracaoMs, palavras: [] }} cor={cor} /></AbsoluteFill>;
   let conteudo: React.ReactNode = null;
   if (b.midia?.arquivo) conteudo = <Conteudo midia={b.midia} estilo={{ width: "100%", height: "100%", objectFit: "cover", transform: `scale(${zoom})` }} />;
@@ -108,11 +117,19 @@ export const Clipe: React.FC<{ cena: CenaClipe; cor: string }> = ({ cena, cor })
   const webcam = enq?.modo === "webcam" && enq.segmentos?.length;
   const horizontal = !seguir && !webcam && (cena.largura ?? 9) > (cena.altura ?? 16);
   const s = pop(f, fps, 3, 14);
-  // frases = palavras até à pontuação final; cada frase nova alterna entre plano normal e plano 8% mais fechado
+  // receita de edição: a imagem muda a cada 3 a 5 s. Novo plano (corte seco para outro zoom) no início de uma frase
+  // ou depois de uma vírgula, se já passaram 2,5 s; à força aos 4,5 s. Dentro do plano, um zoom lento (nunca parado).
   const ms = (f / fps) * 1000;
-  const inicios = (cena.palavras ?? []).filter((p, k, arr) => k === 0 || /[.!?]$/.test(arr[k - 1].texto)).map((p) => p.inicioMs);
-  const frase = inicios.filter((t) => t <= ms).length;
-  const zoom = frase % 2 === 0 ? 1.08 : 1;
+  const ws = cena.palavras ?? [];
+  const cortes = [0];
+  ws.forEach((p, k) => {
+    const desde = p.inicioMs - cortes[cortes.length - 1];
+    const pausa = k > 0 && /[.!?,;:]$/.test(ws[k - 1].texto);
+    if ((pausa && desde >= 2500) || desde >= 4500) cortes.push(p.inicioMs);
+  });
+  const plano = cortes.filter((t) => t <= ms).length - 1;
+  const ZOOMS = [1, 1.14, 1.06, 1.18];
+  const zoom = ZOOMS[plano % ZOOMS.length] * (1 + Math.min((ms - cortes[plano]) / 1000, 5) * 0.004);
 
   return (
     <AbsoluteFill>
