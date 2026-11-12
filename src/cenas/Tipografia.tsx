@@ -1,5 +1,6 @@
 import { AbsoluteFill, Easing, Sequence, interpolate, random, useVideoConfig } from "remotion";
 import { Sfx } from "../components/Sfx";
+import { Decoracoes } from "./Decoracoes";
 import { Conteudo } from "../components/MidiaReal";
 import { FONTES, normalizar, pop, useFrame } from "../components/motion";
 import { useEstilo } from "../estilos";
@@ -99,7 +100,10 @@ export const Tipografia: React.FC<{ cena: CenaTipografia; cor: string; destaques
         <div style={{
           position: "absolute", left: -L * 0.7, right: -L * 0.7, top: -A * 0.7, bottom: -A * 0.7, transform: "translateZ(-520px)",
           backgroundColor: e.fundo, backgroundImage: "linear-gradient(#0000002e 2px, transparent 2px), linear-gradient(90deg, #0000002e 2px, transparent 2px)", backgroundSize: "60px 60px",
+          filter: "blur(1.2px)", // profundidade de campo: o fundo fica ligeiramente desfocado
         }} />
+        {/* elementos decorativos (formas, setas, códigos de barras, textos) a várias profundidades, com desfoque */}
+        <Decoracoes bloco={indice} inicio={iniBloco} f={f} fps={fps} L={L} A={A} tinta={e.corTexto} cor={cor} evitar={[topoTexto - 40, topoTexto + 520]} />
         {/* camada do objeto: à frente do texto */}
         {temObjeto && (
           <div style={{ position: "absolute", left: L * 0.14, width: L * 0.72, top: topoObjeto, height: A * 0.42, transform: `translateZ(180px) translateY(${flutua}px) rotate(${Math.sin(f / 40) * 3}deg)`, filter: "drop-shadow(0 40px 40px #0000004d)" }}>
