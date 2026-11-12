@@ -19,7 +19,7 @@ const Recorte: React.FC<{ src: string; vl: number; va: number; r: Retangulo; cai
   );
 };
 
-const DESVANECER = 160; // px em que a base da webcam se funde com a gameplay
+const DESVANECER = 100; // px em que a base da webcam se funde com a gameplay
 // Gameplay com webcam: a webcam em cima e o jogo ao centro em baixo (o recorte do jogo foge da webcam, até 20% da largura)
 const Dividido: React.FC<{ src: string; enq: NonNullable<CenaClipe["enquadramento"]>; f: number; fps: number; L: number; A: number; zoom: number }> = ({ src, enq, f, fps, L, A, zoom }) => {
   const segs = enq.segmentos ?? [];
@@ -58,7 +58,7 @@ const Dividido: React.FC<{ src: string; enq: NonNullable<CenaClipe["enquadrament
       {/* o jogo começa por baixo da webcam e a webcam desvanece por cima dele: sem divisão seca entre os dois */}
       <Recorte src={src} vl={vl} va={va} r={[jx, 0, jw, va]} caixa={{ top: hc - DESVANECER, altura: hj + DESVANECER, largura: L }} zoom={zoom} />
       <Recorte src={src} vl={vl} va={va} r={seg.cam} caixa={{ top: 0, altura: hc, largura: L }} mudo
-        mascara={`linear-gradient(180deg, #000 0, #000 ${hc - DESVANECER}px, rgba(0,0,0,.55) ${hc - DESVANECER / 2}px, transparent ${hc}px)`} />
+        mascara={`linear-gradient(180deg, #000 0, #000 ${hc - DESVANECER}px, rgba(0,0,0,.8) ${hc - DESVANECER / 2}px, transparent ${hc}px)`} />
     </>
   );
 };
