@@ -1,5 +1,7 @@
-import { AbsoluteFill, OffthreadVideo, Sequence, staticFile, useVideoConfig } from "remotion";
-import { MidiaCartao } from "../components/MidiaReal";
+import { AbsoluteFill, OffthreadVideo, Sequence, interpolate, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
+import { Conteudo, MidiaCartao } from "../components/MidiaReal";
+import { LowPolyCena } from "../lowpoly/LowPolyCena";
+import { PincelCena } from "../pincel/PincelCena";
 import { pop, useFontes, useFrame } from "../components/motion";
 import { useEstilo } from "../estilos";
 import { CenaClipe } from "../types";
@@ -63,6 +65,31 @@ const Dividido: React.FC<{ src: string; enq: NonNullable<CenaClipe["enquadrament
   );
 };
 
+// Exemplo visual de ecrã inteiro por cima da fala (vídeo/foto, low poly ou pincel); a pessoa fica num canto
+type Broll = NonNullable<CenaClipe["broll"]>[number];
+const Exemplo: React.FC<{ b: Broll; cor: string; canto: React.ReactNode }> = ({ b, cor, canto }) => {
+  const f = useCurrentFrame();
+  const { durationInFrames: d } = useVideoConfig();
+  const entra = interpolate(f, [0, 7], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const sai = interpolate(f, [d - 7, d], [1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const o = Math.min(entra, sai);
+  const zoom = interpolate(f, [0, d], [1.04, 1.12]);
+  const duracaoMs = b.fimMs - b.inicioMs;
+  let conteudo: React.ReactNode = null;
+  if (b.midia?.arquivo) conteudo = <Conteudo midia={b.midia} estilo={{ width: "100%", height: "100%", objectFit: "cover", transform: `scale(${zoom})` }} />;
+  else if (b.cena?.tipo === "lowpoly") conteudo = <LowPolyCena cena={{ ...b.cena, duracaoMs, palavras: [] }} cor={cor} />;
+  else if (b.cena?.tipo === "pincel") conteudo = <PincelCena cena={{ ...b.cena, duracaoMs, palavras: [] }} cor={cor} />;
+  if (!conteudo) return null; // a mídia não se descarregou: fica a pessoa
+  return (
+    <AbsoluteFill style={{ opacity: o }}>
+      <AbsoluteFill style={{ background: "#000", overflow: "hidden", transform: `scale(${1.03 - 0.03 * entra})` }}>{conteudo}</AbsoluteFill>
+      <div style={{ position: "absolute", left: 40, top: 1480, width: 270, height: 350, borderRadius: 28, overflow: "hidden", border: `5px solid ${cor}`, boxShadow: "0 18px 40px #000a", transform: `scale(${0.85 + 0.15 * entra})`, transformOrigin: "0% 100%" }}>
+        {canto}
+      </div>
+    </AbsoluteFill>
+  );
+};
+
 // Vídeo gravado por si (já cortado pelo Auto-Editor). Vertical ocupa o ecrã todo; horizontal fica ao centro com fundo desfocado.
 export const Clipe: React.FC<{ cena: CenaClipe; cor: string }> = ({ cena, cor }) => {
   const f = useFrame();
@@ -115,9 +142,21 @@ export const Clipe: React.FC<{ cena: CenaClipe; cor: string }> = ({ cena, cor })
       )}
       {(cena.broll ?? []).map((b, i) => {
         const ini = Math.round((b.inicioMs / 1000) * fps);
+        if (b.cheio) {
+          // a pessoa no canto: o mesmo recorte do enquadramento (o rosto), sem som (a voz vem do vídeo principal)
+          const vl = enq?.largura ?? cena.largura ?? 1080, va = enq?.altura ?? cena.altura ?? 1920;
+          const k = Math.min(enq?.xs?.length ? enq.xs.length - 1 : 0, Math.max(0, Math.round((f / fps) * (enq?.fps ?? fps))));
+          const cw = Math.min(vl, va * (270 / 350));
+          const r: Retangulo = seguir ? [enq!.xs![k], 0, enq!.cropLargura!, va] : [vl / 2 - cw / 2, 0, cw, va];
+          return (
+            <Sequence key={i} from={ini} durationInFrames={Math.max(1, Math.round(((b.fimMs - b.inicioMs) / 1000) * fps))} layout="none">
+              <Exemplo b={b} cor={cor} canto={<Recorte src={src} vl={vl} va={va} r={r} caixa={{ top: 0, altura: 350, largura: 270 }} mudo />} />
+            </Sequence>
+          );
+        }
         return (
           <Sequence key={i} from={ini} durationInFrames={Math.max(1, Math.round(((b.fimMs - b.inicioMs) / 1000) * fps))} layout="none">
-            <MidiaCartao midia={b.midia} cor={cor} top={300} altura={760} atraso={0} />
+            <MidiaCartao midia={b.midia!} cor={cor} top={300} altura={760} atraso={0} />
           </Sequence>
         );
       })}

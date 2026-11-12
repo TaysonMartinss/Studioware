@@ -72,6 +72,12 @@ roteiros.forEach((r) => correr("python", ["scripts/buscar_midia.py", r])); // s�
 roteiros.forEach((r) => correr("python", ["scripts/manim_cenas.py", r])); // só renderiza o que mudou
 console.log("[etapa] clipes");
 roteiros.forEach((r) => correr(process.execPath, ["scripts/transcrever.mjs", r]));
+// cortes de pessoa a falar: exemplos visuais por cima da fala (o Claude escolhe; só quando a cena pede "exemplos")
+roteiros.forEach((r) => {
+  if (!JSON.parse(readFileSync(r, "utf-8")).cenas.some((c) => c.tipo === "clipe" && c.exemplos && !c.exemplosFeitos)) return;
+  correr(process.execPath, ["scripts/exemplos_clipe.mjs", r]);
+  correr("python", ["scripts/buscar_midia.py", r]);
+});
 
 console.log("[etapa] narracao");
 roteiros.forEach((r, i) => {

@@ -88,7 +88,10 @@ export type CenaClipe = Base & {
   cortar?: boolean; // cortar silêncios (padrão: sim)
   margem?: number; // segundos mantidos à volta da fala
   titulo?: string;
-  broll?: { inicioMs: number; fimMs: number; midia: Midia }[];
+  // b-roll: cartão por cima do vídeo, ou (cheio) exemplo de ecrã inteiro com a pessoa num canto e a voz a continuar
+  broll?: { inicioMs: number; fimMs: number; midia?: Midia; cena?: CenaLowPoly | CenaPincel; cheio?: boolean }[];
+  exemplos?: boolean; // pedir ao Claude exemplos visuais (scripts/exemplos_clipe.mjs)
+  exemplosFeitos?: boolean;
   inicio?: number; fim?: number; // momento de um vídeo longo (segundos do original); o script recorta-o
   enquadrar?: boolean; // vídeo horizontal: seguir o rosto no vertical (padrão: sim)
   // preenchidos pelo script

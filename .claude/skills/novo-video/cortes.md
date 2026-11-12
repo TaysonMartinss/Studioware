@@ -37,3 +37,10 @@ Formato:
 ```json
 {"cortes": [{"inicio": 123.4, "fim": 161.0, "janela": "j3", "nota": 87, "gancho": "...", "titulo": "...", "motivo": "...", "legenda_post": "...", "palavras_chave": [{"palavra": "...", "emoji": "..."}]}]}
 ```
+
+## Exemplos visuais (podcasts e vídeos só de conversa)
+
+Com "Exemplos visuais por cima da fala" ligado, cada Short produzido passa por `scripts/exemplos_clipe.mjs` depois de cortado:
+o Claude lê a fala (guia `exemplos-clipe.md`) e escolhe 2 a 5 momentos para mostrar um vídeo/foto real, uma cena low poly
+ou uma ilustração a pincel em ecrã inteiro, com a pessoa num canto e a voz a continuar. Gameplay com webcam e vídeos
+que já mostram o que se diz ficam sem exemplos. Gasta uma chamada ao Claude por Short.

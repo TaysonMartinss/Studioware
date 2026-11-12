@@ -993,7 +993,7 @@ const rotas = async (req, res) => {
         id: videoId, titulo, formato: "clipe", estilo: d.estilo ?? "hormozi", musica: d.musica ?? "auto",
         ...(canalDe(d.canal) === "nenhum" ? { marcaDagua: false } : canalDe(d.canal) && { canal: d.canal }),
         destaques: [], emojis, legenda_post: x.legenda_post, nota: x.nota,
-        cenas: [{ tipo: "clipe", bruto: d.arquivo, inicio: x.inicio, fim: x.fim, fala: "", titulo: d.gancho === false ? undefined : x.gancho, cortar: d.cortar !== false, enquadrar: d.enquadrar !== false }],
+        cenas: [{ tipo: "clipe", bruto: d.arquivo, inicio: x.inicio, fim: x.fim, fala: "", titulo: d.gancho === false ? undefined : x.gancho, cortar: d.cortar !== false, enquadrar: d.enquadrar !== false, exemplos: d.exemplos !== false }],
       }, null, 2));
       const job = novoJob({ tipo: "render", formato: "clipe", videoId, tema: titulo, estilo: d.estilo, narracao: "clipe" });
       produzir(job);
@@ -1024,7 +1024,7 @@ const rotas = async (req, res) => {
         id: videoId, titulo: d.tema.trim(), formato: "clipe", estilo: d.estilo ?? "hormozi", musica: d.musica ?? "auto",
         ...(canalDe(d.canal) === "nenhum" ? { marcaDagua: false } : canalDe(d.canal) && { canal: d.canal }),
         destaques: (d.destaques ?? "").split(",").map((x) => x.trim()).filter(Boolean),
-        cenas: arquivos.map((a) => ({ tipo: "clipe", bruto: a, fala: "", cortar: d.cortar !== false })),
+        cenas: arquivos.map((a) => ({ tipo: "clipe", bruto: a, fala: "", cortar: d.cortar !== false, enquadrar: d.enquadrar !== false, exemplos: d.exemplos === true })),
       }, null, 2));
       const job = novoJob({ tipo: "render", formato: "clipe", videoId, tema: d.tema.trim(), estilo: d.estilo, narracao: "clipe" });
       produzir(job);
