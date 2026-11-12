@@ -42,9 +42,12 @@ export function criarCortes({ raiz, claudeJSON }) {
   };
 
   // encaixa os tempos nas frases (nunca a meio de uma palavra)
+  // (o limite de frase mais próximo se estiver a menos de 3 s; senão a palavra mais próxima, para transcrições sem pontuação)
+  const perto = (lista, t) => lista.reduce((m, v) => (Math.abs(v - t) < Math.abs(m - t) ? v : m), lista[0]);
   const encaixar = (tr, c, min, max) => {
-    const ini = tr.frases.reduce((m, f) => (Math.abs(f.inicio - c.inicio) < Math.abs(m - c.inicio) ? f.inicio : m), tr.frases[0].inicio);
-    let fim = tr.frases.reduce((m, f) => (Math.abs(f.fim - c.fim) < Math.abs(m - c.fim) ? f.fim : m), tr.frases.at(-1).fim);
+    const noLimite = (frases, palavras, t) => { const f = perto(frases, t); return Math.abs(f - t) <= 3 || !palavras.length ? f : perto(palavras, t); };
+    const ini = noLimite(tr.frases.map((f) => f.inicio), (tr.palavras ?? []).map((p) => p.s), c.inicio);
+    let fim = noLimite(tr.frases.map((f) => f.fim), (tr.palavras ?? []).map((p) => p.e), c.fim);
     if (fim - ini < min) fim = Math.min(tr.duracao, ini + min);
     if (fim - ini > max + 5) fim = ini + max;
     return { inicio: Math.max(0, ini - 0.15), fim: Math.min(tr.duracao, fim + 0.3) };
@@ -56,7 +59,8 @@ export function criarCortes({ raiz, claudeJSON }) {
     mkdirSync(pasta(arquivo), { recursive: true });
     t.passo = "🎧 Transcrevendo o vídeo (a primeira vez demora)…";
     const tr = await transcrever(t, arquivo);
-    if (tr.duracao < 45 || tr.frases.length < 5) throw new Error("O vídeo é curto ou tem pouca fala para escolher cortes (use o modo de clipe normal)");
+    if (tr.duracao < 45) throw new Error(`O vídeo tem só ${Math.round(tr.duracao)} s: é curto para cortes (use o modo de clipe normal)`);
+    if (tr.palavras.length < 60) throw new Error(`A transcrição só achou ${tr.palavras.length} palavras: o vídeo tem pouca fala para escolher cortes`);
     const min = Math.max(10, Number(d.min) || 20), max = Math.max(min + 5, Number(d.max) || 60);
     const js = janelas(tr);
 

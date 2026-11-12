@@ -14,9 +14,30 @@ const [video, saida] = process.argv.slice(2);
 const idioma = process.argv.includes("--idioma") ? process.argv[process.argv.indexOf("--idioma") + 1] : "pt";
 if (!video || !saida) { console.error("uso: node scripts/transcrever_longo.mjs <video> <saida.json>"); process.exit(1); }
 
+// frases: acabam na pontuação final ou numa pausa de mais de 0,8 s. O Whisper às vezes devolve tudo sem pontuação
+// e com os tempos colados (uma "frase" de 12 min): depois de 8 s fecha numa vírgula ou pausa curta, e aos 15 s à força.
+function fazerFrases(palavras) {
+  const frases = [];
+  let atual = [];
+  palavras.forEach((p, i) => {
+    atual.push(p);
+    const prox = palavras[i + 1];
+    const dur = p.e - atual[0].s, pausa = prox ? prox.s - p.e : 0;
+    if (!prox || /[.!?]$/.test(p.w) || pausa > 0.8 || (dur > 8 && (/[,;:]$/.test(p.w) || pausa > 0.25)) || dur > 15) {
+      frases.push({ inicio: atual[0].s, fim: atual.at(-1).e, texto: atual.map((x) => x.w).join(" ") });
+      atual = [];
+    }
+  });
+  return frases;
+}
+
 const assinatura = `${statSync(video).size}-${statSync(video).mtimeMs}-${MODELO}`;
 if (existsSync(saida) && JSON.parse(readFileSync(saida, "utf-8")).assinatura === assinatura) {
-  console.log("transcrição em cache");
+  // refaz as frases a partir das palavras guardadas (a regra das frases pode ter mudado)
+  const cache = JSON.parse(readFileSync(saida, "utf-8"));
+  cache.frases = fazerFrases(cache.palavras);
+  writeFileSync(saida, JSON.stringify(cache));
+  console.log(`transcrição em cache (${cache.frases.length} frases)`);
   process.exit(0);
 }
 mkdirSync(dirname(saida), { recursive: true });
@@ -56,16 +77,6 @@ for (let i = 0, dentro = false; i < palavras.length; ) {
   const fecha = w.endsWith("]");
   if (dentro) { palavras.splice(i, 1); if (fecha) dentro = false; } else i++;
 }
-// frases: acabam na pontuação final ou numa pausa de mais de 0,8 s
-const frases = [];
-let atual = [];
-palavras.forEach((p, i) => {
-  atual.push(p);
-  const prox = palavras[i + 1];
-  if (!prox || /[.!?]$/.test(p.w) || prox.s - p.e > 0.8) {
-    frases.push({ inicio: atual[0].s, fim: atual.at(-1).e, texto: atual.map((x) => x.w).join(" ") });
-    atual = [];
-  }
-});
+const frases = fazerFrases(palavras);
 writeFileSync(saida, JSON.stringify({ assinatura, duracao, idioma, palavras, frases }));
 console.log(`✔ ${palavras.length} palavras, ${frases.length} frases`);
