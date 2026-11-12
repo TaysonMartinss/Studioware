@@ -47,6 +47,8 @@
       <div class="cabeca-pagina">
         <div><h1>Criar vídeo</h1><p class="sub">Em três passos: o vídeo, o visual e a voz, e uma revisão antes de criar.</p></div>
       </div>
+      <div class="criar-layout">
+      <div class="criar-principal">
       <ol class="passos" id="passos">
         <li data-p="1"><button type="button" onclick="irParaPasso(1)"><b>1</b><span>O vídeo</span></button></li>
         <li data-p="2"><button type="button" onclick="irParaPasso(2)"><b>2</b><span>Visual e voz</span></button></li>
@@ -179,6 +181,24 @@
         <span class="meta" id="dicaAtalho">Ctrl+Enter cria o vídeo</span>
         <button class="btn primario" id="btnContinuar" onclick="continuarPasso()">Continuar<i class="i" style="--u:url(/icones/arrow-right.svg)"></i></button>
         <button class="btn primario" id="criar" title="Criar (Ctrl+Enter)" onclick="criarDoAssistente()" hidden><i class="i" style="--u:url(/icones/sparkles.svg)"></i><span id="textoCriar">Criar roteiro</span></button>
+      </div>
+      </div>
+
+      <!-- coluna da direita (ecrãs largos): o contexto do vídeo, atualizado enquanto se preenche -->
+      <aside class="criar-lado" aria-label="Resumo do vídeo">
+        <section class="superficie lado-canal">
+          <img id="ladoLogo" class="canal-logo" alt="">
+          <div><span class="meta">A criar para</span><b id="ladoCanal"></b><small id="ladoNicho"></small></div>
+        </section>
+        <section class="superficie lado-estilo">
+          <img id="ladoEstiloImg" alt="">
+          <div><span class="meta">Estilo</span><b id="ladoEstilo"></b><small id="ladoEstiloDesc"></small></div>
+        </section>
+        <section class="superficie">
+          <h2 class="titulo-superficie">O seu vídeo</h2>
+          <dl class="resumo resumo-lado" id="resumoLado"></dl>
+        </section>
+      </aside>
       </div>
     </section>
 

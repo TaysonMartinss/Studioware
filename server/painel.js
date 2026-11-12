@@ -141,7 +141,7 @@ function irParaPasso(n) {
 function continuarPasso() { irParaPasso(passoAtual + 1); }
 
 const NOMES_ORIGEM = { ia: "Novo vídeo com IA", cortes: "Cortes de vídeo longo", clipes: "Meus clipes", outraia: "Roteiro de outra IA" };
-function desenharResumo() {
+function linhasResumo() {
   const canal = OPCOES.canais?.[$("#canal").value];
   const clipe = origem === "clipes" || origem === "cortes";
   const voz = $("#voz").selectedOptions[0]?.textContent ?? "";
@@ -156,10 +156,38 @@ function desenharResumo() {
     !clipe && ["Narração", `${{ edge: "Voz grátis", elevenlabs: "ElevenLabs", chatterbox: "Chatterbox" }[estado.narracao]}${voz ? ` · ${voz}` : ""}`],
     ["Música", $("#musica").selectedOptions[0]?.textContent ?? "Automática"],
   ].filter(Boolean);
-  $("#resumo").innerHTML = linhas.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v || "—")}</dd></div>`).join("");
+  return linhas;
+}
+const htmlResumo = (linhas) => linhas.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v || "—")}</dd></div>`).join("");
+function desenharResumo() {
+  $("#resumo").innerHTML = htmlResumo(linhasResumo());
   const ligadas = ["lowpoly", "editorChefe", "revisaoVisual", "revisar"].filter((id) => $(`#${id}`).checked && !$(`#${id}`).closest(".campo").hidden).length;
   $("#resumoAvancado").textContent = `${ligadas} ${ligadas === 1 ? "ativa" : "ativas"}`;
 }
+// coluna da direita: canal, estilo e resumo, sempre atualizados (só aparece em ecrãs largos)
+let ladoPendente = false;
+function desenharLado() {
+  if (ladoPendente) return;
+  ladoPendente = true;
+  requestAnimationFrame(() => {
+    ladoPendente = false;
+    if (!OPCOES.estilos) return;
+    const canal = OPCOES.canais?.[$("#canal").value];
+    $("#ladoLogo").hidden = !canal;
+    if (canal) { $("#ladoLogo").src = `/public/${canal.logo}`; $("#ladoLogo").style.imageRendering = canal.pixelado ? "pixelated" : "auto"; }
+    $("#ladoCanal").textContent = canal ? `${canal.nome}` : "Sem marca d'água";
+    $("#ladoNicho").textContent = canal ? canal.nicho || "Sem nicho definido: as ideias e o roteiro ficam genéricos." : "O vídeo sai sem logo nem @.";
+    const e = OPCOES.estilos[estado.estilo];
+    $("#ladoEstiloImg").src = `/miniaturas/${estado.estilo}.jpg`;
+    $("#ladoEstilo").textContent = e?.nome ?? estado.estilo;
+    $("#ladoEstiloDesc").textContent = e?.descricao ?? "";
+    // o canal e o estilo já têm cartão próprio: o resumo mostra o resto
+    $("#resumoLado").innerHTML = htmlResumo(linhasResumo().filter(([k]) => k !== "Canal" && k !== "Estilo"));
+  });
+}
+// qualquer mudança no formulário (cliques, texto, escolhas) atualiza a coluna
+["input", "change", "click"].forEach((ev) => $("#vista-criar").addEventListener(ev, desenharLado));
+
 function criarDoAssistente() {
   if (!passoValido(1)) return irParaPasso(1);
   if (origem === "outraia") return abrirOutraIA();
@@ -173,6 +201,7 @@ function mudouCanal() {
   if (vista === "ideias") abrirIdeias();
   if (vista === "canais") desenharListaCanais();
   if (passoAtual === 3) desenharResumo();
+  desenharLado();
 }
 
 // biblioteca: procurar pelo título
@@ -1642,6 +1671,7 @@ async function guardarRoteiro(depoisProduzir) {
   escolherOrigem("ia");
   irParaPasso(1);
   desenharIconeTema();
+  desenharLado();
   irPara(location.hash.slice(1) || "criar", { historico: false });
   // a fila atualiza de 2 em 2 s com o painel à vista; escondido, de 10 em 10 s (chega para os avisos do Windows)
   let ultimaFila = Date.now();
