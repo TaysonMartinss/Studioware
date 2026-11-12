@@ -33,7 +33,7 @@ const FORMATOS = [
   ["animado", "clapperboard", "E se? animado", "Animação 3D low poly, sem fotos", "A pergunta \"E se…?\"", "Ex.: E se você pudesse voltar dez segundos no tempo?"],
   ["storytelling", "clapperboard", "Storytelling de venda", "História que termina na compra de um produto", "O que quer vender e a quem", "Ex.: filtro de linha para quem tem PC gamer, mostrando o risco de um pico de energia"],
   ["ranking", "list-ordered", "Ranking", "Os melhores produtos com preço", "Tema do ranking", "Ex.: 3 melhores monitores 144 Hz até R$ 1.500"],
-  ["curiosidades", "lightbulb", "Curiosidades", "Factos do mundo gamer com imagens reais", "Tema", "Ex.: segredos escondidos em jogos da Nintendo"],
+  ["curiosidades", "lightbulb", "Curiosidades", "Fatos do mundo gamer com imagens reais", "Tema", "Ex.: segredos escondidos em jogos da Nintendo"],
   ["explicativo", "chart-column", "Explicativo", "Gráficos, linha do tempo e animações", "Pergunta a explicar", "Ex.: porque é que as placas de vídeo ficaram tão caras?"],
   ["longo", "monitor-play", "Vídeo longo (YouTube)", "5 a 10 min em 16:9, com capítulos e cortes para Shorts", "Tema do vídeo", "Ex.: a história da Nvidia, da quase falência à empresa mais valiosa do mundo"],
   ["clipe", "film", "Os meus clipes", "Cortes automáticos e legendas", "Título do vídeo", "Ex.: montei o meu PC gamer"],
@@ -137,15 +137,15 @@ function desenharBiblioteca() {
       <b>Importar da YouTube Audio Library</b>
       <ol>
         <li>Abra o <a href="https://studio.youtube.com/" target="_blank" rel="noopener">YouTube Studio</a> e vá a <b>Audio Library</b> no menu da esquerda.</li>
-        <li>Filtre por <b>Attribution not required</b> e pelo clima que procura (tabela abaixo). Clique em descarregar.</li>
-        <li>Arraste aqui os MP3. O título e o artista vêm do nome do ficheiro, o clima é sugerido pela análise do som e o volume é normalizado.</li>
+        <li>Filtre por <b>Attribution not required</b> e pelo clima que procura (tabela abaixo). Clique em baixar.</li>
+        <li>Arraste aqui os MP3. O título e o artista vêm do nome do arquivo, o clima é sugerido pela análise do som e o volume é normalizado.</li>
       </ol>
       <table class="tabela"><tr><th>Clima aqui</th><th>Mood no YouTube</th><th>Género</th></tr>
         ${DE_YOUTUBE.map(([k, mood, genero]) => `<tr><td>${esc(MUSICAS.climas[k])}</td><td>${mood}</td><td>${genero}</td></tr>`).join("")}</table>
       <div class="dica" style="margin-top:8px">Se a faixa pedir atribuição, cole o texto em "Crédito": aparece no vídeo pronto, para copiar para a descrição.</div>
     </div>
     <label class="zona-ficheiros" id="zonaMusica" style="margin-top:14px">
-      ${ic("upload", 20)}<div style="margin-top:6px">Arraste ou escolha os ficheiros de áudio</div>
+      ${ic("upload", 20)}<div style="margin-top:6px">Arraste ou escolha os arquivos de áudio</div>
       <input type="file" id="ficheirosMusica" accept="audio/*" multiple>
     </label>
     <div class="linha" style="margin-top:8px"><label class="rotulo" style="margin:0;white-space:nowrap">Clima das faixas novas</label>
@@ -175,7 +175,7 @@ function desenharBiblioteca() {
 }
 async function importarFaixas(ficheiros) {
   ficheiros = ficheiros.filter((f) => /\.(mp3|wav|m4a|ogg)$/i.test(f.name));
-  if (!ficheiros.length) return toast("Escolha ficheiros de áudio (mp3, wav, m4a, ogg)", "triangle-alert");
+  if (!ficheiros.length) return toast("Escolha arquivos de áudio (mp3, wav, m4a, ogg)", "triangle-alert");
   const fila = $("#filaImportar");
   fila.innerHTML = ficheiros.map((f, i) => `<div class="meta" id="imp${i}">${ic("loader", 12)} ${esc(f.name)}</div>`).join("");
   const clima = $("#climaImportar").value;
@@ -251,8 +251,8 @@ function desenharAuto() {
       <div class="campo"><label class="interruptor"><span>Animação 3D low poly em vez de fotos</span><input type="checkbox" data-a="lowpoly" ${c.lowpoly ? "checked" : ""}></label></div>
       <div class="campo"><label class="interruptor"><span>Publicar no YouTube (agendado)</span><input type="checkbox" data-a="publicarYoutube" ${c.publicarYoutube ? "checked" : ""}></label></div>
       <div class="linha" style="justify-content:space-between">
-        <span class="meta">${ligado ? `${ic("check", 14)} YouTube: ${esc(ligado.titulo)}` : yt.configurado ? "YouTube não ligado" : "Faltam as credenciais da Google (Chaves de API)"}</span>
-        ${ligado ? `<button class="btn fantasma peq" onclick="desligarYoutube('${id}')">Desligar</button>` : `<button class="btn peq" onclick="ligarYoutube('${id}')">${ic("upload", 14)}${yt.configurado ? "Ligar YouTube" : "Configurar YouTube"}</button>`}
+        <span class="meta">${ligado ? `${ic("check", 14)} YouTube: ${esc(ligado.titulo)}` : yt.configurado ? "YouTube não conectado" : "Faltam as credenciais da Google (Chaves de API)"}</span>
+        ${ligado ? `<button class="btn fantasma peq" onclick="desligarYoutube('${id}')">Desligar</button>` : `<button class="btn peq" onclick="ligarYoutube('${id}')">${ic("upload", 14)}${yt.configurado ? "Conectar YouTube" : "Configurar YouTube"}</button>`}
       </div>
     </div>`;
   }).join("");
@@ -262,11 +262,11 @@ function desenharAuto() {
     </div>`).join("") || '<div class="meta">Ainda não correu.</div>';
   $("#autoCorpo").innerHTML = `
     <div class="caixa-info">
-      <label class="interruptor" style="margin:0"><span><b>Ligar o modo automático</b></span><input type="checkbox" id="autoAtivo" ${cfg.ativo ? "checked" : ""}></label>
+      <label class="interruptor" style="margin:0"><span><b>Ativar o modo automático</b></span><input type="checkbox" id="autoAtivo" ${cfg.ativo ? "checked" : ""}></label>
       <div class="campo" style="margin-top:10px"><label class="rotulo">Corre todos os dias às</label><input type="time" id="autoHora" value="${cfg.hora}" style="width:120px"></div>
       <div class="dica">Para cada canal ativo: pesquisa os assuntos do momento, escolhe os melhores, escreve e produz cada vídeo (com o editor-chefe e a revisão visual) e agenda-o no YouTube para os horários do canal. Não publica vídeos com erros por resolver nem com problemas graves na revisão visual. O PC tem de estar ligado e o painel aberto; se estiver desligado à hora marcada, corre quando o painel abrir.</div>
       <div class="dica">Enquanto o projeto da Google não passar a auditoria do YouTube, os vídeos enviados pela API ficam privados: aparecem agendados no YouTube Studio, mas tem de os tornar públicos à mão.</div>
-      ${est.aCorrer ? `<div class="linha" style="margin-top:8px;color:var(--acento)">${ic("loader", 14)}${esc(est.passo || "A correr…")}</div>` : cfg.ultimaExecucao ? `<div class="meta" style="margin-top:8px">Última execução: ${esc(cfg.ultimaExecucao)}</div>` : ""}
+      ${est.aCorrer ? `<div class="linha" style="margin-top:8px;color:var(--acento)">${ic("loader", 14)}${esc(est.passo || "Rodando…")}</div>` : cfg.ultimaExecucao ? `<div class="meta" style="margin-top:8px">Última execução: ${esc(cfg.ultimaExecucao)}</div>` : ""}
     </div>
     ${canaisHtml}
     <div class="caixa-info" style="margin-top:12px"><b>Histórico</b>${hist}</div>`;
@@ -286,7 +286,7 @@ function lerAuto() {
 async function guardarAuto() {
   try {
     await api("/api/automatico", { method: "PUT", body: lerAuto() });
-    toast($("#autoAtivo").checked ? `Modo automático ligado: corre todos os dias às ${$("#autoHora").value}` : "Modo automático desligado", "check");
+    toast($("#autoAtivo").checked ? `Modo automático ativado: roda todos os dias às ${$("#autoHora").value}` : "Modo automático desligado", "check");
     atualizarSeloAuto(); dlgAuto.close();
   } catch (e) { toast(e.message, "triangle-alert"); }
 }
@@ -295,7 +295,7 @@ async function correrAutoAgora() {
   try {
     await api("/api/automatico", { method: "PUT", body: lerAuto() });
     await api("/api/automatico/correr", { method: "POST" });
-    toast("Modo automático a correr", "play");
+    toast("Modo automático rodando", "play");
     setTimeout(carregarAuto, 1500);
     atualizarJobs();
   } catch (e) { toast(e.message, "triangle-alert"); }
@@ -315,18 +315,18 @@ async function ligarYoutube(canal) {
     toast("Autorize na janela da Google e escolha o canal do YouTube. Depois volte aqui.", "external-link");
     const vigia = setInterval(async () => {
       const d = await api("/api/automatico").catch(() => null);
-      if (d?.youtube.canais[canal]) { clearInterval(vigia); autoDados = d; desenharAuto(); toast(`YouTube ligado: ${d.youtube.canais[canal].titulo}`, "check"); }
+      if (d?.youtube.canais[canal]) { clearInterval(vigia); autoDados = d; desenharAuto(); toast(`YouTube conectado: ${d.youtube.canais[canal].titulo}`, "check"); }
     }, 3000);
     setTimeout(() => clearInterval(vigia), 5 * 60 * 1000);
   } catch (e) { toast(e.message, "triangle-alert"); }
 }
 async function desligarYoutube(canal) {
-  if (!confirm("Desligar este canal do YouTube?")) return;
+  if (!confirm("Desconectar este canal do YouTube?")) return;
   await api("/api/youtube/desligar", { method: "POST", body: { canal } });
   carregarAuto();
 }
 async function atualizarSeloAuto() {
-  try { const d = await api("/api/automatico"); $("#autoSelo").textContent = d.estado.aCorrer ? "· a correr" : d.config.ativo ? `· ${d.config.hora}` : ""; } catch {}
+  try { const d = await api("/api/automatico"); $("#autoSelo").textContent = d.estado.aCorrer ? "· rodando" : d.config.ativo ? `· ${d.config.hora}` : ""; } catch {}
 }
 
 // canais (src/canais.json): cada um tem o seu logo e @ na marca d'água
@@ -386,7 +386,7 @@ async function enviarLogoCanal() {
   const f = $("#canalLogo").files[0];
   if (!f) return;
   try {
-    toast("A preparar a logo…", "image");
+    toast("Preparando a logo…", "image");
     const d = await enviarComProgresso(`/api/canais/logo?nome=${encodeURIComponent(f.name)}&fundo=${$("#canalSemFundo").checked ? "remover" : "manter"}`, f);
     logoRascunho = d.logo;
     previsualizarMarca();
@@ -468,14 +468,14 @@ async function enviarAmostraVoz(ficheiro) {
   const nome = prompt("Nome desta voz (ex.: Tayson)", ficheiro.name.replace(/\.\w+$/, ""));
   if (!nome) return;
   try {
-    toast("A enviar a amostra…", "upload");
+    toast("Enviando a amostra…", "upload");
     const r = await fetch(`/api/upload?nome=${encodeURIComponent(ficheiro.name)}&voz=${encodeURIComponent(nome)}`, { method: "POST", body: ficheiro });
     const d = await r.json();
-    if (!r.ok) throw new Error(d.erro ?? "Não consegui guardar a amostra");
+    if (!r.ok) throw new Error(d.erro ?? "Não consegui salvar a amostra");
     OPCOES.vozesChatterbox = d.vozes;
     await desenharVozes();
     $("#voz").value = d.caminho;
-    toast("Voz guardada", "check");
+    toast("Voz salva", "check");
   } catch (e) { toast(e.message, "triangle-alert"); }
 }
 async function carregarVozesEleven() { vozesEleven ??= await api("/api/elevenlabs/vozes"); }
@@ -511,7 +511,7 @@ async function guardarChave() {
     if (sketchfab) OPCOES.temSketchfab = true;
     if (eleven) { OPCOES.temElevenLabs = true; vozesEleven = null; }
     if (pixabay) OPCOES.temPixabay = true;
-    dlgConfig.close(); toast("Chaves guardadas", "check");
+    dlgConfig.close(); toast("Chaves salvas", "check");
     desenharVozes();
   } catch (e) { toast(e.message, "triangle-alert"); }
 }
@@ -526,14 +526,14 @@ function enviarComProgresso(url, ficheiro) {
     x.upload.onprogress = (e) => {
       if (!e.lengthComputable || e.total < 5e6) return; // ficheiros pequenos: não vale a pena
       const p = Math.floor((e.loaded / e.total) * 20) * 5;
-      if (p !== ultimo) { ultimo = p; toast(`A enviar ${ficheiro.name}… ${p}% de ${(e.total / 1e6).toFixed(0)} MB`, "upload"); }
+      if (p !== ultimo) { ultimo = p; toast(`Enviando ${ficheiro.name}… ${p}% de ${(e.total / 1e6).toFixed(0)} MB`, "upload"); }
     };
     x.onload = () => {
       let d = {};
       try { d = JSON.parse(x.responseText); } catch { /* resposta vazia */ }
       x.status >= 200 && x.status < 300 ? ok(d) : falha(new Error(d.erro || `Envio falhou (${x.status})`));
     };
-    x.onerror = () => falha(new Error("A ligação ao painel caiu durante o envio"));
+    x.onerror = () => falha(new Error("A conexão com o painel caiu durante o envio"));
     x.send(ficheiro);
   });
 }
@@ -572,7 +572,7 @@ async function importarRoteiroIA() {
     await api("/api/importar-roteiro", { method: "POST", body: { ...pedidoAtual(), texto } });
     $("#respostaIA").value = ""; $("#tema").value = ""; $("#obs").value = "";
     dlgOutraIA.close();
-    toast("Importado. A validar e a buscar mídia.", "check");
+    toast("Importado. Validando e buscando mídia.", "check");
     atualizarJobs();
   } catch (e) { toast(e.message, "triangle-alert"); }
   $("#importarIA").disabled = false;
@@ -588,14 +588,14 @@ async function criar() {
     if (estado.formato === "clipe") {
       const ficheiros = [...$("#ficheirosClipe").files];
       if (!ficheiros.length) throw new Error("Escolha pelo menos um vídeo");
-      toast("A enviar os vídeos…", "upload");
+      toast("Enviando os vídeos…", "upload");
       const arquivos = [];
       for (const f of ficheiros) arquivos.push(await enviarFicheiro(f));
       await api("/api/jobs", { method: "POST", body: {
         formato: "clipe", tema, estilo: estado.estilo, canal: $("#canal").value, arquivos, musica: $("#musica").value, cortar: $("#cortar").checked, destaques: $("#destaquesClipe").value, enquadrar: $("#enquadrar").checked,
       } });
       $("#ficheirosClipe").value = ""; $("#nomesClipe").textContent = "Escolha os vídeos (pela ordem em que entram)";
-      toast("A cortar e legendar", "scissors");
+      toast("Cortando e legendando", "scissors");
     } else {
       if (estado.narracao === "elevenlabs" && !$("#voz").value) throw new Error("Escolha uma voz da ElevenLabs");
       await api("/api/jobs", { method: "POST", body: {
@@ -603,7 +603,7 @@ async function criar() {
         voz: $("#voz").value, observacoes: $("#obs").value.trim(), revisar: $("#revisar").checked, musica: $("#musica").value,
         duracao: estado.duracao, editorChefe: $("#editorChefe").checked, revisaoVisual: $("#revisaoVisual").checked, canal: $("#canal").value, lowpoly: $("#lowpoly").checked,
       } });
-      toast("Na fila. O Claude está a pesquisar.", "search");
+      toast("Na fila. O Claude está pesquisando.", "search");
     }
     $("#tema").value = ""; $("#obs").value = "";
     atualizarJobs();
@@ -613,7 +613,7 @@ async function criar() {
 
 // ---------- fila ----------
 const ETAPAS = [["roteiro", "Roteiro"], ["editor", "Editor"], ["midia", "Mídia"], ["aguardando revisao", "Revisão"], ["clipes", "Cortes"], ["narracao", "Narração"], ["render", "Render"], ["pronto", "Pronto"]];
-const NOME_ESTADO = { "na fila": "Na fila", "na fila de render": "À espera de render", roteiro: "A escrever o roteiro", editor: "Editor-chefe a rever", midia: "A buscar mídia", "aguardando revisao": "À espera da sua revisão", clipes: "A cortar e legendar", narracao: "A narrar", render: "A renderizar", pronto: "Pronto", erro: "Falhou" };
+const NOME_ESTADO = { "na fila": "Na fila", "na fila de render": "Aguardando render", roteiro: "Escrevendo o roteiro", editor: "Editor-chefe revisando", midia: "Buscando mídia", "aguardando revisao": "Aguardando sua revisão", clipes: "Cortando e legendando", narracao: "Narrando", render: "Renderizando", pronto: "Pronto", erro: "Falhou" };
 const nomeFormato = (k) => FORMATOS.find(([f]) => f === k)?.[2] ?? "";
 let jobsAntes = {}, logsAbertos = new Set();
 let filaDesenhada = "";
@@ -640,7 +640,7 @@ async function atualizarJobs() {
         <span class="meta">${esc(nomeFormato(j.formato))} · ${esc(OPCOES.estilos[j.estilo]?.nome ?? j.estilo ?? "")}</span>
         <span class="estado"><span class="ponto ${ponto}"></span>${NOME_ESTADO[j.estado] ?? esc(j.estado)}${j.estado === "render" ? ` ${j.progresso}%` : ""}</span>
         ${j.estado === "aguardando revisao" ? `<button class="btn primario peq" onclick="abrirEditor('${j.videoId}')">Rever roteiro</button>` : ""}
-        <button class="btn fantasma icone peq" title="Ver registo" onclick="alternarLog('${j.id}')">${ic("terminal", 14)}</button>
+        <button class="btn fantasma icone peq" title="Ver registro" onclick="alternarLog('${j.id}')">${ic("terminal", 14)}</button>
       </div>
       <div class="etapas">${etapas.map(([k, nome], i) => {
         const cls = j.estado === "erro" ? (i === Math.max(0, atual) ? "falhou" : i < atual ? "feita" : "") : j.estado === "pronto" || i < atual ? "feita" : i === atual ? "agora" : "";
@@ -661,7 +661,7 @@ function avisarSistema(jobs) {
     avisados.add(j.id + j.estado);
     if (jobsAntes[j.id] === undefined || jobsAntes[j.id] === j.estado) continue; // já estava assim quando o painel abriu
     if (document.hidden && "Notification" in window && Notification.permission === "granted") {
-      new Notification(j.estado === "pronto" ? "Vídeo pronto" : "Roteiro à espera da sua revisão", { body: j.tema, icon: "/icones/clapperboard.svg" });
+      new Notification(j.estado === "pronto" ? "Vídeo pronto" : "Roteiro aguardando sua revisão", { body: j.tema, icon: "/icones/clapperboard.svg" });
     }
   }
 }
@@ -697,7 +697,7 @@ async function desenharPrecos() {
           <input data-p="preco" value="${esc(String(p.preco).replace(".", ","))}" style="width:130px">
           <input data-p="loja" value="${esc(p.loja ?? "")}" placeholder="Loja" style="width:140px">
           <input data-p="url" value="${esc(p.url ?? "")}" placeholder="Link">
-          <button class="btn peq" onclick="guardarPreco('${esc(k)}')">${ic("check", 14)}Guardar</button>
+          <button class="btn peq" onclick="guardarPreco('${esc(k)}')">${ic("check", 14)}Salvar</button>
         </div>
         <div class="meta">${dias > 7 ? `<span style="color:var(--aviso)">${ic("triangle-alert", 12)} desatualizado: ${dias} dias</span>` : `atualizado há ${dias} ${dias === 1 ? "dia" : "dias"}`}
           ${(p.fontes ?? []).length ? ` · também: ${(p.fontes ?? []).map((f) => `${esc(f.loja)} R$ ${esc(String(f.preco))}`).join(", ")}` : ""}
@@ -817,7 +817,7 @@ function copiarLegenda(legenda, credito) {
 
 async function produzir(id) {
   await api(`/api/roteiros/${id}?acao=produzir`, { method: "POST" });
-  toast("A renderizar", "play");
+  toast("Renderizando", "play");
   atualizarJobs();
 }
 
@@ -862,7 +862,7 @@ const blocoMidia = (c, i) => {
         <select data-m="tipo" style="width:110px" ${tres ? "hidden" : ""}><option value="imagem">Imagem</option><option value="video" ${m.tipo === "video" ? "selected" : ""}>Vídeo</option></select>
       </div>
       <input data-m="consulta" placeholder="${esc(DICA_FONTE[fonte] ?? "Nome do jogo, termo de pesquisa ou link")}" value="${esc(m.fonte === "arquivo" ? "" : m.consulta?.startsWith("uid:") ? "" : m.consulta)}">
-      <div class="aviso aviso-3d" style="margin:0" ${fonte === "sketchfab" && !OPCOES.temSketchfab ? "" : "hidden"}>${ic("key-round", 14)}<span>Para descarregar modelos, adicione o token do Sketchfab em Chaves de API.</span></div>
+      <div class="aviso aviso-3d" style="margin:0" ${fonte === "sketchfab" && !OPCOES.temSketchfab ? "" : "hidden"}>${ic("key-round", 14)}<span>Para baixar modelos, adicione o token do Sketchfab em Chaves de API.</span></div>
       <div class="aviso aviso-stock" style="margin:0" ${fonte === "pixabay" && !OPCOES.temPixabay ? "" : "hidden"}>${ic("key-round", 14)}<span>Adicione a chave grátis do Pixabay em Chaves de API.</span></div>
       <div class="linha">
         <button class="btn peq" onclick="trocarMidia(${i})">${ic("search", 14)}Buscar</button>
@@ -916,7 +916,7 @@ async function analisarCortes() {
   const [min, max] = $("#duracaoCortes").value.split("-").map(Number);
   $("#criar").disabled = true;
   try {
-    toast("A enviar o vídeo…", "upload");
+    toast("Enviando o vídeo…", "upload");
     const arquivo = await enviarFicheiro(f);
     cortesAtuais = { arquivo, cortes: [] };
     $("#cortesLista").innerHTML = ""; $("#cortesMeta").textContent = f.name; $("#btnProduzirCortes").disabled = true;
@@ -981,7 +981,7 @@ async function abrirIdeias() {
   dlgIdeias.showModal();
   const c = OPCOES.canais?.[canalAtual()];
   $("#ideiasDica").textContent = !c ? $("#ideiasDica").textContent : c.nicho
-    ? `Ideias para ${c.nome} (${c.arroba}), só dentro do nicho: ${c.nicho}. O Claude pesquisa o que está a acontecer agora e evita os temas que o canal já fez. Troque de canal no topo do formulário.`
+    ? `Ideias para ${c.nome} (${c.arroba}), só dentro do nicho: ${c.nicho}. O Claude pesquisa o que está acontecendo agora e evita os temas que o canal já fez. Troque de canal no topo do formulário.`
     : `${c.nome} ainda não tem nicho: as ideias vão sair genéricas. Defina o nicho no botão ⚙ ao lado do canal, no topo do formulário.`;
   $("#ideiasFoco").value = "";
   try { desenharIdeias(await api(`/api/ideias?canal=${encodeURIComponent(canalAtual())}`)); } catch (e) { toast(e.message, "triangle-alert"); }
@@ -1022,7 +1022,7 @@ function usarIdeia(k) {
 let textosPub = [];
 const copiarPub = (i) => navigator.clipboard.writeText(textosPub[i]).then(() => toast("Copiado", "check"));
 function blocoPublicacao(r) {
-  return `<div class="caixa-info" style="margin-top:14px" id="blocoPub"><div class="linha" style="justify-content:space-between"><b>Publicação</b><span class="meta">a carregar…</span></div></div>`;
+  return `<div class="caixa-info" style="margin-top:14px" id="blocoPub"><div class="linha" style="justify-content:space-between"><b>Publicação</b><span class="meta">carregando…</span></div></div>`;
 }
 async function carregarPublicacao(id) {
   try { desenharPublicacao(id, await api(`/api/roteiros/${id}/publicacao`)); } catch { desenharPublicacao(id, {}); }
@@ -1056,7 +1056,7 @@ function desenharPublicacao(id, p, passo) {
 async function gerarPublicacao(id) {
   try {
     await guardarSilencioso();
-    desenharPublicacao(id, {}, "🤖 A escrever…");
+    desenharPublicacao(id, {}, "🤖 Escrevendo…");
     const t = await api(`/api/roteiros/${id}/publicacao`, { method: "POST" });
     const p = await esperarTarefa(t, (passo) => desenharPublicacao(id, {}, passo));
     desenharPublicacao(id, p);
@@ -1090,11 +1090,11 @@ function desenharRevisao(id, r, passo) {
           <span>${p.cena ? `<a href="#" onclick="irParaCena(${Number(p.cena)});return false" style="color:var(--acento)">Cena ${esc(p.cena)}</a>: ` : ""}${esc(p.problema)}${p.sugestao ? ` <span class="meta">→ ${esc(p.sugestao)}</span>` : ""}</span>
         </div>`).join("") : `<div class="linha" style="color:var(--ok);font-size:12px">${ic("check", 14)}Nada a corrigir nos frames.</div>`}</div>
       <div style="display:grid;grid-template-columns:repeat(${Math.min(3, r.folhas.length)}, 1fr);gap:6px;margin-top:10px">${r.folhas.map((f) => `<a href="${esc(f)}?v=${v}" target="_blank" rel="noopener"><img src="${esc(f)}?v=${v}" alt="" style="width:100%;display:block;border-radius:6px;border:1px solid var(--borda)"></a>`).join("")}</div>`
-    : passo ? "" : `<div class="dica" style="margin-top:8px">${temVideo ? "Tira frames de cada cena e o Claude procura texto cortado ou ilegível, sobreposições e cenas vazias." : "Fica disponível depois de renderizar. Corre sozinha no fim de cada render (opção nas definições do formulário)."}</div>`}`;
+    : passo ? "" : `<div class="dica" style="margin-top:8px">${temVideo ? "Tira frames de cada cena e o Claude procura texto cortado ou ilegível, sobreposições e cenas vazias." : "Fica disponível depois de renderizar. Roda sozinha no fim de cada render (opção nas configurações do formulário)."}</div>`}`;
 }
 async function reverVisual(id) {
   try {
-    desenharRevisao(id, {}, "🖼 A tirar frames…");
+    desenharRevisao(id, {}, "🖼 Capturando frames…");
     const t = await api(`/api/roteiros/${id}/revisao`, { method: "POST" });
     desenharRevisao(id, await esperarTarefa(t, (p) => desenharRevisao(id, {}, p)));
     toast("Revisão visual pronta", "check");
@@ -1139,7 +1139,7 @@ async function gerarCapa(id, fundo) {
   try {
     await guardarSilencioso();
     const corpo = { texto: $("#capaTexto").value, destaque: $("#capaDestaque").value, formato: $("#capaFormato").value, ...(fundo !== undefined && { fundo }) };
-    desenharCapa(id, capaAtual, "🎨 A preparar o estúdio…");
+    desenharCapa(id, capaAtual, "🎨 Preparando o estúdio…");
     const t = await api(`/api/roteiros/${id}/capa`, { method: "POST", body: corpo });
     const c = await esperarTarefa(t, (p) => desenharCapa(id, capaAtual, p));
     desenharCapa(id, c);
@@ -1185,7 +1185,7 @@ function usarGancho(i, k) {
   el.querySelector('[data-f="texto_tela"]').value = v.texto_tela;
   el.querySelector('[data-f="fala"]').value = v.fala;
   $(`#ganchos-${i}`).innerHTML = "";
-  toast("Gancho trocado no editor. Clique em Guardar.", "check");
+  toast("Gancho trocado no editor. Clique em Salvar.", "check");
 }
 
 // resultado do validador + pesquisa (o que sustenta o roteiro), para rever antes de renderizar
@@ -1204,10 +1204,10 @@ function blocoQualidade(r) {
     </div>
     <div id="caixaReenvio" hidden style="margin-top:8px">
       <textarea id="jsonReenvio" rows="8" placeholder='Cole aqui a resposta da IA com o JSON corrigido' style="width:100%;font-family:var(--mono, monospace);font-size:12px"></textarea>
-      <div class="dica">Substitui as cenas deste roteiro. Ficam o estilo, a narração, a música e o canal que escolheu, e a mídia das cenas que não mudaram. Depois volta a validar e a buscar mídia.</div>
+      <div class="dica">Substitui as cenas deste roteiro. Ficam o estilo, a narração, a música e o canal que escolheu, e a mídia das cenas que não mudaram. Depois volta a validar e buscando mídia.</div>
       <button class="btn primario peq" id="btnReenvio" onclick="reenviarJSON()">${ic("refresh-cw", 14)}Substituir e validar</button>
     </div>
-    <details style="margin-top:10px"><summary class="meta" style="cursor:pointer">Pesquisa (${pesquisa.length} factos com fonte)</summary>
+    <details style="margin-top:10px"><summary class="meta" style="cursor:pointer">Pesquisa (${pesquisa.length} fatos com fonte)</summary>
       <div style="display:flex;flex-direction:column;gap:6px;margin-top:8px">${pesquisa.map((p) => `<div style="font-size:12px"><span>${esc(p.fato)}</span> <a href="${esc(p.url)}" target="_blank" rel="noopener" style="color:var(--acento)">${esc(p.fonte ?? "fonte")}</a></div>`).join("") || '<div class="meta">Sem pesquisa registada.</div>'}</div>
     </details>
   </div>`;
@@ -1232,7 +1232,7 @@ async function reenviarJSON() {
   try {
     await api(`/api/roteiros/${roteiroAberto.id}/reimportar`, { method: "POST", body: { texto } });
     dlgEditor.close();
-    toast("Roteiro substituído. A validar e a buscar mídia.", "check");
+    toast("Roteiro substituído. Validando e buscando mídia.", "check");
     atualizarJobs(); atualizarGaleria();
   } catch (e) { toast(e.message, "triangle-alert"); }
   $("#btnReenvio") && ($("#btnReenvio").disabled = false);
@@ -1246,32 +1246,32 @@ function camposCena(c, i) {
     </div>
     ${campo("Benefícios (separados por vírgula)", "tags", (c.tags ?? []).join(", "))}
     ${campo("Barras (Rótulo: 0–100, uma por linha)", "specs", (c.specs ?? []).map((s) => `${s.label}: ${s.valor}`).join("\n"), "textarea")}`;
-  if (c.tipo === "gancho") return `${campo("Texto no ecrã", "texto_tela", c.texto_tela)}
+  if (c.tipo === "gancho") return `${campo("Texto na tela", "texto_tela", c.texto_tela)}
     <div style="margin:-4px 0 10px"><button class="btn fantasma peq" onclick="sugerirGanchos(${i}, this)">${ic("wand-sparkles", 14)}Sugerir 5 ganchos</button><div id="ganchos-${i}"></div></div>`;
-  if (c.tipo === "cta") return `<div class="grid2">${campo("Texto no ecrã", "texto_tela", c.texto_tela)}${campo("Botão / resposta", "botao", c.botao)}</div>
+  if (c.tipo === "cta") return `<div class="grid2">${campo("Texto na tela", "texto_tela", c.texto_tela)}${campo("Botão / resposta", "botao", c.botao)}</div>
     <div class="grid2"><div class="campo"><label class="rotulo">Ação</label><select data-f="acao">${[["seguir", "Seguir"], ["link", "Link na bio"], ["comentar", "Comentar palavra"]].map(([v, n]) => `<option value="${v}" ${v === (c.acao ?? "seguir") ? "selected" : ""}>${n}</option>`).join("")}</select></div>${campo("Palavra a comentar", "palavra", c.palavra)}</div>`;
-  if (c.tipo === "quiz") return `${campo("Pergunta no ecrã", "pergunta", c.pergunta)}
+  if (c.tipo === "quiz") return `${campo("Pergunta na tela", "pergunta", c.pergunta)}
     ${campo("Opções (uma por linha, pela ordem em que a fala as lê)", "opcoes", (c.opcoes ?? []).join("\n"), "textarea")}
     <div class="grid2">
       <div class="campo"><label class="rotulo">Resposta certa</label><select data-f="resposta"><option value="">Não mostrar</option>${(c.opcoes ?? []).map((o, k) => `<option value="${k}" ${k === c.resposta ? "selected" : ""}>${"ABCD"[k]}: ${esc(o)}</option>`).join("")}</select></div>
       ${campo("Segundos para responder", "segundos", String(c.segundos ?? 5))}
     </div>
     <div class="dica" style="margin-top:-6px">A narração lê a pergunta e as opções, sem contar. A contagem corre depois, em silêncio.</div>`;
-  if (c.tipo === "fato") return `<div class="grid2">${campo("Etiqueta (ex.: Depois de uma hora)", "kicker", c.kicker)}${campo("Título no ecrã", "titulo", c.titulo)}</div>`;
+  if (c.tipo === "fato") return `<div class="grid2">${campo("Etiqueta (ex.: Depois de uma hora)", "kicker", c.kicker)}${campo("Título na tela", "titulo", c.titulo)}</div>`;
   if (c.tipo === "modelo3d") {
     const sel = (nome, atual, opcoes) => `<select data-f="${nome}">${opcoes.map(([v, n]) => `<option value="${v}" ${v === atual ? "selected" : ""}>${n}</option>`).join("")}</select>`;
     const m = c.modelo ?? {};
-    return `<div class="grid2">${campo("Etiqueta acima do título", "kicker", c.kicker)}${campo("Título no ecrã", "titulo", c.titulo)}</div>
+    return `<div class="grid2">${campo("Etiqueta acima do título", "kicker", c.kicker)}${campo("Título na tela", "titulo", c.titulo)}</div>
       <div class="grid2">
-        <div class="campo"><label class="rotulo">Animação</label>${sel("animacao", c.animacao ?? "girar", [["girar", "Girar"], ["explodir", "Explodir em peças"], ["aproximar", "Câmara a aproximar"], ["revelar", "Revelar a rodar"]])}</div>
-        <div class="campo"><label class="rotulo">Modelo de reserva (sem ficheiro)</label>${sel("procedural", c.procedural ?? "gpu", [["gpu", "Placa de vídeo"], ["cpu", "Processador"], ["ram", "Memória RAM"], ["ssd", "SSD M.2"]])}</div>
+        <div class="campo"><label class="rotulo">Animação</label>${sel("animacao", c.animacao ?? "girar", [["girar", "Girar"], ["explodir", "Explodir em peças"], ["aproximar", "Câmera aproximando"], ["revelar", "Revelar girando"]])}</div>
+        <div class="campo"><label class="rotulo">Modelo de reserva (sem arquivo)</label>${sel("procedural", c.procedural ?? "gpu", [["gpu", "Placa de vídeo"], ["cpu", "Processador"], ["ram", "Memória RAM"], ["ssd", "SSD M.2"]])}</div>
       </div>
       ${campo("Etiquetas (JSON: texto, ancora topo|frente|lado|base|centro, inicioS)", "json", JSON.stringify(c.etiquetas ?? [], null, 2), "textarea")}
       <div class="midia">
         <div class="previa"><div class="sem-midia">${m.arquivo ? `${ic("box", 22)}<br>${esc(m.arquivo.split("/").pop())}` : "Modelo procedural"}</div></div>
         <div class="midia-campos">
           <label class="rotulo" style="margin:0">Modelo 3D (.glb)</label>
-          <input data-m3d="consulta" placeholder="Link direto para um .glb (ou envie um ficheiro)" value="${esc(m.fonte === "url" ? m.consulta : "")}">
+          <input data-m3d="consulta" placeholder="Link direto para um .glb (ou envie um arquivo)" value="${esc(m.fonte === "url" ? m.consulta : "")}">
           <input data-m3d="credito" placeholder="Crédito do modelo (se a licença pedir)" value="${esc(m.credito)}">
           <div class="linha">
             <button class="btn peq" onclick="trocarModelo(${i})">${ic("link", 14)}Usar link</button>
@@ -1282,7 +1282,7 @@ function camposCena(c, i) {
             <input data-m3d="busca" placeholder="Procurar no Sketchfab (ex.: RTX 4090, PS5, teclado mecânico)" value="${esc(m.fonte === "sketchfab" && !m.consulta?.startsWith("uid:") ? m.consulta : "")}" onkeydown="if (event.key === 'Enter') procurarSketchfab(${i})">
             <button class="btn peq" onclick="procurarSketchfab(${i})">${ic("search", 14)}Procurar</button>
           </div>
-          ${OPCOES.temSketchfab ? "" : `<div class="aviso" style="margin:0">${ic("key-round", 14)}<span>Para descarregar, adicione o token do Sketchfab em Chaves de API.</span></div>`}
+          ${OPCOES.temSketchfab ? "" : `<div class="aviso" style="margin:0">${ic("key-round", 14)}<span>Para baixar, adicione o token do Sketchfab em Chaves de API.</span></div>`}
           <div class="resultados-3d" id="res3d-${i}"></div>
           ${m.sketchfab ? `<div class="dica" style="margin:0">${esc(m.sketchfab.nome)} · ${esc(m.sketchfab.autor)} · ${esc(m.sketchfab.licenca)}</div>` : ""}
           <div class="dica" style="margin:0">Só aparecem modelos com licença que permite uso comercial. O crédito é preenchido sozinho.</div>
@@ -1291,7 +1291,7 @@ function camposCena(c, i) {
   }
   if (c.tipo === "clipe") return campo("Título por cima do vídeo", "titulo", c.titulo);
   const extra = Object.fromEntries((CAMPOS_JSON[c.tipo] ?? []).filter((k) => c[k] !== undefined).map((k) => [k, c[k]]));
-  return `${c.tipo === "numero" ? "" : campo("Título no ecrã", "titulo", c.titulo)}${campo("Dados (JSON)", "json", JSON.stringify(extra, null, 2), "textarea")}`;
+  return `${c.tipo === "numero" ? "" : campo("Título na tela", "titulo", c.titulo)}${campo("Dados (JSON)", "json", JSON.stringify(extra, null, 2), "textarea")}`;
 }
 
 async function abrirEditor(id, roteiro) {
@@ -1327,9 +1327,9 @@ async function abrirEditor(id, roteiro) {
     </div>
     ${blocoQualidade(r)}
     ${blocoCortes(r)}
-    <div class="caixa-info" style="margin-top:14px" id="blocoRevisao"><b>Revisão visual</b><span class="meta"> a carregar…</span></div>
+    <div class="caixa-info" style="margin-top:14px" id="blocoRevisao"><b>Revisão visual</b><span class="meta"> carregando…</span></div>
     ${blocoPublicacao(r)}
-    <div class="caixa-info" style="margin-top:14px" id="blocoCapa"><b>Capa</b><span class="meta"> a carregar…</span></div>
+    <div class="caixa-info" style="margin-top:14px" id="blocoCapa"><b>Capa</b><span class="meta"> carregando…</span></div>
     ${r.cenas.map((c, i) => `
       <div class="cena" data-i="${i}">
         <div class="cena-topo"><span class="n">${String(i + 1).padStart(2, "0")}</span><span class="tipo">${NOME_CENA[c.tipo] ?? c.tipo}</span>
@@ -1422,7 +1422,7 @@ async function trocarMidia(i, proxima = 0) {
     const fonte = el.querySelector('[data-m="fonte"]').value;
     const atual = roteiroAberto.cenas[i].midia;
     const indice = proxima ? (atual?.indice ?? 0) + 1 : 0;
-    toast(fonte ? "A procurar…" : "Mídia removida", fonte ? "search" : "trash-2");
+    toast(fonte ? "Procurando…" : "Mídia removida", fonte ? "search" : "trash-2");
     const d = await api(`/api/roteiros/${roteiroAberto.id}/midia/${i}`, { method: "POST", body: {
       fonte, consulta: el.querySelector('[data-m="consulta"]').value.trim(), tipo: el.querySelector('[data-m="tipo"]').value, indice,
     } });
@@ -1436,10 +1436,10 @@ async function trocarModelo(i, remover = false) {
     await guardarSilencioso();
     const el = document.querySelector(`.cena[data-i="${i}"]`);
     const consulta = remover ? "" : el.querySelector('[data-m3d="consulta"]').value.trim();
-    if (!remover && !consulta) return toast("Cole o link de um ficheiro .glb", "link");
-    toast(remover ? "Modelo removido" : "A descarregar o modelo…", remover ? "trash-2" : "download");
+    if (!remover && !consulta) return toast("Cole o link de um arquivo .glb", "link");
+    toast(remover ? "Modelo removido" : "Baixando o modelo…", remover ? "trash-2" : "download");
     const d = await api(`/api/roteiros/${roteiroAberto.id}/modelo/${i}`, { method: "POST", body: { fonte: "url", consulta, credito: el.querySelector('[data-m3d="credito"]').value.trim() } });
-    if (consulta && !d.roteiro.cenas[i].modelo?.arquivo) toast(d.log.at(-1) ?? "Não consegui descarregar o modelo", "triangle-alert");
+    if (consulta && !d.roteiro.cenas[i].modelo?.arquivo) toast(d.log.at(-1) ?? "Não consegui baixar o modelo", "triangle-alert");
     abrirEditor(roteiroAberto.id, d.roteiro);
   } catch (e) { toast(e.message, "triangle-alert"); }
 }
@@ -1449,7 +1449,7 @@ async function procurarSketchfab(i) {
   const q = el.querySelector('[data-m3d="busca"]').value.trim();
   if (!q) return toast("Escreva o que procura", "search");
   const caixa = $(`#res3d-${i}`);
-  caixa.innerHTML = `<div class="meta">A procurar…</div>`;
+  caixa.innerHTML = `<div class="meta">Procurando…</div>`;
   try {
     const r = await api(`/api/sketchfab/busca?q=${encodeURIComponent(q)}`);
     caixa.innerHTML = r.length ? r.slice(0, 12).map((m) => `
@@ -1464,9 +1464,9 @@ async function escolherSketchfab(i, uid) {
   if (!OPCOES.temSketchfab) return toast("Adicione o token do Sketchfab em Chaves de API", "key-round");
   try {
     await guardarSilencioso();
-    toast("A descarregar o modelo…", "download");
+    toast("Baixando o modelo…", "download");
     const d = await api(`/api/roteiros/${roteiroAberto.id}/modelo/${i}`, { method: "POST", body: { fonte: "sketchfab", consulta: `uid:${uid}` } });
-    if (!d.roteiro.cenas[i].modelo?.arquivo) toast(d.log.at(-1) ?? "Não consegui descarregar o modelo", "triangle-alert");
+    if (!d.roteiro.cenas[i].modelo?.arquivo) toast(d.log.at(-1) ?? "Não consegui baixar o modelo", "triangle-alert");
     else toast("Modelo pronto", "check");
     abrirEditor(roteiroAberto.id, d.roteiro);
   } catch (e) { toast(e.message, "triangle-alert"); }
@@ -1476,7 +1476,7 @@ async function enviarModelo(i, ficheiro) {
   if (!ficheiro) return;
   try {
     await guardarSilencioso();
-    toast("A enviar o modelo…", "upload");
+    toast("Enviando o modelo…", "upload");
     const caminho = await enviarFicheiro(ficheiro);
     const el = document.querySelector(`.cena[data-i="${i}"]`);
     const d = await api(`/api/roteiros/${roteiroAberto.id}/modelo/${i}`, { method: "POST", body: { fonte: "arquivo", consulta: caminho, credito: el.querySelector('[data-m3d="credito"]').value.trim() } });
@@ -1488,7 +1488,7 @@ async function enviarMidia(i, ficheiro) {
   if (!ficheiro) return;
   try {
     await guardarSilencioso();
-    toast("A enviar…", "upload");
+    toast("Enviando…", "upload");
     const caminho = await enviarFicheiro(ficheiro);
     const d = await api(`/api/roteiros/${roteiroAberto.id}/midia/${i}`, { method: "POST", body: { fonte: "arquivo", consulta: caminho } });
     abrirEditor(roteiroAberto.id, d.roteiro);
@@ -1499,7 +1499,7 @@ async function guardarRoteiro(depoisProduzir) {
   try {
     await api(`/api/roteiros/${roteiroAberto.id}`, { method: "PUT", body: lerEditor() });
     dlgEditor.close();
-    if (depoisProduzir) await produzir(roteiroAberto.id); else toast("Roteiro guardado", "check");
+    if (depoisProduzir) await produzir(roteiroAberto.id); else toast("Roteiro salvo", "check");
     atualizarGaleria();
   } catch (e) { toast(e.message, "triangle-alert"); }
 }

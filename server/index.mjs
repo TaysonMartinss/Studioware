@@ -24,19 +24,19 @@ const VOZES_EDGE = [
 ];
 
 const FORMATOS = {
-  livre: "formato livre: não segue nenhum molde. O criador descreve o vídeo que imagina (tema, estrutura, tom, ritmo, tipos de cena) e o roteirista é o realizador: escolhe a estrutura e os tipos de cena que melhor servem a ideia, misturando à vontade (fato, grafico, linha_tempo, comparacao, numero, modelo3d, lowpoly, quiz, manim…), sempre com início, meio e fim e um gancho forte na primeira cena (guia na secção do formato)",
-  quiz: "quiz interativo: o espectador tenta acertar {itens} perguntas sobre o tema. Gancho que desafia, depois para cada pergunta uma cena quiz (pergunta, 3 opções, resposta, contagem real de 5 s) seguida da cena que revela e explica a resposta com um dado surpreendente (fato com mídia, numero ou grafico); dificuldade a subir e a última pergunta é a pegadinha; cta para comentar quantas acertou (guia na secção do formato)",
+  livre: "formato livre: não segue nenhum molde. O criador descreve o vídeo que imagina (tema, estrutura, tom, ritmo, tipos de cena) e o roteirista é o realizador: escolhe a estrutura e os tipos de cena que melhor servem a ideia, misturando à vontade (fato, grafico, linha_tempo, comparacao, numero, modelo3d, lowpoly, quiz, manim…), sempre com início, meio e fim e um gancho forte na primeira cena (guia na seção do formato)",
+  quiz: "quiz interativo: o espectador tenta acertar {itens} perguntas sobre o tema. Gancho que desafia, depois para cada pergunta uma cena quiz (pergunta, 3 opções, resposta, contagem real de 5 s) seguida da cena que revela e explica a resposta com um dado surpreendente (fato com mídia, numero ou grafico); dificuldade a subir e a última pergunta é a pegadinha; cta para comentar quantas acertou (guia na seção do formato)",
   ranking: "ranking de produtos com recomendação de compra (gancho, produtos, cta; um modelo3d do produto vencedor dá destaque ao #1)",
-  longo: "vídeo longo para o YouTube em 16:9 (5 a 10 minutos): documentário curto dividido em 4 a 7 capítulos (cenas capitulo), com mídia em quase todas as cenas e 2 ou 3 cortes para Shorts no campo cortes (estrutura da secção 3.6 do roteirista)",
-  animado: "\"E se?\" em animação 3D low poly: a mesma escalada do E se?, mas quase todas as cenas são do tipo lowpoly (personagens 3D em estádio, cidade, quarto, natureza ou planeta, com hora do dia e câmara), sem fotos; 1 cena de conteúdo por frase, cada uma com outro cenário, plano, ação ou hora (estrutura na secção do formato)",
-  ese: "viral \"E se?\": uma pergunta hipotética levada às últimas consequências, numa escalada no tempo ou na escala, com base científica e sem vender nada (estrutura da secção E se? da skill; cta para comentar a próxima pergunta ou seguir)",
-  storytelling: "storytelling de venda: uma história que cria a necessidade e termina na compra de UM produto (estrutura da secção Storytelling da skill; cta com acao link ou comentar)",
+  longo: "vídeo longo para o YouTube em 16:9 (5 a 10 minutos): documentário curto dividido em 4 a 7 capítulos (cenas capitulo), com mídia em quase todas as cenas e 2 ou 3 cortes para Shorts no campo cortes (estrutura da seção 3.6 do roteirista)",
+  animado: "\"E se?\" em animação 3D low poly: a mesma escalada do E se?, mas quase todas as cenas são do tipo lowpoly (personagens 3D em estádio, cidade, quarto, natureza ou planeta, com hora do dia e câmera), sem fotos; 1 cena de conteúdo por frase, cada uma com outro cenário, plano, ação ou hora (estrutura na seção do formato)",
+  ese: "viral \"E se?\": uma pergunta hipotética levada às últimas consequências, numa escalada no tempo ou na escala, com base científica e sem vender nada (estrutura da seção E se? da skill; cta para comentar a próxima pergunta ou seguir)",
+  storytelling: "storytelling de venda: uma história que cria a necessidade e termina na compra de UM produto (estrutura da seção Storytelling da skill; cta com acao link ou comentar)",
   curiosidades: "curiosidades do mundo gamer (gancho, cenas fato com mídia real, cta)",
   explicativo: "vídeo explicativo estilo Kurzgesagt/Vox (gancho, mistura de fato, grafico, linha_tempo, modelo3d para mostrar hardware por dentro e, se fizer sentido, manim, cta)",
 };
 
 // pedido do painel "Animação 3D low poly em vez de fotos" (em qualquer formato; o "animado" já é assim)
-const REGRA_LOWPOLY = "Visual em animação 3D low poly (pedido do criador): as cenas de conteúdo são do tipo `lowpoly` em vez de fotos e b-rolls (nada de `fato` com foto). Use personagens, cenários, objetos animados e etiquetas 3D para encenar cada momento; `numero`, `grafico`, `quiz` e `manim` continuam permitidos quando mostram um dado melhor do que uma cena. A primeira cena pode ser uma `lowpoly` com `titulo`. Cada cena muda alguma coisa (cenário, plano, ação, hora ou câmara).";
+const REGRA_LOWPOLY = "Visual em animação 3D low poly (pedido do criador): as cenas de conteúdo são do tipo `lowpoly` em vez de fotos e b-rolls (nada de `fato` com foto). Use personagens, cenários, objetos animados e etiquetas 3D para encenar cada momento; `numero`, `grafico`, `quiz` e `manim` continuam permitidos quando mostram um dado melhor do que uma cena. A primeira cena pode ser uma `lowpoly` com `titulo`. Cada cena muda alguma coisa (cenário, plano, ação, hora ou câmera).";
 
 const estilos = () => JSON.parse(readFileSync(join(RAIZ, "src/estilos.json"), "utf-8"));
 const caminhoRoteiro = (id) => join(RAIZ, "roteiros", `${id}.json`);
@@ -207,12 +207,12 @@ async function validar(job) {
 // segunda leitura: corrige o que o validador apanhou e aprofunda as cenas rasas
 async function editorChefe(job, problemas) {
   job.estado = "editor";
-  registar(job, "🧐 Editor-chefe a rever profundidade, precisão e preços…");
+  registar(job, "🧐 Editor-chefe revisando profundidade, precisão e preços…");
   const prompt = [
-    `És o editor-chefe do canal. Revê o roteiro em roteiros/${job.videoId}.json (lê também dados/precos.json).`,
+    `És o editor-chefe do canal. Revise o roteiro em roteiros/${job.videoId}.json (lê também dados/precos.json).`,
     problemas.length ? `O validador automático encontrou estes problemas, que TÊM de ficar resolvidos:\n- ${problemas.join("\n- ")}` : "O validador não encontrou erros.",
     "Depois faz a tua revisão de editor, pela ordem:",
-    "1. Profundidade: cada cena tem de passar no teste do \"e daí?\" (secção 3.2 do system prompt). Reescreve as cenas rasas com dados concretos e o porquê. Se faltar informação, pesquisa (WebSearch) e acrescenta o facto, com fonte e link, ao campo pesquisa.",
+    "1. Profundidade: cada cena tem de passar no teste do \"e daí?\" (seção 3.2 do system prompt). Reescreve as cenas rasas com dados concretos e o porquê. Se faltar informação, pesquisa (WebSearch) e acrescenta o fato, com fonte e link, ao campo pesquisa.",
     "2. Precisão: cada afirmação tem de estar na pesquisa. Preços só do catálogo dados/precos.json (atualiza-o com 2 lojas se o preço tiver mais de 7 dias ou faltar) e ligados com produto_ref ou precos_usados.",
     "3. Honestidade: tira promessas que não existem e afirmações que o canal não pode provar.",
     "4. Arco e retenção: o gancho promete, o meio aprofunda, o fim entrega e volta ao gancho.",
@@ -267,7 +267,7 @@ function claudeJSON(tarefa, guia, pedido, ferramentas = []) {
 }
 
 function novaTarefa(tipo, trabalho) {
-  const t = { id: `t${Date.now().toString(36)}${Math.random().toString(36).slice(2, 5)}`, tipo, estado: "a correr", passo: "🤖 A pensar…", criado: Date.now() };
+  const t = { id: `t${Date.now().toString(36)}${Math.random().toString(36).slice(2, 5)}`, tipo, estado: "a correr", passo: "🤖 Pensando…", criado: Date.now() };
   tarefas.set(t.id, t);
   for (const [k, v] of tarefas) if (Date.now() - v.criado > 3 * 3600e3) tarefas.delete(k);
   trabalho(t).then((r) => Object.assign(t, { estado: "pronto", resultado: r }), (e) => Object.assign(t, { estado: "erro", erro: e.message }));
@@ -299,7 +299,7 @@ function gerarIdeias(t, d) {
     FORMATOS[d.formato] ? `Use só o formato: ${d.formato}` : "",
     `Mercado: ${String(d.pais ?? "Brasil").startsWith("Portugal") ? "Portugal (PT-PT, euros)" : "Brasil (PT-BR, reais)"}.`,
     `Vídeos que o canal já fez (não repetir):\n- ${feitos.slice(0, 120).join("\n- ") || "(nenhum)"}`,
-    "Pesquise na web o que está a acontecer agora antes de sugerir. Responda só com o JSON.",
+    "Pesquise na web o que está acontecendo agora antes de sugerir. Responda só com o JSON.",
   ].filter(Boolean).join("\n\n");
   return claudeJSON(t, "ideias.md", pedido, ["WebSearch", "WebFetch"]).then((r) => {
     if (!Array.isArray(r.ideias)) throw new Error("A resposta não trouxe ideias");
@@ -347,7 +347,7 @@ function gerarGanchos(t, id) {
 const ficheiroRevisao = (id) => join(RAIZ, "out/revisao", `${id}.json`);
 function revisaoVisual(id, aoPasso = () => {}) {
   return new Promise((ok, falha) => {
-    aoPasso("🖼 A tirar frames de cada cena…");
+    aoPasso("🖼 Capturando frames de cada cena…");
     const p = spawn("python", ["scripts/folha_contacto.py", id], { cwd: RAIZ, stdio: ["ignore", "pipe", "pipe"], env: { ...process.env, PYTHONIOENCODING: "utf-8" } });
     let saida = "", erro = "";
     p.stdout.on("data", (d) => (saida += d));
@@ -356,13 +356,13 @@ function revisaoVisual(id, aoPasso = () => {}) {
     p.on("close", (code) => {
       if (code !== 0) return falha(new Error(erro.trim().split("\n").pop() || "Não consegui tirar os frames"));
       let folha;
-      try { folha = JSON.parse(saida.trim().split("\n").pop()); } catch { return falha(new Error("A folha de contacto não respondeu")); }
+      try { folha = JSON.parse(saida.trim().split("\n").pop()); } catch { return falha(new Error("A folha de contato não respondeu")); }
       ok(folha);
     });
   }).then(async (folha) => {
-    aoPasso("👁 O Claude está a ver os frames…");
+    aoPasso("👁 O Claude está vendo os frames…");
     const pedido = [
-      `Revê este vídeo (${folha.quadros.length} quadros em ${folha.folhas.length} folhas de contacto). Lê cada folha com Read:`,
+      `Revê este vídeo (${folha.quadros.length} quadros em ${folha.folhas.length} folhas de contato). Lê cada folha com Read:`,
       ...folha.folhas.map((f) => `- ${join(RAIZ, f)}`),
       `Mapa dos quadros: ${JSON.stringify(folha.quadros)}`,
       "Responde só com o JSON.",
@@ -398,18 +398,18 @@ ${guiaDe("formato: animado")}` : "",
     job.lowpoly || job.formato === "animado" ? `${job.lowpoly ? REGRA_LOWPOLY + " " : ""}Campos da cena lowpoly em .claude/skills/novo-video/esquema-roteiro.md; para objetos que o motor não desenha, usa o objeto modelo com um nome de .claude/skills/novo-video/modelos-lowpoly.md.` : "",
     `Grava o roteiro em roteiros/${job.videoId}.json com "id": "${job.videoId}". Não incluas os campos cor, estilo, narracao nem voz.`,
     "Inclui mídia real (campo midia) sempre que fizer sentido, como a skill explica.",
-    "Logo a seguir ao gancho, uma apresentação clara do tema (secção 3a): uma ou duas frases que dizem de que é o vídeo, com o tema pelo nome, e o que a pessoa vai entender; só depois o desenvolvimento.",
-    "O roteiro tem de seguir o arco narrativo (início, meio e fim) e as regras de fala natural da skill (secções 3a e 3b): frases curtas, números e siglas por extenso na fala, marcas [pausa] antes das revelações, sempre logo a seguir a uma vírgula ou a um ponto (nunca no meio de uma frase sem pontuação: soa a vídeo travado).",
-    "Antes de gravar o ficheiro, faz a revisão da secção 3c: relê as falas em sequência como se as dissesses em voz alta e reescreve o que soar a texto lido ou não responder à promessa do gancho.",
-    "Começa pela pesquisa (secção 3.1): preenche o campo pesquisa com factos específicos, cada um com fonte e link.",
-    "Preços: usa e atualiza o catálogo dados/precos.json (secção 3.3) e liga cada produto com produto_ref.",
-    "A última cena é sempre um `cta` e a fala dele pede para se inscrever no canal (\"se inscreve pra não perder o próximo\"), mesmo quando a ação principal é comentar ou o link: ex. \"Comenta aí qual foi a tua e se inscreve no canal.\" O ecrã mostra sempre o botão de inscrição.",
+    "Logo a seguir ao gancho, uma apresentação clara do tema (seção 3a): uma ou duas frases que dizem de que é o vídeo, com o tema pelo nome, e o que a pessoa vai entender; só depois o desenvolvimento.",
+    "O roteiro tem de seguir o arco narrativo (início, meio e fim) e as regras de fala natural da skill (seções 3a e 3b): frases curtas, números e siglas por extenso na fala, marcas [pausa] antes das revelações, sempre logo a seguir a uma vírgula ou a um ponto (nunca no meio de uma frase sem pontuação: soa a vídeo travado).",
+    "Antes de gravar o arquivo, faz a revisão da seção 3c: relê as falas em sequência como se as dissesses em voz alta e reescreve o que soar a texto lido ou não responder à promessa do gancho.",
+    "Começa pela pesquisa (seção 3.1): preenche o campo pesquisa com fatos específicos, cada um com fonte e link.",
+    "Preços: usa e atualiza o catálogo dados/precos.json (seção 3.3) e liga cada produto com produto_ref.",
+    "A última cena é sempre um `cta` e a fala dele pede para se inscrever no canal (\"se inscreve pra não perder o próximo\"), mesmo quando a ação principal é comentar ou o link: ex. \"Comenta aí qual foi a tua e se inscreve no canal.\" O tela mostra sempre o botão de inscrição.",
     "Preenche também os campos thumbnail e legenda_post.",
     "No fim responde numa linha com as fontes usadas (e os preços, se houver).",
   ].filter(Boolean).join("\n");
 
   job.estado = "roteiro";
-  registar(job, "🤖 Claude a pesquisar e escrever o roteiro…");
+  registar(job, "🤖 Claude pesquisando e escrevendo o roteiro…");
   return rodarClaude(job, prompt).then(() => {
     if (!existsSync(caminhoRoteiro(job.videoId))) throw new Error("O Claude não gravou o roteiro");
     aplicarEscolhas(job);
@@ -466,7 +466,7 @@ const correrScript = (job, args) => new Promise((ok, falha) => {
 // descarrega imagens/b-rolls e renderiza cenas Manim, para a revisão já as mostrar
 async function prepararMidia(job) {
   job.estado = "midia";
-  registar(job, "🖼 A procurar imagens e b-rolls…");
+  registar(job, "🖼 Procurando imagens e b-rolls…");
   await correrScript(job, ["scripts/buscar_midia.py", `roteiros/${job.videoId}.json`]);
   await correrScript(job, ["scripts/manim_cenas.py", `roteiros/${job.videoId}.json`]);
 }
@@ -491,7 +491,7 @@ async function correrJob(job) {
     }
     if (job.revisar && job.tipo === "novo") {
       job.estado = "aguardando revisao";
-      registar(job, "👀 Revê o roteiro (preços, factos, avisos) e clica em Produzir");
+      registar(job, "👀 Revise o roteiro (preços, fatos, avisos) e clique em Produzir");
       return;
     }
     produzir(job);
@@ -531,7 +531,7 @@ function promptExterno(d) {
     comPrecos
       ? "- Você não tem acesso ao catálogo de preços. Pesquise o preço atual de cada produto em pelo menos 2 lojas confiáveis e registe cada preço na `pesquisa` com loja, link e data; ignore `produto_ref`."
       : "- Este formato não vende produtos. Se citar algum preço, pesquise-o e registe-o na `pesquisa` com loja, link e data.",
-    "- Pesquise na web antes de escrever. Se não puder navegar, use só factos de que tem certeza e diga a fonte original; nunca invente links.",
+    "- Pesquise na web antes de escrever. Se não puder navegar, use só fatos de que tem certeza e diga a fonte original; nunca invente links.",
     "",
     `## O formato deste vídeo: ${formato}`,
     (guiaDe(`formato: ${formato}`) ?? FORMATOS[formato]).replaceAll("{itens}", String(itens)),
@@ -547,16 +547,16 @@ function promptExterno(d) {
     ["ranking", "curiosidades", "quiz"].includes(formato) ? `- Número de ${{ ranking: "produtos", curiosidades: "curiosidades", quiz: "perguntas" }[formato]}: ${itens}` : null,
     `- País e moeda${comPrecos ? "" : " (se houver preços)"}: ${d.pais ?? "Brasil (R$)"}`,
     `- Idioma da narração: ${portugal ? "português europeu (o mercado é Portugal)" : "português brasileiro (PT-BR)"}`,
-    `- Estilo visual: ${est.nome}. Ajuste o tom do texto como diz a secção do estilo.`,
+    `- Estilo visual: ${est.nome}. Ajuste o tom do texto como diz a seção do estilo.`,
     `- Duração alvo: ${DURACOES[duracao]}.`,
     d.observacoes?.trim() ? `- Observações do criador: ${d.observacoes.trim()}` : null,
     d.lowpoly && formato !== "animado" ? `- ${REGRA_LOWPOLY}` : null,
     formato === "longo" ? "- É um vídeo longo: o JSON vai ter 45 a 90 cenas. Escreva-o inteiro, sem resumir nem cortar cenas. Se a resposta for cortada a meio, eu escrevo \"continue\" e você continua exatamente do ponto onde parou, sem repetir nada." : null,
     "",
-    "Faça a pesquisa, escreva, revise (secção 6) e responda só com o JSON.",
+    "Faça a pesquisa, escreva, revise (seção 6) e responda só com o JSON.",
   ].filter((l) => l !== null).join("\n")
     // a outra IA não conhece a skill: as referências apontam para as secções deste mesmo texto
-    .replace("campos descritos na skill", "campos descritos abaixo").replace(/ da skill/g, "").replace(/\(estrutura da secção [^)]*\)/g, "(estrutura na secção do formato, acima)");
+    .replace("campos descritos na skill", "campos descritos abaixo").replace(/ da skill/g, "").replace(/\(estrutura da secção [^)]*\)/g, "(estrutura na seção do formato, acima)");
 }
 
 // tira o JSON da resposta de outra IA (aceita blocos ```json e texto à volta)
@@ -741,11 +741,11 @@ const rotas = async (req, res) => {
   // a Google volta aqui depois de o criador autorizar o canal do YouTube
   if (req.method === "GET" && url.pathname === "/oauth/youtube") {
     const pagina = (titulo, texto) => { res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" }); res.end(`<!doctype html><meta charset="utf-8"><title>${titulo}</title><body style="font-family:system-ui;background:#0f1115;color:#eee;display:grid;place-items:center;height:100vh;margin:0"><div style="max-width:460px;text-align:center"><h2>${titulo}</h2><p>${texto}</p><p style="opacity:.6">Pode fechar esta janela e voltar ao painel.</p></div>`); };
-    if (url.searchParams.get("error")) return pagina("Ligação cancelada", "A Google não deu autorização.");
+    if (url.searchParams.get("error")) return pagina("Conexão cancelada", "A Google não deu autorização.");
     try {
       const r = await youtube.concluir(url.searchParams.get("code"), url.searchParams.get("state"));
-      return pagina("YouTube ligado", `O canal do estúdio <b>${r.canal}</b> publica agora em <b>${r.titulo.replace(/[<>&]/g, "")}</b>.`);
-    } catch (e) { return pagina("Não foi possível ligar", e.message.replace(/[<>&]/g, "")); }
+      return pagina("YouTube conectado", `O canal do estúdio <b>${r.canal}</b> publica agora em <b>${r.titulo.replace(/[<>&]/g, "")}</b>.`);
+    } catch (e) { return pagina("Não foi possível conectar", e.message.replace(/[<>&]/g, "")); }
   }
   if (req.method === "GET" && url.pathname === "/") {
     res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-cache" });
@@ -1115,7 +1115,7 @@ const rotas = async (req, res) => {
   if (b === "automatico" && !c && req.method === "GET") return json(res, 200, { config: automatico.ler(), estado: automatico.estado, youtube: youtube.estado() });
   if (b === "automatico" && !c && req.method === "PUT") return json(res, 200, { config: automatico.atualizarConfig(await corpo(req)) });
   if (b === "automatico" && c === "correr" && req.method === "POST") {
-    if (automatico.estado.aCorrer) return json(res, 409, { erro: "O modo automático já está a correr" });
+    if (automatico.estado.aCorrer) return json(res, 409, { erro: "O modo automático já está rodando" });
     automatico.correr("manual").catch(() => {});
     return json(res, 202, { ok: true });
   }
@@ -1170,7 +1170,7 @@ const rotas = async (req, res) => {
       if (Number.isInteger(d.fundo)) args.push("--fundo", String(d.fundo));
       if (["vertical", "horizontal"].includes(d.formato)) args.push("--formato", d.formato);
       return json(res, 202, novaTarefa("capa", (t) => new Promise((ok, falha) => {
-        t.passo = "🎨 A preparar o estúdio…";
+        t.passo = "🎨 Preparando o estúdio…";
         const p = spawn(process.execPath, args, { cwd: RAIZ, stdio: ["ignore", "pipe", "pipe"] });
         let ultima = "";
         p.stdout.on("data", (x) => {

@@ -63,14 +63,14 @@
               <label class="rotulo" for="focoCortes">Foco (opcional)</label>
               <input id="focoCortes" placeholder="ex.: as partes sobre dinheiro, as piadas, as polémicas">
             </div>
-            <div class="campo"><label class="interruptor"><span>Gancho escrito no ecrã nos primeiros segundos</span><input type="checkbox" id="ganchoCortes" checked></label></div>
+            <div class="campo"><label class="interruptor"><span>Gancho escrito na tela nos primeiros segundos</span><input type="checkbox" id="ganchoCortes" checked></label></div>
           </div>
           <div class="campo"><label class="interruptor"><span>Enquadrar no rosto (vídeos horizontais)</span><input type="checkbox" id="enquadrar" checked></label></div>
           <div class="campo"><label class="interruptor"><span>Cortar silêncios automaticamente</span><input type="checkbox" id="cortar" checked></label></div>
           <div class="campo">
             <label class="rotulo" for="destaquesClipe">Palavras em destaque</label>
             <input id="destaquesClipe" placeholder="grátis, segredo, nunca">
-            <div class="dica">As legendas são geradas pelo Whisper. Na primeira vez o modelo (cerca de 500 MB) é descarregado.</div>
+            <div class="dica">As legendas são geradas pelo Whisper. Na primeira vez o modelo (cerca de 500 MB) é baixado.</div>
           </div>
         </div>
       </section>
@@ -118,7 +118,7 @@
               <div class="dica">Mais tempo = mais profundidade. O alvo guia o tamanho das falas.</div>
             </div>
             <div class="campo" id="campoLowpoly"><label class="interruptor"><span>Animação 3D low poly em vez de fotos</span><input type="checkbox" id="lowpoly"></label></div>
-            <div class="campo"><label class="interruptor"><span>Revisão do editor-chefe (profundidade, factos e preços)</span><input type="checkbox" id="editorChefe" checked></label></div>
+            <div class="campo"><label class="interruptor"><span>Revisão do editor-chefe (profundidade, fatos e preços)</span><input type="checkbox" id="editorChefe" checked></label></div>
             <div class="campo"><label class="interruptor"><span>Revisão visual depois do render (o Claude vê os frames)</span><input type="checkbox" id="revisaoVisual" checked></label></div>
             <div class="campo"><label class="interruptor"><span>Rever o roteiro antes de renderizar</span><input type="checkbox" id="revisar" checked></label></div>
           </div>
@@ -127,7 +127,7 @@
     </div>
     <div class="rodape-lateral">
       <button class="btn primario" id="criar" title="Criar (Ctrl+Enter)" onclick="criar()"><i class="i" style="--u:url(/icones/sparkles.svg)"></i><span id="textoCriar">Criar roteiro</span></button>
-      <button class="btn fantasma" onclick="abrirIdeias()" title="Ideias de vídeos com base no que está a acontecer agora"><i class="i" style="--u:url(/icones/lightbulb.svg)"></i>Ideias de vídeos</button>
+      <button class="btn fantasma" onclick="abrirIdeias()" title="Ideias de vídeos com base no que está acontecendo agora"><i class="i" style="--u:url(/icones/lightbulb.svg)"></i>Ideias de vídeos</button>
       <button class="btn fantasma" id="outraIA" onclick="abrirOutraIA()" title="Escrever o roteiro no ChatGPT, Gemini ou outra IA e importar aqui"><i class="i" style="--u:url(/icones/clipboard-paste.svg)"></i>Usar outra IA</button>
     </div>
   </aside>
@@ -178,17 +178,17 @@
       <div class="campo">
         <label class="rotulo" for="tokenClaude">Claude (roteiros) <span id="estadoClaude"></span></label>
         <input id="tokenClaude" type="password" placeholder="Deixe vazio para manter (começa por sk-ant-oat)" autocomplete="off">
-        <div class="dica">Opcional, para os roteiros não pararem quando o login do Claude expira (importante no modo automático). Num terminal corra <b>claude setup-token</b>, entre com a sua conta e cole aqui o token que aparece. Fica só no ficheiro .env deste computador.</div>
+        <div class="dica">Opcional, para os roteiros não pararem quando o login do Claude expira (importante no modo automático). Num terminal corra <b>claude setup-token</b>, entre com a sua conta e cole aqui o token que aparece. Fica só no arquivo .env deste computador.</div>
       </div>
       <div class="campo">
         <label class="rotulo" for="googleId">Google (YouTube) <span id="estadoGoogle"></span></label>
         <input id="googleId" placeholder="ID do cliente (termina em .apps.googleusercontent.com)" autocomplete="off">
         <input id="googleSegredo" type="password" placeholder="Chave secreta do cliente (começa por GOCSPX-)" autocomplete="off" style="margin-top:6px">
-        <div class="dica">Para publicar no YouTube. Em console.cloud.google.com: crie um projeto, ative a "YouTube Data API v3", configure o ecrã de consentimento (tipo Externo, junte o seu e-mail como utilizador de teste) e em Credenciais → Criar credenciais → <b>ID do cliente OAuth</b> → tipo "App para computador" (não use "Chave de API": essa não publica). Cole aqui o ID do cliente e a chave secreta do cliente. Por fim, no ecrã de consentimento, carregue em "Publicar app": em modo de teste a Google desliga o canal ao fim de 7 dias (o aviso "app não verificada" ao ligar é normal, porque a app é sua).</div>
+        <div class="dica">Para publicar no YouTube. Em console.cloud.google.com: crie um projeto, ative a "YouTube Data API v3", configure a tela de consentimento (tipo Externo, junte o seu e-mail como usuário de teste) e em Credenciais → Criar credenciais → <b>ID do cliente OAuth</b> → tipo "App para computador" (não use "Chave de API": essa não publica). Cole aqui o ID do cliente e a chave secreta do cliente. Por fim, na tela de consentimento, carregue em "Publicar app": em modo de teste a Google desliga o canal ao fim de 7 dias (o aviso "app não verificada" ao ligar é normal, porque a app é sua).</div>
       </div>
-      <div class="dica" style="margin-top:14px">As chaves ficam só neste computador, no ficheiro <code>.env</code> do projeto.</div>
+      <div class="dica" style="margin-top:14px">As chaves ficam só neste computador, no arquivo <code>.env</code> do projeto.</div>
     </div>
-    <div class="gaveta-rodape"><button class="btn" onclick="dlgConfig.close()">Cancelar</button><button class="btn primario" onclick="guardarChave()">Guardar</button></div>
+    <div class="gaveta-rodape"><button class="btn" onclick="dlgConfig.close()">Cancelar</button><button class="btn primario" onclick="guardarChave()">Salvar</button></div>
   </div>
 </dialog>
 
@@ -204,7 +204,7 @@
     <div class="campo">
       <label class="rotulo">2. Cole aqui a resposta (o JSON)</label>
       <textarea id="respostaIA" rows="10" placeholder='{"titulo": "...", "cenas": [...]}' style="font-family:var(--mono, monospace);font-size:12px"></textarea>
-      <div class="dica">O estúdio valida o roteiro, busca a mídia e deixa-o à espera da sua revisão antes de narrar e renderizar.</div>
+      <div class="dica">O estúdio valida o roteiro, busca a mídia e o deixa aguardando sua revisão antes de narrar e renderizar.</div>
     </div>
     <div><button class="btn primario" id="importarIA" onclick="importarRoteiroIA()"><i class="i" style="--u:url(/icones/download.svg)"></i>Importar roteiro</button></div>
   </div>
@@ -217,7 +217,7 @@
     <div class="gaveta-corpo" id="autoCorpo"></div>
     <div class="gaveta-rodape">
       <button class="btn" id="btnAutoAgora" onclick="correrAutoAgora()"><i class="i" style="--u:url(/icones/play.svg)"></i>Correr agora</button>
-      <button class="btn primario" onclick="guardarAuto()">Guardar</button>
+      <button class="btn primario" onclick="guardarAuto()">Salvar</button>
     </div>
   </div>
 </dialog>
@@ -263,7 +263,7 @@
           <div class="previa-marca"><div class="marca-pilula" id="marcaPrevia"></div></div>
         </div>
         <div class="linha" style="gap:10px">
-          <button class="btn primario" type="submit" id="btnGuardarCanal"><i class="i" style="--u:url(/icones/check.svg)"></i>Guardar canal</button>
+          <button class="btn primario" type="submit" id="btnGuardarCanal"><i class="i" style="--u:url(/icones/check.svg)"></i>Salvar canal</button>
           <button class="btn fantasma" type="button" onclick="$('#formCanal').hidden = true; $('#btnNovoCanal').hidden = false">Cancelar</button>
         </div>
       </form>
@@ -290,7 +290,7 @@
       <div class="campo">
         <label class="rotulo" for="ideiasFoco">Foco (opcional)</label>
         <input id="ideiasFoco" placeholder="ex.: placas de vídeo baratas, GTA 6, E se? sobre o espaço">
-        <div class="dica" id="ideiasDica">O Claude pesquisa o que está a acontecer agora no nicho do canal e evita os temas que o canal já fez.</div>
+        <div class="dica" id="ideiasDica">O Claude pesquisa o que está acontecendo agora no nicho do canal e evita os temas que o canal já fez.</div>
       </div>
       <div class="linha" style="margin-bottom:14px"><button class="btn primario" id="btnIdeias" onclick="gerarIdeias()"><i class="i" style="--u:url(/icones/lightbulb.svg)"></i>Gerar ideias</button><span class="meta" id="ideiasPasso"></span></div>
       <div id="ideiasLista" style="display:flex;flex-direction:column;gap:10px"></div>
@@ -331,8 +331,8 @@
     <div class="gaveta-topo"><b id="edTitulo">Roteiro</b><button class="btn fantasma icone" onclick="dlgEditor.close()" title="Fechar"><i class="i" style="--u:url(/icones/x.svg)"></i></button></div>
     <div class="gaveta-corpo" id="edCorpo"></div>
     <div class="gaveta-rodape">
-      <button class="btn" onclick="guardarRoteiro(false)">Guardar</button>
-      <button class="btn primario" onclick="guardarRoteiro(true)"><i class="i" style="--u:url(/icones/play.svg)"></i>Guardar e renderizar</button>
+      <button class="btn" onclick="guardarRoteiro(false)">Salvar</button>
+      <button class="btn primario" onclick="guardarRoteiro(true)"><i class="i" style="--u:url(/icones/play.svg)"></i>Salvar e renderizar</button>
     </div>
   </div>
 </dialog>

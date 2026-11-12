@@ -54,7 +54,7 @@ export function criarCortes({ raiz, claudeJSON }) {
     const arquivo = d.arquivo;
     if (!/^uploads\/[\w.-]+$/.test(arquivo ?? "") || !existsSync(join(raiz, "public", arquivo))) throw new Error("Vídeo não encontrado");
     mkdirSync(pasta(arquivo), { recursive: true });
-    t.passo = "🎧 A transcrever o vídeo (a primeira vez demora)…";
+    t.passo = "🎧 Transcrevendo o vídeo (a primeira vez demora)…";
     const tr = await transcrever(t, arquivo);
     if (tr.duracao < 45 || tr.frases.length < 5) throw new Error("O vídeo é curto ou tem pouca fala para escolher cortes (use o modo de clipe normal)");
     const min = Math.max(10, Number(d.min) || 20), max = Math.max(min + 5, Number(d.max) || 60);
@@ -64,7 +64,7 @@ export function criarCortes({ raiz, claudeJSON }) {
     const notas = [];
     for (let k = 0; k < js.length; k += 30) {
       const lote = js.slice(k, k + 30);
-      t.passo = `🤖 A pontuar os momentos (${Math.min(k + 30, js.length)}/${js.length})…`;
+      t.passo = `🤖 Pontuando os momentos (${Math.min(k + 30, js.length)}/${js.length})…`;
       const r = await claudeJSON(t, guia, [
         "FASE: pontuar janelas.",
         `IDIOMA: ${tr.idioma}. DURAÇÃO DO VÍDEO: ${Math.round(tr.duracao)} s.`,
@@ -81,7 +81,7 @@ export function criarCortes({ raiz, claudeJSON }) {
     // fase 2: detalhar os cortes das melhores janelas
     const quantos = Number(d.quantidade) || 0;
     const minC = quantos || Math.min(3, curta.length * 2), maxC = quantos || Math.min(12, curta.length * 2);
-    t.passo = `🤖 A escolher os cortes em ${curta.length} momentos…`;
+    t.passo = `🤖 Escolhendo os cortes em ${curta.length} momentos…`;
     const r = await claudeJSON(t, guia, [
       "FASE: detalhar os cortes.",
       `IDIOMA: ${tr.idioma}. DURAÇÃO DO VÍDEO: ${Math.round(tr.duracao)} s.`,
