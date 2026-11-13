@@ -33,5 +33,9 @@ O código próprio do Studioware é proprietário (ver `LICENSE`). Estes compone
 
 ## Fora do repositório (cada instalação traz os seus)
 - Modelos do Sketchfab (`public/modelos3d/`): licença individual de cada modelo.
+- Modelos do Poly Haven (`public/modelos/polyhaven/`, descarregados por `scripts/baixar_polyhaven.py`): CC0 1.0
+  (domínio público); o catálogo `src/lowpoly/polyhaven.json` está no git.
+- Fonte Keep Calm (`public/fontes/`): K-Type, licença comercial paga; distribuir o produto com ela exige a Enterprise Licence.
+- Biblioteca de gameplay (`public/gameplay/`): gravações do próprio criador.
 - Músicas importadas (YouTube Audio Library e outras): uso nos vídeos conforme a licença de cada faixa; não se redistribuem.
 - Amostras de voz para clonar (`public/vozes/`): só com autorização da pessoa.

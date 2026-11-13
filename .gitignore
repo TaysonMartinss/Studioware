@@ -50,3 +50,6 @@ public/modelos/polyhaven/
 
 # biblioteca de gameplay do criador (vídeos grandes)
 public/gameplay/
+
+# estado do modo automático desta máquina (histórico, última execução)
+dados/automatico.json
