@@ -120,7 +120,9 @@ const Exemplo: React.FC<{ b: Broll; cor: string; palavras: Palavra[] }> = ({ b, 
 const Empilhado: React.FC<{ src: string; cena: CenaClipe; f: number; fps: number; L: number; A: number; zoom: number; cortes: number[] }> = ({ src, cena, f, fps, L, A, zoom, cortes }) => {
   const { durationInFrames: total } = useVideoConfig();
   const enq = cena.enquadramento, gp = cena.gameplay!;
-  const hc = Math.round(A * 0.46); // altura da faixa da pessoa
+  // a mesma altura do layout de gameplay com webcam: a faixa de cima tem a proporção de um vídeo 16:9 (entre 30% e 40%
+  // do ecrã), para os dois modos terem o mesmo corte e o mesmo desvanecimento
+  const hc = Math.round(Math.min(A * 0.4, Math.max(A * 0.3, L / (16 / 9))));
   const aspeto = L / hc;
   const vl = enq?.largura ?? cena.largura ?? 1080, va = enq?.altura ?? cena.altura ?? 1920;
   // retângulo da pessoa com a forma da faixa: à volta do rosto (modo seguir), no terço de cima (vídeo vertical) ou ao centro
