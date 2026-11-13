@@ -13,5 +13,13 @@
     "logo": "marca/ovaranalisa.png",
     "nicho": "futebol: análise de lances polémicos, arbitragem e VAR, regras explicadas, curiosidades, recordes e histórias do futebol",
     "categoriaYoutube": 17
+  },
+  "centralcounterstrike": {
+    "nome": "Central Rockstar Games",
+    "arroba": "@centralrockstargames",
+    "logo": "marca/centralcounterstrike-mwfawthv.png",
+    "nicho": "videos sobre GTA 6 e seus criadores de conteudo brasileiro.",
+    "categoriaYoutube": 20,
+    "redonda": true
   }
 }

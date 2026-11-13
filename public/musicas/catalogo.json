@@ -34,5 +34,41 @@
     "bpm": 89,
     "duracaoS": 178.7,
     "climaSugerido": "energetica"
+  },
+  "musicas/energetica/electric-dreams-scott-buckley-no-copyright-music-audio-library-1.mp3": {
+    "titulo": "Electric Dreams – Scott Buckley (No Copyright Music)",
+    "artista": "Audio Library (1)",
+    "origem": "YouTube Audio Library",
+    "credito": "",
+    "bpm": 99,
+    "duracaoS": 292.3,
+    "climaSugerido": "energetica"
+  },
+  "musicas/energetica/ether-silent-partner-no-copyright-music-audio-library.mp3": {
+    "titulo": "Ether – Silent Partner (No Copyright Music)",
+    "artista": "Audio Library",
+    "origem": "YouTube Audio Library",
+    "credito": "",
+    "bpm": 136,
+    "duracaoS": 212.2,
+    "climaSugerido": "energetica"
+  },
+  "musicas/energetica/sugar-zone-silent-partner-no-copyright-music-audio-library-1.mp3": {
+    "titulo": "Sugar Zone – Silent Partner (No Copyright Music)",
+    "artista": "Audio Library (1)",
+    "origem": "YouTube Audio Library",
+    "credito": "",
+    "bpm": 103,
+    "duracaoS": 114.2,
+    "climaSugerido": "energetica"
+  },
+  "musicas/energetica/sugar-zone-silent-partner-no-copyright-music-audio-library.mp3": {
+    "titulo": "Sugar Zone – Silent Partner (No Copyright Music)",
+    "artista": "Audio Library",
+    "origem": "YouTube Audio Library",
+    "credito": "",
+    "bpm": 103,
+    "duracaoS": 114.2,
+    "climaSugerido": "energetica"
   }
 }
