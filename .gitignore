@@ -47,3 +47,6 @@ public/musicas/**/*.wav
 
 # modelos 3D do Poly Haven (CC0, ~1 GB): python scripts/baixar_polyhaven.py
 public/modelos/polyhaven/
+
+# biblioteca de gameplay do criador (vídeos grandes)
+public/gameplay/

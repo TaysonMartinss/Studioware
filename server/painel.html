@@ -125,6 +125,13 @@
           </div>
           <div class="campo"><label class="interruptor"><span>Enquadrar no rosto <small>vídeos horizontais viram verticais</small></span><input type="checkbox" id="enquadrar" checked></label></div>
           <div class="campo"><label class="interruptor"><span>Cortar silêncios automaticamente</span><input type="checkbox" id="cortar" checked></label></div>
+          <div class="campo">
+            <label class="rotulo" for="gameplay">Gameplay em baixo <small>o rosto fica em cima e a gameplay em baixo; cada Short usa um trecho diferente</small></label>
+            <div class="linha" style="gap:8px">
+              <select id="gameplay" style="flex:1"><option value="nenhuma">Sem gameplay (layout normal)</option></select>
+              <label class="btn peq" style="margin:0"><i class="i" style="--u:url(/icones/upload.svg);width:14px;height:14px"></i>Adicionar<input type="file" accept="video/*" hidden onchange="enviarGameplay(this.files[0])"></label>
+            </div>
+          </div>
           <div class="campo"><label class="interruptor"><span>Exemplos visuais por cima da fala <small>em podcasts e vídeos só de conversa, o Claude mostra vídeos, imagens, low poly ou desenhos do que a pessoa diz (gasta tokens: uma chamada por Short)</small></span><input type="checkbox" id="exemplos" checked></label></div>
           <div class="campo" id="campoDestaques">
             <label class="rotulo" for="destaquesClipe">Palavras em destaque <span class="opcional">opcional</span></label>

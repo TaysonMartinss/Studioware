@@ -453,5 +453,28 @@
     "raio": 4,
     "brilho": false,
     "tracking": "-0.04em"
+  },
+  "vice": {
+    "nome": "Vice Sunset",
+    "descricao": "Cidade costeira ao pôr do sol (direção de arte inspirada no GTA VI): céu roxo-rosa-laranja, palmeiras, letra condensada em itálico; nos cortes, rosto em cima e gameplay em baixo",
+    "cor": "#ffd45e",
+    "cor2": "#2ee6d6",
+    "fundo": "#1a0a2e",
+    "corTexto": "#ffffff",
+    "sombra": "0 6px 0 #2a0b45",
+    "superficie": "#ffffff1f",
+    "tema": "vice",
+    "overlay": "grao",
+    "transicao": "corte",
+    "legenda": "padrao",
+    "titulo": "anton",
+    "corpo": "inter",
+    "glitch": false,
+    "shake": 0.4,
+    "flash": 0,
+    "passo": 1,
+    "raio": 28,
+    "brilho": false,
+    "tracking": "0.01em"
   }
 }

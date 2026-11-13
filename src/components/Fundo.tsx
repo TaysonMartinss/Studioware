@@ -3,6 +3,7 @@ import { Estilo, useEstilo } from "../estilos";
 import { useFrame } from "./motion";
 import { PapelAquarela } from "./Aquarela";
 import { GrelhaOndulada } from "./GrelhaOndulada";
+import { FundoVice } from "./Vice";
 
 // Luz difusa vinda de cima, em vez de manchas de cor a flutuar
 const Luz: React.FC<{ cor: string; forte?: boolean }> = ({ cor, forte }) => (
@@ -178,6 +179,7 @@ export const Fundo: React.FC<{ cor: string }> = ({ cor }) => {
       {/* fundos pretos: grelha de linhas brancas onduladas (o Neon mantém a luz da cor por cima) */}
       {e.tema === "grelha" && <><GrelhaOndulada opacidade={0.55} /><Luz cor={cor} /></>}
       {e.tema === "solido" && <GrelhaOndulada opacidade={0.55} />}
+      {e.tema === "vice" && <FundoVice />}
       {/* editorial: papel milimétrico claro, com a luz a cair do centro */}
       {e.tema === "editorial" && (
         <>

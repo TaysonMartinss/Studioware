@@ -804,7 +804,7 @@ async function criar() {
       const arquivos = [];
       for (const f of ficheiros) arquivos.push(await enviarFicheiro(f));
       await api("/api/jobs", { method: "POST", body: {
-        formato: "clipe", tema, estilo: estado.estilo, canal: $("#canal").value, arquivos, musica: $("#musica").value, cortar: $("#cortar").checked, destaques: $("#destaquesClipe").value, enquadrar: $("#enquadrar").checked, exemplos: $("#exemplos").checked,
+        formato: "clipe", tema, estilo: estado.estilo, canal: $("#canal").value, arquivos, musica: $("#musica").value, cortar: $("#cortar").checked, destaques: $("#destaquesClipe").value, enquadrar: $("#enquadrar").checked, exemplos: $("#exemplos").checked, gameplay: $("#gameplay").value,
       } });
       $("#ficheirosClipe").value = ""; $("#nomesClipe").textContent = "Escolha os vídeos (pela ordem em que entram)";
       toast("Cortando e legendando", "scissors");
@@ -1142,6 +1142,26 @@ function mudarModoCortes() {
   mudarFormato();
 }
 const tempo = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
+// ---------- biblioteca de gameplay ----------
+function desenharGameplays(lista, escolher) {
+  const atual = escolher ?? $("#gameplay").value;
+  const min = (s) => `${Math.floor(s / 60)} min`;
+  $("#gameplay").innerHTML = `<option value="nenhuma">Sem gameplay (layout normal)</option>` +
+    (lista.length ? `<option value="aleatoria">Qualquer uma da biblioteca (${lista.length})</option>` : "") +
+    lista.map((g) => `<option value="${esc(g.arquivo)}">${esc(g.nome)} · ${min(g.duracaoS)}</option>`).join("");
+  $("#gameplay").value = [...$("#gameplay").options].some((o) => o.value === atual) ? atual : "nenhuma";
+}
+async function carregarGameplays() { try { desenharGameplays(await api("/api/gameplay")); } catch {} }
+async function enviarGameplay(f) {
+  if (!f) return;
+  try {
+    toast("Enviando a gameplay…", "upload");
+    const d = await enviarComProgresso(`/api/upload?nome=${encodeURIComponent(f.name)}&gameplay=1`, f);
+    desenharGameplays(d.gameplays, d.caminho);
+    toast("Gameplay na biblioteca", "check");
+  } catch (e) { toast(e.message, "triangle-alert"); }
+}
+
 async function analisarCortes() {
   const f = $("#ficheirosClipe").files[0];
   if (!f) return toast("Escolha o vídeo", "film");
@@ -1294,7 +1314,7 @@ async function produzirCortes() {
   try {
     await api("/api/cortes/produzir", { method: "POST", body: {
       arquivo: cortesAtuais.arquivo, cortes: escolhidos, estilo: estado.estilo, canal: $("#canal").value, musica: $("#musica").value,
-      cortar: $("#cortar").checked, enquadrar: $("#enquadrar").checked, gancho: $("#ganchoCortes").checked, exemplos: $("#exemplos").checked,
+      cortar: $("#cortar").checked, enquadrar: $("#enquadrar").checked, gancho: $("#ganchoCortes").checked, exemplos: $("#exemplos").checked, gameplay: $("#gameplay").value,
     } });
     dlgCortes.close();
     toast(`${escolhidos.length} Shorts na fila de render`, "scissors");
@@ -1864,6 +1884,7 @@ async function guardarRoteiro(depoisProduzir) {
   desenharIconeTema();
   desenharLado();
   desenharAnalises();
+  carregarGameplays();
   irPara(location.hash.slice(1) || "criar", { historico: false });
   // a fila atualiza de 2 em 2 s com o painel à vista; escondido, de 10 em 10 s (chega para os avisos do Windows)
   let ultimaFila = Date.now();

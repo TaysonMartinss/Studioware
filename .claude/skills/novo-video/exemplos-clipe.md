@@ -18,11 +18,15 @@ como um editor de reels. Durante o apoio a pessoa **não aparece** (sem câmara 
    importante é dita (usa o tempo do trecho) e acaba no fim dessa ideia, numa pausa.
 2. **Estímulo contínuo**: a imagem muda a cada 3 a 5 s (o estúdio já muda o zoom da pessoa sozinho; os teus apoios
    são os outros cortes). Num corte de 30 a 60 s, 6 a 12 apoios (3 a 4 num de 20 s); 2 a 5 s de pessoa entre eles.
-3. **Texto como design**: as frases de efeito viram tipografia editorial (`editorial`), não legenda.
-4. **Cena com contexto**: cada apoio é uma extensão da mensagem (o cérebro quando se fala da mente, o coração no amor,
+3. **Explicar ao espectador**: sempre que a pessoa usa um termo, nome, lugar, mecânica, evento ou referência que quem
+   está a ver pode não conhecer (ex.: "o patch novo", "a Leonida", "o modo RP", "o crash de 2008"), mostre um apoio que
+   **explique de facto** o que é: um vídeo que o mostre (`midia`), uma faixa com o número (`faixa`), o dado (`dado`) ou a
+   frase escrita com o objeto (`editorial`). Se o corte tem gameplay em baixo, ela é só fundo: não conta como explicação.
+4. **Texto como design**: as frases de efeito viram tipografia editorial (`editorial`), não legenda.
+5. **Cena com contexto**: cada apoio é uma extensão da mensagem (o cérebro quando se fala da mente, o coração no amor,
    o gráfico quando há números), nunca decoração solta.
-5. **Continuidade**: um apoio fecha uma ideia e a pessoa abre a próxima; não corte a meio de uma frase curta.
-6. **Sentido narrativo acima do ritmo**: os apoios constroem tensão antes de uma revelação; a **revelação, a piada ou a
+6. **Continuidade**: um apoio fecha uma ideia e a pessoa abre a próxima; não corte a meio de uma frase curta.
+7. **Sentido narrativo acima do ritmo**: os apoios constroem tensão antes de uma revelação; a **revelação, a piada ou a
    conclusão ficam na cara da pessoa** (a reação dela prende). Nunca nos primeiros 2 s (o gancho é a pessoa) nem nos
    últimos 2 s. A pessoa fica visível em pelo menos 40% do corte.
 (O estúdio já põe woosh e impactos nas entradas dos apoios e mexe a câmara em tudo; não precisas de pedir.)

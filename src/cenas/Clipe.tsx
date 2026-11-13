@@ -1,4 +1,4 @@
-import { AbsoluteFill, Easing, OffthreadVideo, Sequence, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
+import { AbsoluteFill, Easing, Loop, OffthreadVideo, Sequence, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import { Conteudo, MidiaCartao } from "../components/MidiaReal";
 import { LowPolyCena } from "../lowpoly/LowPolyCena";
 import { PincelCena } from "../pincel/PincelCena";
@@ -114,6 +114,42 @@ const Exemplo: React.FC<{ b: Broll; cor: string; palavras: Palavra[] }> = ({ b, 
   );
 };
 
+// Rosto em cima e gameplay em baixo, como o layout de gameplay com webcam: a pessoa a toda a largura no topo
+// (enquadrada no rosto, com os mesmos zooms de plano) e a base dela a desvanecer para dentro da gameplay.
+// A gameplay vem da biblioteca, num trecho diferente em cada Short, sem som (a voz é a da pessoa).
+const Empilhado: React.FC<{ src: string; cena: CenaClipe; f: number; fps: number; L: number; A: number; zoom: number }> = ({ src, cena, f, fps, L, A, zoom }) => {
+  const enq = cena.enquadramento, gp = cena.gameplay!;
+  const hc = Math.round(A * 0.46); // altura da faixa da pessoa
+  const aspeto = L / hc;
+  const vl = enq?.largura ?? cena.largura ?? 1080, va = enq?.altura ?? cena.altura ?? 1920;
+  // retângulo da pessoa com a forma da faixa: à volta do rosto (modo seguir), no terço de cima (vídeo vertical) ou ao centro
+  let r: Retangulo;
+  if (enq?.modo === "seguir" && enq.xs?.length && enq.cropLargura) {
+    const i = Math.min(enq.xs.length - 1, Math.max(0, Math.round((f / fps) * enq.fps)));
+    const h = va * 0.85, w = Math.min(vl, h * aspeto), cx = enq.xs[i] + enq.cropLargura / 2;
+    r = [Math.min(vl - w, Math.max(0, cx - w / 2)), va * 0.03, w, h];
+  } else if (vl <= va) {
+    const w = vl, h = Math.min(va, w / aspeto);
+    r = [0, va * 0.08, w, h];
+  } else {
+    const h = va, w = Math.min(vl, h * aspeto);
+    r = [vl / 2 - w / 2, 0, w, h];
+  }
+  const ini = Math.round(gp.inicioS * fps), resto = Math.max(fps, Math.floor((gp.duracaoS - gp.inicioS) * fps));
+  return (
+    <AbsoluteFill style={{ background: "#000" }}>
+      {/* a gameplay começa por baixo da pessoa, para a base da pessoa desvanecer por cima dela */}
+      <div style={{ position: "absolute", left: 0, top: hc - DESVANECER, width: L, height: A - hc + DESVANECER, overflow: "hidden" }}>
+        <Loop durationInFrames={resto} layout="none">
+          <OffthreadVideo src={staticFile(gp.arquivo)} muted trimBefore={ini} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", transform: `scale(${1 + (zoom - 1) * 0.4})` }} />
+        </Loop>
+      </div>
+      <Recorte src={src} vl={vl} va={va} r={r} caixa={{ top: 0, altura: hc, largura: L }} zoom={zoom}
+        mascara={`linear-gradient(180deg, #000 0, #000 ${hc - DESVANECER}px, rgba(0,0,0,.8) ${hc - DESVANECER / 2}px, transparent ${hc}px)`} />
+    </AbsoluteFill>
+  );
+};
+
 // Vídeo gravado por si (já cortado pelo Auto-Editor). Vertical ocupa o ecrã todo; horizontal fica ao centro com fundo desfocado.
 export const Clipe: React.FC<{ cena: CenaClipe; cor: string }> = ({ cena, cor }) => {
   const f = useFrame();
@@ -142,7 +178,9 @@ export const Clipe: React.FC<{ cena: CenaClipe; cor: string }> = ({ cena, cor })
 
   return (
     <AbsoluteFill>
-      {webcam ? (
+      {cena.gameplay?.arquivo && !webcam ? (
+        <Empilhado src={src} cena={cena} f={f} fps={fps} L={L} A={A} zoom={zoom} />
+      ) : webcam ? (
         <Dividido src={src} enq={enq!} f={f} fps={fps} L={L} A={A} zoom={1 + (zoom - 1) * 0.5} />
       ) : seguir ? (
         // enquadramento automático: o vídeo enche a altura e desliza para o x do corte deste frame

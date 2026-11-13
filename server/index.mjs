@@ -1,7 +1,7 @@
 // Painel local: http://localhost:4321
 // O roteiro é escrito pelo Claude Code em modo headless (claude -p, usa a skill novo-video);
 // a narração e o render correm em scripts/produzir.mjs.
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import { copyFileSync, createReadStream, createWriteStream, existsSync, mkdirSync, readFileSync, readdirSync, renameSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { pipeline } from "node:stream/promises";
 import { CLIMAS, POR_ESTILO, POR_FORMATO, gravarCatalogo, lerCatalogo, listarMusicas } from "../scripts/musica.mjs";
@@ -105,6 +105,34 @@ async function prepararVozEleven(voz) {
     throw new Error(`A ElevenLabs não deixou adicionar a voz: ${msg.slice(0, 200)}`);
   }
   return d.voice_id ?? id;
+}
+
+// ---------- biblioteca de gameplay (metade de baixo do layout rosto + gameplay) ----------
+// clipes do próprio criador em public/gameplay (fora do git); a duração fica guardada em .duracoes.json
+const PASTA_GAMEPLAY = join(RAIZ, "public/gameplay");
+function gameplays() {
+  if (!existsSync(PASTA_GAMEPLAY)) return [];
+  const cache = join(PASTA_GAMEPLAY, ".duracoes.json");
+  const duracoes = existsSync(cache) ? JSON.parse(readFileSync(cache, "utf-8")) : {};
+  let mudou = false;
+  const lista = readdirSync(PASTA_GAMEPLAY).filter((f) => /\.(mp4|mov|webm|mkv)$/i.test(f) && !f.startsWith(".") && !f.includes(".tmp.")).map((f) => {
+    if (!duracoes[f]) {
+      const r = spawnSync("npx", ["remotion", "ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", `"${join(PASTA_GAMEPLAY, f)}"`], { shell: true, encoding: "utf-8" });
+      duracoes[f] = Number(String(r.stdout).trim()) || 0;
+      mudou = true;
+    }
+    return { arquivo: `gameplay/${f}`, nome: f.replace(/\.\w+$/, "").replace(/-/g, " "), duracaoS: duracoes[f] };
+  });
+  if (mudou) writeFileSync(cache, JSON.stringify(duracoes));
+  return lista.filter((g) => g.duracaoS > 5);
+}
+// um trecho da biblioteca para um Short: o clipe pedido (ou um ao acaso) e um início ao acaso que caiba
+function trechoGameplay(pedido, duracaoS = 60) {
+  const lista = gameplays();
+  if (!pedido || pedido === "nenhuma" || !lista.length) return undefined;
+  const g = lista.find((x) => x.arquivo === pedido) ?? lista[Math.floor(Math.random() * lista.length)];
+  const folga = Math.max(0, g.duracaoS - duracaoS - 1);
+  return { arquivo: g.arquivo, duracaoS: g.duracaoS, inicioS: Math.round(Math.random() * folga * 10) / 10 };
 }
 
 // ---------- parar operações ----------
@@ -899,6 +927,27 @@ const rotas = async (req, res) => {
       await pipeline(req, createWriteStream(join(RAIZ, "public/vozes", nome)));
       return json(res, 200, { caminho: `vozes/${nome}`, vozes: vozesChatterbox() });
     }
+    if (url.searchParams.get("gameplay")) {
+      // clipe de gameplay para a biblioteca (metade de baixo do layout rosto + gameplay)
+      const ext = original.match(/\.(mp4|mov|webm|mkv)$/)?.[1];
+      if (!ext) return json(res, 400, { erro: "formato de vídeo não suportado (mp4, mov, webm, mkv)" });
+      mkdirSync(PASTA_GAMEPLAY, { recursive: true });
+      const nome = `${slug(original.replace(/\.\w+$/, "")) || "gameplay"}-${Date.now().toString(36)}.${ext}`;
+      const bruto = join(PASTA_GAMEPLAY, `.bruto-${nome}`);
+      await pipeline(req, createWriteStream(bruto));
+      // o cartão de baixo tem ~1000x850 px: converte para 720p a 30 fps, sem som (≈10x mais leve). Cada render lê o
+      // ficheiro inteiro para o Temp, por isso uma gameplay de 450 MB pesava 450 MB por vídeo. Corre em segundo plano.
+      const final = join(PASTA_GAMEPLAY, nome.replace(/\.\w+$/, ".mp4"));
+      const aspas = (x) => `"${x}"`;
+      const conv = spawn("npx", ["remotion", "ffmpeg", "-y", "-loglevel", "error", "-i", aspas(bruto), "-vf", aspas("scale=-2:720,fps=30"), "-c:v", "libx264", "-preset", "veryfast", "-crf", "26", "-an", aspas(`${final}.tmp.mp4`)], { shell: true, stdio: "ignore" });
+      conv.on("close", (code) => {
+        try {
+          if (code === 0) { renameSync(`${final}.tmp.mp4`, final); rmSync(bruto, { force: true }); }
+          else renameSync(bruto, final); // não converteu: fica o original
+        } catch { /* fica para a próxima */ }
+      });
+      return json(res, 200, { caminho: `gameplay/${basename(final)}`, gameplays: gameplays(), aConverter: true });
+    }
     if (clima) {
       // faixa de música para a biblioteca
       if (!CLIMAS[clima]) return json(res, 400, { erro: "clima desconhecido" });
@@ -995,7 +1044,7 @@ const rotas = async (req, res) => {
         id: videoId, titulo, formato: "clipe", estilo: d.estilo ?? "hormozi", musica: d.musica ?? "auto",
         ...(canalDe(d.canal) === "nenhum" ? { marcaDagua: false } : canalDe(d.canal) && { canal: d.canal }),
         destaques: Object.keys(emojis), legenda_post: x.legenda_post, nota: x.nota,
-        cenas: [{ tipo: "clipe", bruto: d.arquivo, inicio: x.inicio, fim: x.fim, fala: "", titulo: d.gancho === false ? undefined : x.gancho, cortar: d.cortar !== false, enquadrar: d.enquadrar !== false, exemplos: d.exemplos !== false }],
+        cenas: [{ tipo: "clipe", bruto: d.arquivo, inicio: x.inicio, fim: x.fim, fala: "", titulo: d.gancho === false ? undefined : x.gancho, cortar: d.cortar !== false, enquadrar: d.enquadrar !== false, exemplos: d.exemplos !== false, gameplay: trechoGameplay(d.gameplay, x.fim - x.inicio) }],
       }, null, 2));
       const job = novoJob({ tipo: "render", formato: "clipe", videoId, tema: titulo, estilo: d.estilo, narracao: "clipe" });
       produzir(job);
@@ -1004,6 +1053,7 @@ const rotas = async (req, res) => {
     return json(res, 201, criados);
   }
 
+  if (b === "gameplay" && !c && req.method === "GET") return json(res, 200, gameplays());
   if (b === "jobs" && req.method === "GET") return json(res, 200, [...jobs.values()].sort((x, y) => y.criado - x.criado));
   if (b === "jobs" && c === "parar-tudo" && req.method === "POST") {
     return json(res, 200, { parados: [...jobs.values()].filter(pararJob).length });
@@ -1026,7 +1076,7 @@ const rotas = async (req, res) => {
         id: videoId, titulo: d.tema.trim(), formato: "clipe", estilo: d.estilo ?? "hormozi", musica: d.musica ?? "auto",
         ...(canalDe(d.canal) === "nenhum" ? { marcaDagua: false } : canalDe(d.canal) && { canal: d.canal }),
         destaques: (d.destaques ?? "").split(",").map((x) => x.trim()).filter(Boolean),
-        cenas: arquivos.map((a) => ({ tipo: "clipe", bruto: a, fala: "", cortar: d.cortar !== false, enquadrar: d.enquadrar !== false, exemplos: d.exemplos === true })),
+        cenas: arquivos.map((a) => ({ tipo: "clipe", bruto: a, fala: "", cortar: d.cortar !== false, enquadrar: d.enquadrar !== false, exemplos: d.exemplos === true, gameplay: trechoGameplay(d.gameplay) })),
       }, null, 2));
       const job = novoJob({ tipo: "render", formato: "clipe", videoId, tema: d.tema.trim(), estilo: d.estilo, narracao: "clipe" });
       produzir(job);
