@@ -2994,6 +2994,25 @@
    "carpentry"
   ]
  },
+ "flood_lights": {
+  "arquivo": "modelos/polyhaven/flood_lights/flood_lights_1k.gltf",
+  "nome": "Flood Lights",
+  "categorias": [
+   "lighting",
+   "industrial",
+   "electronics"
+  ],
+  "tags": [
+   "light",
+   "outdoor",
+   "industrial",
+   "lighting",
+   "work light",
+   "portable",
+   "tripod stand",
+   "jobsite"
+  ]
+ },
  "flower_empodium": {
   "arquivo": "modelos/polyhaven/flower_empodium/flower_empodium_1k.gltf",
   "nome": "Flower Empodium",
@@ -3927,6 +3946,5239 @@
    "old",
    "fancy",
    "decorative"
+  ]
+ },
+ "katana_stand_01": {
+  "arquivo": "modelos/polyhaven/katana_stand_01/katana_stand_01_1k.gltf",
+  "nome": "Katana Stand 01",
+  "categorias": [
+   "props",
+   "decorative"
+  ],
+  "tags": [
+   "katana",
+   "stand",
+   "wooden",
+   "painted",
+   "worn",
+   "simple",
+   "display"
+  ]
+ },
+ "kite_shield": {
+  "arquivo": "modelos/polyhaven/kite_shield/kite_shield_1k.gltf",
+  "nome": "Kite Shield",
+  "categorias": [
+   "props"
+  ],
+  "tags": [
+   "weapon",
+   "shield",
+   "war",
+   "knight",
+   "crusades",
+   "old",
+   "wooden",
+   "metal"
+  ]
+ },
+ "korean_fire_extinguisher_01": {
+  "arquivo": "modelos/polyhaven/korean_fire_extinguisher_01/korean_fire_extinguisher_01_1k.gltf",
+  "nome": "Korean Fire Extinguisher 01",
+  "categorias": [
+   "industrial",
+   "props"
+  ],
+  "tags": [
+   "fire",
+   "saftey",
+   "fireman",
+   "extinguisher",
+   "emergency",
+   "equipment",
+   "red",
+   "firefighting"
+  ]
+ },
+ "korean_public_payphone_01": {
+  "arquivo": "modelos/polyhaven/korean_public_payphone_01/korean_public_payphone_01_1k.gltf",
+  "nome": "Korean Public Payphone 01",
+  "categorias": [
+   "props"
+  ],
+  "tags": [
+   "pay",
+   "phone",
+   "public",
+   "korean",
+   "old",
+   "utility",
+   "infrastructure"
+  ]
+ },
+ "ladder_sectioned_01": {
+  "arquivo": "modelos/polyhaven/ladder_sectioned_01/ladder_sectioned_01_1k.gltf",
+  "nome": "Ladder Sectioned 01",
+  "categorias": [
+   "industrial",
+   "tools"
+  ],
+  "tags": [
+   "scaffolding",
+   "foldable",
+   "folding",
+   "steps",
+   "metal",
+   "building",
+   "construction",
+   "workshop"
+  ]
+ },
+ "lambis_shell": {
+  "arquivo": "modelos/polyhaven/lambis_shell/lambis_shell_1k.gltf",
+  "nome": "Lambis Shell",
+  "categorias": [
+   "decorative",
+   "nature"
+  ],
+  "tags": [
+   "shell",
+   "beach",
+   "shore",
+   "shoreline",
+   "underwater",
+   "coral",
+   "reef",
+   "ocean"
+  ]
+ },
+ "lantern_chandelier_01": {
+  "arquivo": "modelos/polyhaven/lantern_chandelier_01/lantern_chandelier_01_1k.gltf",
+  "nome": "Lantern Chandelier 01",
+  "categorias": [
+   "lighting"
+  ],
+  "tags": [
+   "lighting",
+   "old",
+   "victorian",
+   "metal",
+   "antique",
+   "ornate",
+   "vintage",
+   "brass"
+  ]
+ },
+ "large_castle_door": {
+  "arquivo": "modelos/polyhaven/large_castle_door/large_castle_door_1k.gltf",
+  "nome": "Large Castle Door",
+  "categorias": [
+   "structures",
+   "buildings"
+  ],
+  "tags": [
+   "fort",
+   "castle",
+   "gate",
+   "door",
+   "entrance",
+   "stronghold",
+   "fortified gate",
+   "crusades"
+  ]
+ },
+ "large_iron_gate": {
+  "arquivo": "modelos/polyhaven/large_iron_gate/large_iron_gate_1k.gltf",
+  "nome": "Large Iron Gate",
+  "categorias": [
+   "structures",
+   "buildings"
+  ],
+  "tags": [
+   "gate",
+   "entrance",
+   "drive way",
+   "cast iron",
+   "iron",
+   "stylish",
+   "security"
+  ]
+ },
+ "lateral_sea_marker": {
+  "arquivo": "modelos/polyhaven/lateral_sea_marker/lateral_sea_marker_1k.gltf",
+  "nome": "Lateral Sea Marker",
+  "categorias": [
+   "props"
+  ],
+  "tags": [
+   "ocean",
+   "water",
+   "dock",
+   "harbor",
+   "ship",
+   "marker",
+   "buoy"
+  ]
+ },
+ "leather_cleaner_can": {
+  "arquivo": "modelos/polyhaven/leather_cleaner_can/leather_cleaner_can_1k.gltf",
+  "nome": "Leather Cleaner Can",
+  "categorias": [
+   "props",
+   "containers"
+  ],
+  "tags": [
+   "shed",
+   "cleaning",
+   "workshop",
+   "garage",
+   "car",
+   "leather",
+   "storage",
+   "spray"
+  ]
+ },
+ "leipoldtia_schultzei": {
+  "arquivo": "modelos/polyhaven/leipoldtia_schultzei/leipoldtia_schultzei_1k.gltf",
+  "nome": "Leipoldtia Schultzei",
+  "categorias": [
+   "plants"
+  ],
+  "tags": [
+   "succulent",
+   "wildflower",
+   "flower",
+   "floral",
+   "african",
+   "purple",
+   "plant",
+   "flora"
+  ]
+ },
+ "lemon": {
+  "arquivo": "modelos/polyhaven/lemon/lemon_1k.gltf",
+  "nome": "Lemon",
+  "categorias": [
+   "props",
+   "food"
+  ],
+  "tags": [
+   "culinary",
+   "cooking",
+   "vegetable",
+   "vegetables",
+   "organic",
+   "ingredients",
+   "produce"
+  ]
+ },
+ "life_jacket": {
+  "arquivo": "modelos/polyhaven/life_jacket/life_jacket_1k.gltf",
+  "nome": "Life Jacket",
+  "categorias": [
+   "props"
+  ],
+  "tags": [
+   "flotation device",
+   "life preserver",
+   "ocean",
+   "boat",
+   "single-seat",
+   "fishing",
+   "accessories",
+   "ship"
+  ]
+ },
+ "lifebuoy": {
+  "arquivo": "modelos/polyhaven/lifebuoy/lifebuoy_1k.gltf",
+  "nome": "Lifebuoy",
+  "categorias": [
+   "wall decoration",
+   "industrial"
+  ],
+  "tags": [
+   "weathered",
+   "safety",
+   "lifering",
+   "marine",
+   "nautical",
+   "flotation device",
+   "life preserver"
+  ]
+ },
+ "lightbulb_01": {
+  "arquivo": "modelos/polyhaven/lightbulb_01/lightbulb_01_1k.gltf",
+  "nome": "Lightbulb 01",
+  "categorias": [
+   "lighting"
+  ],
+  "tags": [
+   "globe",
+   "filament",
+   "light",
+   "lamp",
+   "shed",
+   "bulb",
+   "illumination",
+   "incandescent"
+  ]
+ },
+ "lightbulb_led": {
+  "arquivo": "modelos/polyhaven/lightbulb_led/lightbulb_led_1k.gltf",
+  "nome": "Lightbulb Led",
+  "categorias": [
+   "electronics",
+   "lighting"
+  ],
+  "tags": [
+   "shed",
+   "indoor",
+   "interrior",
+   "globe",
+   "light"
+  ]
+ },
+ "lion_head": {
+  "arquivo": "modelos/polyhaven/lion_head/lion_head_1k.gltf",
+  "nome": "Lion Head",
+  "categorias": [
+   "decorative"
+  ],
+  "tags": [
+   "old",
+   "wooden",
+   "vintage",
+   "sculpture",
+   "ornament",
+   "wildlife",
+   "figurine",
+   "art"
+  ]
+ },
+ "long_life_food": {
+  "arquivo": "modelos/polyhaven/long_life_food/long_life_food_1k.gltf",
+  "nome": "Long Life Food",
+  "categorias": [
+   "food",
+   "containers",
+   "props"
+  ],
+  "tags": [
+   "groceries",
+   "canned beans",
+   "carton milk",
+   "tinned food",
+   "canned tomatoes",
+   "sardines"
+  ]
+ },
+ "lubricant_spray": {
+  "arquivo": "modelos/polyhaven/lubricant_spray/lubricant_spray_1k.gltf",
+  "nome": "Lubricant Spray",
+  "categorias": [
+   "props",
+   "containers",
+   "tools",
+   "decorative"
+  ],
+  "tags": [
+   "shed",
+   "workshop",
+   "metal",
+   "garage",
+   "cleaning",
+   "spray",
+   "can",
+   "oil"
+  ]
+ },
+ "machete": {
+  "arquivo": "modelos/polyhaven/machete/machete_1k.gltf",
+  "nome": "Machete",
+  "categorias": [
+   "props"
+  ],
+  "tags": [
+   "weapon",
+   "knife",
+   "iron",
+   "steel",
+   "shed",
+   "gardening",
+   "metal",
+   "jungle"
+  ]
+ },
+ "magnifying_glass_01": {
+  "arquivo": "modelos/polyhaven/magnifying_glass_01/magnifying_glass_01_1k.gltf",
+  "nome": "Magnifying Glass 01",
+  "categorias": [
+   "props",
+   "tools"
+  ],
+  "tags": [
+   "eye",
+   "focal",
+   "lense",
+   "magnifier",
+   "magnifying lens",
+   "inspection",
+   "optical tool",
+   "reading aid"
+  ]
+ },
+ "mantel_clock_01": {
+  "arquivo": "modelos/polyhaven/mantel_clock_01/mantel_clock_01_1k.gltf",
+  "nome": "Mantel Clock 01",
+  "categorias": [
+   "decorative",
+   "appliances",
+   "rigged"
+  ],
+  "tags": [
+   "vintage",
+   "antique",
+   "old",
+   "clock",
+   "time",
+   "wooden",
+   "shelf",
+   "mantel"
+  ]
+ },
+ "marble_bust_01": {
+  "arquivo": "modelos/polyhaven/marble_bust_01/marble_bust_01_1k.gltf",
+  "nome": "Marble Bust 01",
+  "categorias": [
+   "decorative"
+  ],
+  "tags": [
+   "sculpt",
+   "sculpture",
+   "statue",
+   "art",
+   "sandstone",
+   "bust",
+   "marble",
+   "mansion"
+  ]
+ },
+ "measuring_tape_01": {
+  "arquivo": "modelos/polyhaven/measuring_tape_01/measuring_tape_01_1k.gltf",
+  "nome": "Measuring Tape 01",
+  "categorias": [
+   "industrial",
+   "tools",
+   "props"
+  ],
+  "tags": [
+   "tape",
+   "ruler",
+   "measure",
+   "tool",
+   "toolbox",
+   "woodwork"
+  ]
+ },
+ "medical_box": {
+  "arquivo": "modelos/polyhaven/medical_box/medical_box_1k.gltf",
+  "nome": "Medical Box",
+  "categorias": [
+   "props",
+   "containers"
+  ],
+  "tags": [
+   "worn",
+   "metal",
+   "green",
+   "medical",
+   "first aid",
+   "storage",
+   "scratched"
+  ]
+ },
+ "medical_tape": {
+  "arquivo": "modelos/polyhaven/medical_tape/medical_tape_1k.gltf",
+  "nome": "Medical Tape",
+  "categorias": [
+   "props",
+   "industrial",
+   "tools"
+  ],
+  "tags": [
+   "tape",
+   "hospital",
+   "bandage",
+   "tissue-roll",
+   "cylindrical roll"
+  ]
+ },
+ "metal_detector": {
+  "arquivo": "modelos/polyhaven/metal_detector/metal_detector_1k.gltf",
+  "nome": "Metal Detector",
+  "categorias": [
+   "props",
+   "electronics"
+  ],
+  "tags": [
+   "detector",
+   "exploration",
+   "adventure",
+   "treasure",
+   "equipment",
+   "archaeology",
+   "technology"
+  ]
+ },
+ "metal_jerrycan": {
+  "arquivo": "modelos/polyhaven/metal_jerrycan/metal_jerrycan_1k.gltf",
+  "nome": "Metal Jerrycan",
+  "categorias": [
+   "props",
+   "containers"
+  ],
+  "tags": [
+   "old",
+   "worn",
+   "rusted",
+   "petrol",
+   "gasoline",
+   "gas",
+   "fuel",
+   "red"
+  ]
+ },
+ "metal_jerrycan_green": {
+  "arquivo": "modelos/polyhaven/metal_jerrycan_green/metal_jerrycan_green_1k.gltf",
+  "nome": "Metal Jerrycan Green",
+  "categorias": [
+   "props",
+   "containers"
+  ],
+  "tags": [
+   "old",
+   "worn",
+   "jerrycan",
+   "fuel can",
+   "military",
+   "petrol",
+   "garage",
+   "gas"
+  ]
+ },
+ "metal_jug": {
+  "arquivo": "modelos/polyhaven/metal_jug/metal_jug_1k.gltf",
+  "nome": "Metal Jug",
+  "categorias": [
+   "containers",
+   "decorative",
+   "vases"
+  ],
+  "tags": [
+   "milk jug",
+   "metal",
+   "vase",
+   "farmhouse",
+   "countryside",
+   "kitchen decor",
+   "vintage",
+   "farmhouse decor"
+  ]
+ },
+ "metal_office_desk": {
+  "arquivo": "modelos/polyhaven/metal_office_desk/metal_office_desk_1k.gltf",
+  "nome": "Metal Office Desk",
+  "categorias": [
+   "furniture",
+   "table",
+   "office"
+  ],
+  "tags": [
+   "old",
+   "vintage",
+   "metal",
+   "dirty",
+   "scratched",
+   "industrial",
+   "rectangular"
+  ]
+ },
+ "metal_stool_01": {
+  "arquivo": "modelos/polyhaven/metal_stool_01/metal_stool_01_1k.gltf",
+  "nome": "Metal Stool 01",
+  "categorias": [
+   "furniture",
+   "seating"
+  ],
+  "tags": [
+   "vintage",
+   "antique",
+   "old",
+   "leather",
+   "round",
+   "metal",
+   "industrial",
+   "barstool"
+  ]
+ },
+ "metal_stool_02": {
+  "arquivo": "modelos/polyhaven/metal_stool_02/metal_stool_02_1k.gltf",
+  "nome": "Metal Stool 02",
+  "categorias": [
+   "furniture",
+   "seating"
+  ],
+  "tags": [
+   "wooden",
+   "metal frame",
+   "industrial",
+   "small",
+   "workshop",
+   "round"
+  ]
+ },
+ "metal_stool_03": {
+  "arquivo": "modelos/polyhaven/metal_stool_03/metal_stool_03_1k.gltf",
+  "nome": "Metal Stool 03",
+  "categorias": [
+   "furniture",
+   "seating"
+  ],
+  "tags": [
+   "old",
+   "metal",
+   "barstool",
+   "backrest",
+   "heavy-duty",
+   "weathered",
+   "rusted",
+   "workshop"
+  ]
+ },
+ "metal_tool_chest": {
+  "arquivo": "modelos/polyhaven/metal_tool_chest/metal_tool_chest_1k.gltf",
+  "nome": "Metal Tool Chest",
+  "categorias": [
+   "props",
+   "tools",
+   "industrial",
+   "containers",
+   "rigged"
+  ],
+  "tags": [
+   "old",
+   "metal",
+   "garage",
+   "workshop",
+   "storage",
+   "shed",
+   "worn",
+   "mechanics toolbox"
+  ]
+ },
+ "metal_toolbox": {
+  "arquivo": "modelos/polyhaven/metal_toolbox/metal_toolbox_1k.gltf",
+  "nome": "Metal Toolbox",
+  "categorias": [
+   "containers",
+   "tools",
+   "industrial"
+  ],
+  "tags": [
+   "vintage",
+   "rustic",
+   "garage",
+   "workshop",
+   "metal",
+   "storage",
+   "shed",
+   "construction"
+  ]
+ },
+ "metal_trash_can": {
+  "arquivo": "modelos/polyhaven/metal_trash_can/metal_trash_can_1k.gltf",
+  "nome": "Metal Trash Can",
+  "categorias": [
+   "industrial",
+   "containers"
+  ],
+  "tags": [
+   "bin",
+   "rubbish",
+   "garbage",
+   "disposal",
+   "litter",
+   "dumpster",
+   "outdoor trash can",
+   " urban"
+  ]
+ },
+ "mid_century_lounge_chair": {
+  "arquivo": "modelos/polyhaven/mid_century_lounge_chair/mid_century_lounge_chair_1k.gltf",
+  "nome": "Mid Century Lounge Chair",
+  "categorias": [
+   "furniture",
+   "seating"
+  ],
+  "tags": [
+   "wooden",
+   "leather",
+   "couch",
+   "lounge",
+   "architecture",
+   "modern",
+   "interior design",
+   "home decor"
+  ]
+ },
+ "modern_arm_chair_01": {
+  "arquivo": "modelos/polyhaven/modern_arm_chair_01/modern_arm_chair_01_1k.gltf",
+  "nome": "Modern Arm Chair 01",
+  "categorias": [
+   "furniture",
+   "seating",
+   "office"
+  ],
+  "tags": [
+   "wood",
+   "leather",
+   "fancy",
+   "modern",
+   "chair",
+   "contemporary",
+   "wooden",
+   "lounge"
+  ]
+ },
+ "modern_ceiling_lamp_01": {
+  "arquivo": "modelos/polyhaven/modern_ceiling_lamp_01/modern_ceiling_lamp_01_1k.gltf",
+  "nome": "Modern Ceiling Lamp 01",
+  "categorias": [
+   "lighting"
+  ],
+  "tags": [
+   "lighting",
+   "light",
+   "modern",
+   "glass",
+   "round",
+   "hanging",
+   "hanging lamp",
+   "ceiling lamp"
+  ]
+ },
+ "modern_coffee_table_01": {
+  "arquivo": "modelos/polyhaven/modern_coffee_table_01/modern_coffee_table_01_1k.gltf",
+  "nome": "Modern Coffee Table 01",
+  "categorias": [
+   "furniture",
+   "table"
+  ],
+  "tags": [
+   "table",
+   "contemporary",
+   "modern",
+   "rectangular",
+   "stone",
+   "wood",
+   "deco",
+   "clean"
+  ]
+ },
+ "modern_coffee_table_02": {
+  "arquivo": "modelos/polyhaven/modern_coffee_table_02/modern_coffee_table_02_1k.gltf",
+  "nome": "Modern Coffee Table 02",
+  "categorias": [
+   "furniture",
+   "table"
+  ],
+  "tags": [
+   "contemporary",
+   "modern",
+   "rectangular",
+   "stone",
+   "wood",
+   "deco",
+   "clean"
+  ]
+ },
+ "modern_wooden_cabinet": {
+  "arquivo": "modelos/polyhaven/modern_wooden_cabinet/modern_wooden_cabinet_1k.gltf",
+  "nome": "Modern Wooden Cabinet",
+  "categorias": [
+   "furniture",
+   "table"
+  ],
+  "tags": [
+   "cabinet",
+   "wood",
+   "modern",
+   "minimalist",
+   "interrior",
+   "living room",
+   "contemporary",
+   "design"
+  ]
+ },
+ "modified_thermos": {
+  "arquivo": "modelos/polyhaven/modified_thermos/modified_thermos_1k.gltf",
+  "nome": "Modified Thermos",
+  "categorias": [
+   "props",
+   "containers"
+  ],
+  "tags": [
+   "insulated flask",
+   "thermos jug",
+   "survival gear",
+   "camping flask",
+   "vintage thermos",
+   "used condition"
+  ]
+ },
+ "modular_airduct_circular_01": {
+  "arquivo": "modelos/polyhaven/modular_airduct_circular_01/modular_airduct_circular_01_1k.gltf",
+  "nome": "Modular Airduct Circular 01",
+  "categorias": [
+   "industrial",
+   "structures"
+  ],
+  "tags": [
+   "vent",
+   "aircon",
+   "airduct",
+   "hvac",
+   "modular",
+   "pieces",
+   "workshop",
+   "industrial"
+  ]
+ },
+ "modular_airduct_rectangular_01": {
+  "arquivo": "modelos/polyhaven/modular_airduct_rectangular_01/modular_airduct_rectangular_01_1k.gltf",
+  "nome": "Modular Airduct Rectangular 01",
+  "categorias": [
+   "industrial"
+  ],
+  "tags": [
+   "vent",
+   "airduct",
+   "modular",
+   "pieces",
+   "workshop",
+   "warehouse",
+   "rectangular",
+   "metal"
+  ]
+ },
+ "modular_chainlink_fence": {
+  "arquivo": "modelos/polyhaven/modular_chainlink_fence/modular_chainlink_fence_1k.gltf",
+  "nome": "Modular Chainlink Fence",
+  "categorias": [
+   "structures",
+   "industrial",
+   "buildings"
+  ],
+  "tags": [
+   "infrastructure",
+   "city",
+   "urban",
+   "fencing",
+   "barrier",
+   "security",
+   "fencing",
+   "boundary"
+  ]
+ },
+ "modular_electric_cables": {
+  "arquivo": "modelos/polyhaven/modular_electric_cables/modular_electric_cables_1k.gltf",
+  "nome": "Modular Electric Cables",
+  "categorias": [
+   "industrial"
+  ],
+  "tags": [
+   "wiring",
+   "connectors",
+   "power supply",
+   "components",
+   "power",
+   "infrastructure",
+   "maintenance",
+   "junction box"
+  ]
+ },
+ "modular_electricity_poles": {
+  "arquivo": "modelos/polyhaven/modular_electricity_poles/modular_electricity_poles_1k.gltf",
+  "nome": "Modular Electricity Poles",
+  "categorias": [
+   "industrial",
+   "structures"
+  ],
+  "tags": [
+   "urban",
+   "infrastructure",
+   "city",
+   "road",
+   "utility",
+   "street",
+   "electrical",
+   "power"
+  ]
+ },
+ "modular_factory_facade": {
+  "arquivo": "modelos/polyhaven/modular_factory_facade/modular_factory_facade_1k.gltf",
+  "nome": "Modular Factory Facade",
+  "categorias": [
+   "structures",
+   "buildings"
+  ],
+  "tags": [
+   "industrial",
+   "factory",
+   "modular",
+   "architecture",
+   "warehouse",
+   "facade",
+   "exterior"
+  ]
+ },
+ "modular_fire_escape": {
+  "arquivo": "modelos/polyhaven/modular_fire_escape/modular_fire_escape_1k.gltf",
+  "nome": "Modular Fire Escape",
+  "categorias": [
+   "industrial",
+   "structures"
+  ],
+  "tags": [
+   "modular",
+   "pieces",
+   "emergency",
+   "building",
+   "urban",
+   "evacuation",
+   "safety",
+   "fire egress"
+  ]
+ },
+ "modular_fort_01": {
+  "arquivo": "modelos/polyhaven/modular_fort_01/modular_fort_01_1k.gltf",
+  "nome": "Modular Fort 01",
+  "categorias": [
+   "structures",
+   "buildings"
+  ],
+  "tags": [
+   "fort",
+   "modular",
+   "old",
+   "colonial",
+   "castle",
+   "wall",
+   "ramparts",
+   "structure"
+  ]
+ },
+ "modular_industrial_pipes_01": {
+  "arquivo": "modelos/polyhaven/modular_industrial_pipes_01/modular_industrial_pipes_01_1k.gltf",
+  "nome": "Modular Industrial Pipes 01",
+  "categorias": [
+   "industrial",
+   "structures"
+  ],
+  "tags": [
+   "pipes",
+   "factory",
+   "steam",
+   "modular",
+   "industrial",
+   "utility",
+   "infrastructure"
+  ]
+ },
+ "modular_metal_gutter": {
+  "arquivo": "modelos/polyhaven/modular_metal_gutter/modular_metal_gutter_1k.gltf",
+  "nome": "Modular Metal Gutter",
+  "categorias": [
+   "industrial",
+   "structures",
+   "buildings"
+  ],
+  "tags": [
+   "drain",
+   "roof",
+   "downspout",
+   "rainwater",
+   "drainage",
+   "gutter system",
+   "rain gutters",
+   "modular"
+  ]
+ },
+ "modular_pipes": {
+  "arquivo": "modelos/polyhaven/modular_pipes/modular_pipes_1k.gltf",
+  "nome": "Modular Pipes",
+  "categorias": [
+   "industrial",
+   "structures"
+  ],
+  "tags": [
+   "construction",
+   "piping",
+   "plumbing",
+   "infrastructure",
+   "metal",
+   "plastic",
+   "rusted",
+   "water supply"
+  ]
+ },
+ "modular_pipes_plastic_01": {
+  "arquivo": "modelos/polyhaven/modular_pipes_plastic_01/modular_pipes_plastic_01_1k.gltf",
+  "nome": "Modular Pipes Plastic 01",
+  "categorias": [
+   "industrial",
+   "structures"
+  ],
+  "tags": [
+   "pipes",
+   "garden",
+   "shed",
+   "modular",
+   "cable",
+   "valve",
+   "tap",
+   "outdoor"
+  ]
+ },
+ "modular_street_seating": {
+  "arquivo": "modelos/polyhaven/modular_street_seating/modular_street_seating_1k.gltf",
+  "nome": "Modular Street Seating",
+  "categorias": [
+   "furniture",
+   "seating"
+  ],
+  "tags": [
+   "chair",
+   "outdoor",
+   "urban",
+   "cityscape",
+   "contemporary",
+   "bench",
+   "city",
+   "infrastructure"
+  ]
+ },
+ "modular_urban_apartments_facade": {
+  "arquivo": "modelos/polyhaven/modular_urban_apartments_facade/modular_urban_apartments_facade_1k.gltf",
+  "nome": "Modular Urban Apartments Facade",
+  "categorias": [
+   "structures",
+   "buildings"
+  ],
+  "tags": [
+   "building",
+   "urban",
+   "modular",
+   "contemporary",
+   "apartments",
+   "city",
+   "home",
+   "house"
+  ]
+ },
+ "modular_wooden_pier": {
+  "arquivo": "modelos/polyhaven/modular_wooden_pier/modular_wooden_pier_1k.gltf",
+  "nome": "Modular Wooden Pier",
+  "categorias": [
+   "structures"
+  ],
+  "tags": [
+   "old",
+   "wooden",
+   "wood",
+   "pier",
+   "ship",
+   "maritime",
+   "sea",
+   "water"
+  ]
+ },
+ "moon_rock_01": {
+  "arquivo": "modelos/polyhaven/moon_rock_01/moon_rock_01_1k.gltf",
+  "nome": "Moon Rock 01",
+  "categorias": [
+   "rocks",
+   "nature"
+  ],
+  "tags": [
+   "rough texture",
+   "lunar",
+   "dirty",
+   "regolith",
+   "dusted",
+   "space",
+   "extraterrestrial"
+  ]
+ },
+ "moon_rock_02": {
+  "arquivo": "modelos/polyhaven/moon_rock_02/moon_rock_02_1k.gltf",
+  "nome": "Moon Rock 02",
+  "categorias": [
+   "rocks",
+   "nature"
+  ],
+  "tags": [
+   "rough texture",
+   "lunar",
+   "dirty",
+   "regolith",
+   "dusted",
+   "extraterrestrial",
+   "space"
+  ]
+ },
+ "moon_rock_03": {
+  "arquivo": "modelos/polyhaven/moon_rock_03/moon_rock_03_1k.gltf",
+  "nome": "Moon Rock 03",
+  "categorias": [
+   "rocks",
+   "nature"
+  ],
+  "tags": [
+   "rough texture",
+   "lunar",
+   "dirty",
+   "regolith",
+   "dusted",
+   "space",
+   "extraterrestrial"
+  ]
+ },
+ "moon_rock_04": {
+  "arquivo": "modelos/polyhaven/moon_rock_04/moon_rock_04_1k.gltf",
+  "nome": "Moon Rock 04",
+  "categorias": [
+   "rocks",
+   "nature"
+  ],
+  "tags": [
+   "rough texture",
+   "lunar",
+   "dirty",
+   "regolith",
+   "dusted",
+   "extraterrestrial",
+   "space"
+  ]
+ },
+ "moon_rock_05": {
+  "arquivo": "modelos/polyhaven/moon_rock_05/moon_rock_05_1k.gltf",
+  "nome": "Moon Rock 05",
+  "categorias": [
+   "rocks",
+   "nature"
+  ],
+  "tags": [
+   "rough texture",
+   "lunar",
+   "dirty",
+   "regolith",
+   "dusted",
+   "extraterrestrial",
+   "space"
+  ]
+ },
+ "moon_rock_06": {
+  "arquivo": "modelos/polyhaven/moon_rock_06/moon_rock_06_1k.gltf",
+  "nome": "Moon Rock 06",
+  "categorias": [
+   "rocks",
+   "nature"
+  ],
+  "tags": [
+   "rough texture",
+   "lunar",
+   "dirty",
+   "regolith",
+   "dusted",
+   "extraterrestrial",
+   "space"
+  ]
+ },
+ "moon_rock_07": {
+  "arquivo": "modelos/polyhaven/moon_rock_07/moon_rock_07_1k.gltf",
+  "nome": "Moon Rock 07",
+  "categorias": [
+   "rocks",
+   "nature"
+  ],
+  "tags": [
+   "rough texture",
+   "lunar",
+   "dirty",
+   "regolith",
+   "dusted",
+   "extraterrestrial",
+   "space"
+  ]
+ },
+ "moss_01": {
+  "arquivo": "modelos/polyhaven/moss_01/moss_01_1k.gltf",
+  "nome": "Moss 01",
+  "categorias": [
+   "nature",
+   "plants",
+   "ground cover"
+  ],
+  "tags": [
+   "moss",
+   "ground cover",
+   "forest",
+   "woodland",
+   "foliage",
+   "nature",
+   "plant",
+   "natural"
+  ]
+ },
+ "mountainside": {
+  "arquivo": "modelos/polyhaven/mountainside/mountainside_1k.gltf",
+  "nome": "Mountainside",
+  "categorias": [
+   "nature",
+   "rocks"
+  ],
+  "tags": [
+   "cliff",
+   "rock face",
+   "formation",
+   "landscape",
+   "geology",
+   "rock",
+   "weathered",
+   "lichen"
+  ]
+ },
+ "mounted_fluorescent_lights": {
+  "arquivo": "modelos/polyhaven/mounted_fluorescent_lights/mounted_fluorescent_lights_1k.gltf",
+  "nome": "Mounted Fluorescent Lights",
+  "categorias": [
+   "lighting",
+   "industrial"
+  ],
+  "tags": [
+   "workshop",
+   "fluorescent_tube",
+   "utility_lighting",
+   "garage_light",
+   "workshop_light",
+   "shed",
+   "garage"
+  ]
+ },
+ "mousetrap": {
+  "arquivo": "modelos/polyhaven/mousetrap/mousetrap_1k.gltf",
+  "nome": "Mousetrap",
+  "categorias": [
+   "props"
+  ],
+  "tags": [
+   "wood",
+   "old",
+   "trap",
+   "rat",
+   "mouse",
+   "catcher",
+   "pest control",
+   "rodent"
+  ]
+ },
+ "multi_cleaner_5_litre": {
+  "arquivo": "modelos/polyhaven/multi_cleaner_5_litre/multi_cleaner_5_litre_1k.gltf",
+  "nome": "Multi Cleaner 5 Litre",
+  "categorias": [
+   "props",
+   "containers",
+   "industrial"
+  ],
+  "tags": [
+   "shed",
+   "storage",
+   "cleaning",
+   "plastic",
+   "bottle",
+   "dirty",
+   "cleaner",
+   "multipurpose"
+  ]
+ },
+ "multi_cleaner_bottle": {
+  "arquivo": "modelos/polyhaven/multi_cleaner_bottle/multi_cleaner_bottle_1k.gltf",
+  "nome": "Multi Cleaner Bottle",
+  "categorias": [
+   "containers",
+   "props"
+  ],
+  "tags": [
+   "shed",
+   "cleaning",
+   "garage",
+   "storage",
+   "plastic",
+   "bottle",
+   "workshop",
+   "clutter"
+  ]
+ },
+ "namaqualand_boulder_02": {
+  "arquivo": "modelos/polyhaven/namaqualand_boulder_02/namaqualand_boulder_02_1k.gltf",
+  "nome": "Namaqualand Boulder 02",
+  "categorias": [
+   "nature",
+   "rocks"
+  ],
+  "tags": [
+   "karoo",
+   "desert",
+   "south africa",
+   "boulders",
+   "rocks",
+   "geological",
+   "rock",
+   "landscaping"
+  ]
+ },
+ "namaqualand_boulder_03": {
+  "arquivo": "modelos/polyhaven/namaqualand_boulder_03/namaqualand_boulder_03_1k.gltf",
+  "nome": "Namaqualand Boulder 03",
+  "categorias": [
+   "nature",
+   "rocks"
+  ],
+  "tags": [
+   "karoo",
+   "south africa",
+   "desert",
+   "boulder",
+   "rock",
+   "rough",
+   "brown",
+   "geological"
+  ]
+ },
+ "namaqualand_boulder_04": {
+  "arquivo": "modelos/polyhaven/namaqualand_boulder_04/namaqualand_boulder_04_1k.gltf",
+  "nome": "Namaqualand Boulder 04",
+  "categorias": [
+   "nature",
+   "rocks"
+  ],
+  "tags": [
+   "karoo",
+   "south africa",
+   "desert",
+   "boulder",
+   "rock",
+   "brown",
+   "geological",
+   "landscaping"
+  ]
+ },
+ "namaqualand_boulder_05": {
+  "arquivo": "modelos/polyhaven/namaqualand_boulder_05/namaqualand_boulder_05_1k.gltf",
+  "nome": "Namaqualand Boulder 05",
+  "categorias": [
+   "nature",
+   "rocks"
+  ],
+  "tags": [
+   "karoo",
+   "desert",
+   "dry",
+   "south africa",
+   "rock",
+   "rocks",
+   "formation",
+   "geological"
+  ]
+ },
+ "namaqualand_boulder_06": {
+  "arquivo": "modelos/polyhaven/namaqualand_boulder_06/namaqualand_boulder_06_1k.gltf",
+  "nome": "Namaqualand Boulder 06",
+  "categorias": [
+   "nature",
+   "rocks"
+  ],
+  "tags": [
+   "karoo",
+   "south africa",
+   "desert",
+   "boulder",
+   "rock",
+   "brown",
+   "geological",
+   "landscaping"
+  ]
+ },
+ "namaqualand_boulders_01": {
+  "arquivo": "modelos/polyhaven/namaqualand_boulders_01/namaqualand_boulders_01_1k.gltf",
+  "nome": "Namaqualand Boulders 01",
+  "categorias": [
+   "nature",
+   "rocks"
+  ],
+  "tags": [
+   "south africa",
+   "karoo",
+   "desert",
+   "boulder",
+   "rock",
+   "brown",
+   "geological",
+   "landscaping"
+  ]
+ },
+ "namaqualand_cliff_01": {
+  "arquivo": "modelos/polyhaven/namaqualand_cliff_01/namaqualand_cliff_01_1k.gltf",
+  "nome": "Namaqualand Cliff 01",
+  "categorias": [
+   "nature",
+   "rocks"
+  ],
+  "tags": [
+   "south africa",
+   "karoo",
+   "desert",
+   "boulders",
+   "rock",
+   "rock formation",
+   "cliff side",
+   "cliff"
+  ]
+ },
+ "namaqualand_cliff_02": {
+  "arquivo": "modelos/polyhaven/namaqualand_cliff_02/namaqualand_cliff_02_1k.gltf",
+  "nome": "Namaqualand Cliff 02",
+  "categorias": [
+   "nature",
+   "rocks"
+  ],
+  "tags": [
+   "karoo",
+   "south africa",
+   "desert",
+   "boulders",
+   "rock face",
+   "rock",
+   "cliff side",
+   "cliff"
+  ]
+ },
+ "namaqualand_rocks_01": {
+  "arquivo": "modelos/polyhaven/namaqualand_rocks_01/namaqualand_rocks_01_1k.gltf",
+  "nome": "Namaqualand Rocks 01",
+  "categorias": [
+   "nature",
+   "rocks"
+  ],
+  "tags": [
+   "karoo",
+   "south africa",
+   "quartz",
+   "desert",
+   "geological",
+   "stones",
+   "rocks"
+  ]
+ },
+ "namaqualand_stones_01": {
+  "arquivo": "modelos/polyhaven/namaqualand_stones_01/namaqualand_stones_01_1k.gltf",
+  "nome": "Namaqualand Stones 01",
+  "categorias": [
+   "nature",
+   "rocks"
+  ],
+  "tags": [
+   "karoo",
+   "south africa",
+   "quartz",
+   "desert",
+   "geological",
+   "mineral",
+   "stones",
+   "rocks"
+  ]
+ },
+ "nettle_plant": {
+  "arquivo": "modelos/polyhaven/nettle_plant/nettle_plant_1k.gltf",
+  "nome": "Nettle Plant",
+  "categorias": [
+   "nature",
+   "plants",
+   "ground cover"
+  ],
+  "tags": [
+   "nettle",
+   "plant",
+   "green",
+   "nature",
+   "shrub",
+   "outdoor",
+   "leaf",
+   "bush"
+  ]
+ },
+ "ocean_buoy": {
+  "arquivo": "modelos/polyhaven/ocean_buoy/ocean_buoy_1k.gltf",
+  "nome": "Ocean Buoy",
+  "categorias": [
+   "props"
+  ],
+  "tags": [
+   "marine buoy",
+   "light beacon",
+   "maritime",
+   "ship",
+   "dock",
+   "jetty",
+   "sea",
+   "ocean"
+  ]
+ },
+ "office_notepads": {
+  "arquivo": "modelos/polyhaven/office_notepads/office_notepads_1k.gltf",
+  "nome": "Office Notepads",
+  "categorias": [
+   "props",
+   "office"
+  ],
+  "tags": [
+   "stationery",
+   "notepad",
+   "lined paper",
+   "blank paper",
+   "art supplies",
+   "office",
+   "admin",
+   "sticky notes"
+  ]
+ },
+ "oil_tin": {
+  "arquivo": "modelos/polyhaven/oil_tin/oil_tin_1k.gltf",
+  "nome": "Oil Tin",
+  "categorias": [
+   "containers",
+   "props",
+   "industrial"
+  ],
+  "tags": [
+   "old",
+   "worn",
+   "rusted",
+   "metal",
+   "rectangular",
+   "fuel",
+   "storage"
+  ]
+ },
+ "old_bed_frame": {
+  "arquivo": "modelos/polyhaven/old_bed_frame/old_bed_frame_1k.gltf",
+  "nome": "Old Bed Frame",
+  "categorias": [
+   "bed",
+   "furniture"
+  ],
+  "tags": [
+   "rusty",
+   "metal",
+   "bedroom",
+   "vintage",
+   "antique",
+   "hospital",
+   "traditional"
+  ]
+ },
+ "old_drill_press": {
+  "arquivo": "modelos/polyhaven/old_drill_press/old_drill_press_1k.gltf",
+  "nome": "Old Drill Press",
+  "categorias": [
+   "tools",
+   "industrial"
+  ],
+  "tags": [
+   "metal",
+   "workshop",
+   "garage",
+   "bench drill",
+   "stand",
+   "power cable"
+  ]
+ },
+ "old_gas_mask": {
+  "arquivo": "modelos/polyhaven/old_gas_mask/old_gas_mask_1k.gltf",
+  "nome": "Old Gas Mask",
+  "categorias": [
+   "props",
+   "industrial",
+   "tools"
+  ],
+  "tags": [
+   "vintage",
+   "respirator",
+   "antique",
+   "airfilter",
+   "warfare",
+   "chemical",
+   "gasmask",
+   "postapocalyptic"
+  ]
+ },
+ "old_military_compressor": {
+  "arquivo": "modelos/polyhaven/old_military_compressor/old_military_compressor_1k.gltf",
+  "nome": "Old Military Compressor",
+  "categorias": [
+   "industrial",
+   "tools"
+  ],
+  "tags": [
+   "cart",
+   "tank",
+   "garage",
+   "workshop",
+   "construction",
+   "automotive",
+   "maintenance"
+  ]
+ },
+ "old_military_crate": {
+  "arquivo": "modelos/polyhaven/old_military_crate/old_military_crate_1k.gltf",
+  "nome": "Old Military Crate",
+  "categorias": [
+   "containers",
+   "props"
+  ],
+  "tags": [
+   "ammunition crate",
+   "military supply crate",
+   "hand-painted symbol",
+   "transport container",
+   "wooden",
+   "vintage",
+   "worn",
+   "military"
+  ]
+ },
+ "old_tyre": {
+  "arquivo": "modelos/polyhaven/old_tyre/old_tyre_1k.gltf",
+  "nome": "Old Tyre",
+  "categorias": [
+   "industrial",
+   "props"
+  ],
+  "tags": [
+   "wheels",
+   "wheel",
+   "trash",
+   "garbage",
+   "garage",
+   "scrapyard",
+   "junkyard",
+   "abandoned"
+  ]
+ },
+ "ornate_medieval_dagger": {
+  "arquivo": "modelos/polyhaven/ornate_medieval_dagger/ornate_medieval_dagger_1k.gltf",
+  "nome": "Ornate Medieval Dagger",
+  "categorias": [
+   "props"
+  ],
+  "tags": [
+   "weapon",
+   "blade",
+   "knife",
+   "combat",
+   "sharp",
+   "detailed",
+   "silver",
+   "medieval"
+  ]
+ },
+ "ornate_medieval_mace": {
+  "arquivo": "modelos/polyhaven/ornate_medieval_mace/ornate_medieval_mace_1k.gltf",
+  "nome": "Ornate Medieval Mace",
+  "categorias": [
+   "props"
+  ],
+  "tags": [
+   "weapon",
+   "fantasy",
+   "battle",
+   "combat",
+   "knight",
+   "iron",
+   "seige",
+   "war"
+  ]
+ },
+ "ornate_mirror_01": {
+  "arquivo": "modelos/polyhaven/ornate_mirror_01/ornate_mirror_01_1k.gltf",
+  "nome": "Ornate Mirror 01",
+  "categorias": [
+   "decorative",
+   "wall decoration",
+   "furniture"
+  ],
+  "tags": [
+   "decor",
+   "decoration",
+   "ornate",
+   "fancy",
+   "wealthy",
+   "mansion",
+   "manor",
+   "vintage"
+  ]
+ },
+ "ornate_war_hammer": {
+  "arquivo": "modelos/polyhaven/ornate_war_hammer/ornate_war_hammer_1k.gltf",
+  "nome": "Ornate War Hammer",
+  "categorias": [
+   "props"
+  ],
+  "tags": [
+   "weapon",
+   "fantasy",
+   "battle",
+   "combat",
+   "knight",
+   "medieval",
+   "iron",
+   "seige"
+  ]
+ },
+ "othonna_cerarioides": {
+  "arquivo": "modelos/polyhaven/othonna_cerarioides/othonna_cerarioides_1k.gltf",
+  "nome": "Othonna Cerarioides",
+  "categorias": [
+   "nature",
+   "plants",
+   "trees"
+  ],
+  "tags": [
+   "karoo",
+   "south africa",
+   "succulent",
+   "bush",
+   "shrub",
+   "botany",
+   "green",
+   "leaf"
+  ]
+ },
+ "outdoor_table_chair_set_01": {
+  "arquivo": "modelos/polyhaven/outdoor_table_chair_set_01/outdoor_table_chair_set_01_1k.gltf",
+  "nome": "Outdoor Table Chair Set 01",
+  "categorias": [
+   "furniture",
+   "seating"
+  ],
+  "tags": [
+   "outdoor",
+   "foldable",
+   "folding",
+   "seating",
+   "coffee",
+   "diner",
+   "street",
+   "urban"
+  ]
+ },
+ "overhead_crane": {
+  "arquivo": "modelos/polyhaven/overhead_crane/overhead_crane_1k.gltf",
+  "nome": "Overhead Crane",
+  "categorias": [
+   "industrial",
+   "tools"
+  ],
+  "tags": [
+   "gantry",
+   "machinery",
+   "shipyard",
+   "dock",
+   "transport container",
+   "hoist",
+   "wheels",
+   "winch"
+  ]
+ },
+ "pachira_aquatica_01": {
+  "arquivo": "modelos/polyhaven/pachira_aquatica_01/pachira_aquatica_01_1k.gltf",
+  "nome": "Pachira Aquatica 01",
+  "categorias": [
+   "plants",
+   "nature"
+  ],
+  "tags": [
+   "nature",
+   "plant",
+   "shrub",
+   "leaves",
+   "forest",
+   "jungle",
+   "outdoor",
+   "bush"
+  ]
+ },
+ "painted_wooden_bench": {
+  "arquivo": "modelos/polyhaven/painted_wooden_bench/painted_wooden_bench_1k.gltf",
+  "nome": "Painted Wooden Bench",
+  "categorias": [
+   "furniture",
+   "seating"
+  ],
+  "tags": [
+   "vintage",
+   "old",
+   "wooden",
+   "worn",
+   "antique",
+   "farmhouse",
+   "aged",
+   "rustic"
+  ]
+ },
+ "painted_wooden_cabinet": {
+  "arquivo": "modelos/polyhaven/painted_wooden_cabinet/painted_wooden_cabinet_1k.gltf",
+  "nome": "Painted Wooden Cabinet",
+  "categorias": [
+   "furniture",
+   "shelves"
+  ],
+  "tags": [
+   "old",
+   "worn",
+   "antique",
+   "wooden",
+   "vintage",
+   "colonial",
+   "farmhouse",
+   "storage"
+  ]
+ },
+ "painted_wooden_cabinet_02": {
+  "arquivo": "modelos/polyhaven/painted_wooden_cabinet_02/painted_wooden_cabinet_02_1k.gltf",
+  "nome": "Painted Wooden Cabinet 02",
+  "categorias": [
+   "furniture",
+   "shelves"
+  ],
+  "tags": [
+   "storage",
+   "cabinet",
+   "wood",
+   "vintage",
+   "rustic",
+   "worn",
+   "carpentry",
+   "aged"
+  ]
+ },
+ "painted_wooden_chair_01": {
+  "arquivo": "modelos/polyhaven/painted_wooden_chair_01/painted_wooden_chair_01_1k.gltf",
+  "nome": "Painted Wooden Chair 01",
+  "categorias": [
+   "furniture",
+   "seating"
+  ],
+  "tags": [
+   "chair",
+   "wood",
+   "painted",
+   "farmhouse",
+   "dining",
+   "diner",
+   "american",
+   "kitchen"
+  ]
+ },
+ "painted_wooden_chair_02": {
+  "arquivo": "modelos/polyhaven/painted_wooden_chair_02/painted_wooden_chair_02_1k.gltf",
+  "nome": "Painted Wooden Chair 02",
+  "categorias": [
+   "furniture",
+   "seating"
+  ],
+  "tags": [
+   "old",
+   "wooden",
+   "vintage",
+   "antique",
+   "farmhouse",
+   "seat",
+   "dining",
+   "chair"
+  ]
+ },
+ "painted_wooden_nightstand": {
+  "arquivo": "modelos/polyhaven/painted_wooden_nightstand/painted_wooden_nightstand_1k.gltf",
+  "nome": "Painted Wooden Nightstand",
+  "categorias": [
+   "furniture",
+   "table"
+  ],
+  "tags": [
+   "old",
+   "wooden",
+   "worn",
+   "vintage",
+   "antique",
+   "aged",
+   "bedside",
+   "bedroom"
+  ]
+ },
+ "painted_wooden_shelves": {
+  "arquivo": "modelos/polyhaven/painted_wooden_shelves/painted_wooden_shelves_1k.gltf",
+  "nome": "Painted Wooden Shelves",
+  "categorias": [
+   "furniture",
+   "shelves"
+  ],
+  "tags": [
+   "old",
+   "wooden",
+   "worn",
+   "vintage",
+   "farmhouse",
+   "aged"
+  ]
+ },
+ "painted_wooden_sofa": {
+  "arquivo": "modelos/polyhaven/painted_wooden_sofa/painted_wooden_sofa_1k.gltf",
+  "nome": "Painted Wooden Sofa",
+  "categorias": [
+   "furniture",
+   "seating"
+  ],
+  "tags": [
+   "chair",
+   "outdoor",
+   "couch",
+   "wooden",
+   "vintage",
+   "aged"
+  ]
+ },
+ "painted_wooden_stool": {
+  "arquivo": "modelos/polyhaven/painted_wooden_stool/painted_wooden_stool_1k.gltf",
+  "nome": "Painted Wooden Stool",
+  "categorias": [
+   "seating",
+   "furniture"
+  ],
+  "tags": [
+   "painted",
+   "worn",
+   "old",
+   "antique",
+   "vintage",
+   "farmhouse",
+   "rustic",
+   "carpentry"
+  ]
+ },
+ "painted_wooden_table": {
+  "arquivo": "modelos/polyhaven/painted_wooden_table/painted_wooden_table_1k.gltf",
+  "nome": "Painted Wooden Table",
+  "categorias": [
+   "furniture",
+   "table"
+  ],
+  "tags": [
+   "old",
+   "wooden",
+   "vintage",
+   "farmhouse",
+   "aged",
+   "worn",
+   "carpentry"
+  ]
+ },
+ "pastic_torch_6v": {
+  "arquivo": "modelos/polyhaven/pastic_torch_6v/pastic_torch_6v_1k.gltf",
+  "nome": "Plastic Torch 6V",
+  "categorias": [
+   "lighting",
+   "tools",
+   "electronics",
+   "props"
+  ],
+  "tags": [
+   "plastic",
+   "lighting",
+   "flashlight",
+   "spotlight"
+  ]
+ },
+ "periwinkle_plant": {
+  "arquivo": "modelos/polyhaven/periwinkle_plant/periwinkle_plant_1k.gltf",
+  "nome": "Periwinkle Plant",
+  "categorias": [
+   "nature",
+   "ground cover",
+   "plants",
+   "flowers"
+  ],
+  "tags": [
+   "small flowers",
+   "shrub",
+   "bush",
+   "spring",
+   "botanical",
+   "garden plant",
+   "foliage",
+   "leaf"
+  ]
+ },
+ "picke_dirty_01": {
+  "arquivo": "modelos/polyhaven/picke_dirty_01/picke_dirty_01_1k.gltf",
+  "nome": "Picke Dirty 01",
+  "categorias": [
+   "props",
+   "tools"
+  ],
+  "tags": [
+   "old",
+   "vintage",
+   "wood",
+   "wooden",
+   "worn",
+   "farmhouse",
+   "metal",
+   "workshop"
+  ]
+ },
+ "pine_roots": {
+  "arquivo": "modelos/polyhaven/pine_roots/pine_roots_1k.gltf",
+  "nome": "Pine Roots",
+  "categorias": [
+   "plants",
+   "nature",
+   "ground cover"
+  ],
+  "tags": [
+   "pine",
+   "roots",
+   "tree",
+   "forest",
+   "needles",
+   "leaf",
+   "nature",
+   "natural"
+  ]
+ },
+ "pine_sapling_medium": {
+  "arquivo": "modelos/polyhaven/pine_sapling_medium/pine_sapling_medium_1k.gltf",
+  "nome": "Pine Sapling Medium",
+  "categorias": [
+   "nature",
+   "plants",
+   "trees"
+  ],
+  "tags": [
+   "woodland",
+   "needles",
+   "pine",
+   "tree",
+   "sapling",
+   "branches",
+   "environment",
+   "coniferous"
+  ]
+ },
+ "pine_sapling_small": {
+  "arquivo": "modelos/polyhaven/pine_sapling_small/pine_sapling_small_1k.gltf",
+  "nome": "Pine Sapling Small",
+  "categorias": [
+   "nature",
+   "plants",
+   "trees"
+  ],
+  "tags": [
+   "needles",
+   "tree",
+   "pine",
+   "woodland",
+   "branches",
+   "environment",
+   "coniferous",
+   "plants"
+  ]
+ },
+ "pine_tree_01": {
+  "arquivo": "modelos/polyhaven/pine_tree_01/pine_tree_01_1k.gltf",
+  "nome": "Pine Tree 01",
+  "categorias": [
+   "nature",
+   "plants",
+   "trees"
+  ],
+  "tags": [
+   "pine",
+   "tree",
+   "needles",
+   "branches",
+   "woodland",
+   "coniferous",
+   "plants",
+   "geometry nodes"
+  ]
+ },
+ "pipe_wrench": {
+  "arquivo": "modelos/polyhaven/pipe_wrench/pipe_wrench_1k.gltf",
+  "nome": "Pipe Wrench",
+  "categorias": [
+   "industrial",
+   "tools"
+  ],
+  "tags": [
+   "wrench",
+   "garage",
+   "workshop",
+   "construction",
+   "plumbing",
+   "automotive",
+   "used",
+   "mechanics toolbox"
+  ]
+ },
+ "planter_box_01": {
+  "arquivo": "modelos/polyhaven/planter_box_01/planter_box_01_1k.gltf",
+  "nome": "Planter Box 01",
+  "categorias": [
+   "decorative",
+   "containers",
+   "potted plants"
+  ],
+  "tags": [
+   "old",
+   "wooden",
+   "wood",
+   "farmhouse",
+   "shed",
+   "outdoor",
+   "gardening",
+   "greenhouse"
+  ]
+ },
+ "planter_box_02": {
+  "arquivo": "modelos/polyhaven/planter_box_02/planter_box_02_1k.gltf",
+  "nome": "Planter Box 02",
+  "categorias": [
+   "containers",
+   "decorative",
+   "potted plants"
+  ],
+  "tags": [
+   "old",
+   "wooden",
+   "wood",
+   "worn",
+   "shed",
+   "outdoor",
+   "gardening",
+   "farm"
+  ]
+ },
+ "planter_box_03": {
+  "arquivo": "modelos/polyhaven/planter_box_03/planter_box_03_1k.gltf",
+  "nome": "Planter Box 03",
+  "categorias": [
+   "containers",
+   "decorative",
+   "potted plants"
+  ],
+  "tags": [
+   "old",
+   "wooden",
+   "wood",
+   "shed",
+   "farm",
+   "gardening",
+   "landscaping",
+   "garden"
+  ]
+ },
+ "planter_pot_clay": {
+  "arquivo": "modelos/polyhaven/planter_pot_clay/planter_pot_clay_1k.gltf",
+  "nome": "Planter Pot Clay",
+  "categorias": [
+   "containers",
+   "vases"
+  ],
+  "tags": [
+   "outdoor",
+   "mossy",
+   "dirty",
+   "used",
+   "worn",
+   "shed",
+   "garden",
+   "gardening"
+  ]
+ },
+ "plastic_bottle_gallon": {
+  "arquivo": "modelos/polyhaven/plastic_bottle_gallon/plastic_bottle_gallon_1k.gltf",
+  "nome": "Plastic Bottle Gallon",
+  "categorias": [
+   "containers"
+  ],
+  "tags": [
+   "rubbish",
+   "dirty",
+   "shed",
+   "outdoor",
+   "trash",
+   "clutter",
+   "garage",
+   "old"
+  ]
+ },
+ "plastic_broom": {
+  "arquivo": "modelos/polyhaven/plastic_broom/plastic_broom_1k.gltf",
+  "nome": "Plastic Broom",
+  "categorias": [
+   "props",
+   "tools"
+  ],
+  "tags": [
+   "cleaning",
+   "janitorial",
+   "red",
+   "housekeeping"
+  ]
+ },
+ "plastic_container": {
+  "arquivo": "modelos/polyhaven/plastic_container/plastic_container_1k.gltf",
+  "nome": "Plastic Container",
+  "categorias": [
+   "props",
+   "containers"
+  ],
+  "tags": [
+   "storage bin",
+   "rectangular bin",
+   "storage",
+   "box",
+   "crate",
+   "stackable"
+  ]
+ },
+ "plastic_crate_01": {
+  "arquivo": "modelos/polyhaven/plastic_crate_01/plastic_crate_01_1k.gltf",
+  "nome": "Plastic Crate 01",
+  "categorias": [
+   "props",
+   "containers"
+  ],
+  "tags": [
+   "beverage crate",
+   "milk crate",
+   "storage",
+   "crate",
+   "box",
+   "garage",
+   "workshop",
+   "retail"
+  ]
+ },
+ "plastic_crate_02": {
+  "arquivo": "modelos/polyhaven/plastic_crate_02/plastic_crate_02_1k.gltf",
+  "nome": "Plastic Crate 02",
+  "categorias": [
+   "props",
+   "containers"
+  ],
+  "tags": [
+   "plastic",
+   "crate",
+   "stackable",
+   "industrial",
+   "storage",
+   "utility",
+   "warehouse",
+   "retail"
+  ]
+ },
+ "plastic_crate_03": {
+  "arquivo": "modelos/polyhaven/plastic_crate_03/plastic_crate_03_1k.gltf",
+  "nome": "Plastic Crate 03",
+  "categorias": [
+   "containers",
+   "industrial"
+  ],
+  "tags": [
+   "plastic",
+   "crate",
+   "stackable",
+   "crate",
+   "aged",
+   "sun damaged",
+   "storage",
+   "distressed"
+  ]
+ },
+ "plastic_jerrycan": {
+  "arquivo": "modelos/polyhaven/plastic_jerrycan/plastic_jerrycan_1k.gltf",
+  "nome": "Plastic Jerrycan",
+  "categorias": [
+   "props",
+   "containers"
+  ],
+  "tags": [
+   "dirty",
+   "worn",
+   "plastic",
+   "fuel",
+   "petrol",
+   "gasoline",
+   "gas",
+   "red"
+  ]
+ },
+ "plastic_monobloc_chair_01": {
+  "arquivo": "modelos/polyhaven/plastic_monobloc_chair_01/plastic_monobloc_chair_01_1k.gltf",
+  "nome": "Plastic Monobloc Chair 01",
+  "categorias": [
+   "furniture",
+   "seating"
+  ],
+  "tags": [
+   "plastic",
+   "dirty",
+   "old",
+   "monobloc",
+   "outdoor",
+   "cheap",
+   "shed"
+  ]
+ },
+ "plastic_thermos": {
+  "arquivo": "modelos/polyhaven/plastic_thermos/plastic_thermos_1k.gltf",
+  "nome": "Plastic Thermos",
+  "categorias": [
+   "props",
+   "containers"
+  ],
+  "tags": [
+   "clean",
+   "green",
+   "70s",
+   "plastic",
+   "vintage",
+   "flask"
+  ]
+ },
+ "pliers": {
+  "arquivo": "modelos/polyhaven/pliers/pliers_1k.gltf",
+  "nome": "Pliers",
+  "categorias": [
+   "tools",
+   "props",
+   "industrial"
+  ],
+  "tags": [
+   "rusted",
+   "plastic",
+   "metal",
+   "combination pliers",
+   "wire cutters",
+   "hand tool"
+  ]
+ },
+ "plunger": {
+  "arquivo": "modelos/polyhaven/plunger/plunger_1k.gltf",
+  "nome": "Plunger",
+  "categorias": [
+   "tools"
+  ],
+  "tags": [
+   "bathroom",
+   "garage",
+   "cleaning",
+   "cleaning supplies",
+   "janitorial",
+   "sanitation",
+   "toilet",
+   "plumbing"
+  ]
+ },
+ "pocket_watch": {
+  "arquivo": "modelos/polyhaven/pocket_watch/pocket_watch_1k.gltf",
+  "nome": "Pocket Watch",
+  "categorias": [
+   "props"
+  ],
+  "tags": [
+   "antique",
+   "brass",
+   "ornate",
+   "gold",
+   "vintage",
+   "watch",
+   "timepiece",
+   "watchface"
+  ]
+ },
+ "portable_cassette_player": {
+  "arquivo": "modelos/polyhaven/portable_cassette_player/portable_cassette_player_1k.gltf",
+  "nome": "Portable Cassette Player",
+  "categorias": [
+   "props",
+   "electronics"
+  ],
+  "tags": [
+   "old",
+   "vintage",
+   "cassette tape",
+   "tape",
+   "retro",
+   "analog",
+   "walkman"
+  ]
+ },
+ "portable_generator": {
+  "arquivo": "modelos/polyhaven/portable_generator/portable_generator_1k.gltf",
+  "nome": "Portable Generator",
+  "categorias": [
+   "industrial",
+   "appliances"
+  ],
+  "tags": [
+   "gasoline",
+   "backup power",
+   "construction equipment",
+   "power generator",
+   "petrol",
+   "garage",
+   "power",
+   "engine"
+  ]
+ },
+ "portable_searchlight": {
+  "arquivo": "modelos/polyhaven/portable_searchlight/portable_searchlight_1k.gltf",
+  "nome": "Portable Searchlight",
+  "categorias": [
+   "lighting",
+   "electronics",
+   "tools",
+   "props"
+  ],
+  "tags": [
+   "flashlight",
+   "searchlight",
+   "plastic",
+   "lighting"
+  ]
+ },
+ "portable_welding_cart": {
+  "arquivo": "modelos/polyhaven/portable_welding_cart/portable_welding_cart_1k.gltf",
+  "nome": "Portable Welding Cart",
+  "categorias": [
+   "industrial",
+   "containers"
+  ],
+  "tags": [
+   "fuel",
+   "welding",
+   "cart",
+   "gas torch",
+   "oxygen tank",
+   "acetylene tank",
+   "hand truck",
+   "cylinder"
+  ]
+ },
+ "postcard_set_01": {
+  "arquivo": "modelos/polyhaven/postcard_set_01/postcard_set_01_1k.gltf",
+  "nome": "Postcard Set 01",
+  "categorias": [
+   "props"
+  ],
+  "tags": [
+   "scatter",
+   "paper",
+   "cards",
+   "notes",
+   "travel",
+   "post",
+   "mail",
+   "card"
+  ]
+ },
+ "pot_enamel_01": {
+  "arquivo": "modelos/polyhaven/pot_enamel_01/pot_enamel_01_1k.gltf",
+  "nome": "Pot Enamel 01",
+  "categorias": [
+   "props",
+   "decorative",
+   "dishes"
+  ],
+  "tags": [
+   "pot",
+   "container",
+   "cooking",
+   "cookware",
+   "kitchen",
+   "enamel",
+   "crockery",
+   "cuisine"
+  ]
+ },
+ "potted_plant_01": {
+  "arquivo": "modelos/polyhaven/potted_plant_01/potted_plant_01_1k.gltf",
+  "nome": "Potted Plant 01",
+  "categorias": [
+   "decorative",
+   "plants",
+   "potted plants",
+   "nature"
+  ],
+  "tags": [
+   "potplant",
+   "plant",
+   "terracotta",
+   "pot",
+   "vase",
+   "medium",
+   "leaf",
+   "green"
+  ]
+ },
+ "potted_plant_02": {
+  "arquivo": "modelos/polyhaven/potted_plant_02/potted_plant_02_1k.gltf",
+  "nome": "Potted Plant 02",
+  "categorias": [
+   "decorative",
+   "plants",
+   "potted plants",
+   "nature"
+  ],
+  "tags": [
+   "potplant",
+   "plant",
+   "pot",
+   "vase",
+   "medium",
+   "leaf",
+   "green",
+   "terracotta"
+  ]
+ },
+ "potted_plant_04": {
+  "arquivo": "modelos/polyhaven/potted_plant_04/potted_plant_04_1k.gltf",
+  "nome": "Potted Plant 04",
+  "categorias": [
+   "decorative",
+   "plants",
+   "potted plants",
+   "succulent",
+   "nature"
+  ],
+  "tags": [
+   "cactus",
+   "aloe",
+   "succulent",
+   "potplant",
+   "small",
+   "pot",
+   "plant",
+   "decor"
+  ]
+ },
+ "power_box_01": {
+  "arquivo": "modelos/polyhaven/power_box_01/power_box_01_1k.gltf",
+  "nome": "Power Box 01",
+  "categorias": [
+   "industrial",
+   "props",
+   "electronics",
+   "tools",
+   "rigged"
+  ],
+  "tags": [
+   "box",
+   "electrical",
+   "power",
+   "wiring",
+   "db board",
+   "circuit",
+   "breakers",
+   "board"
+  ]
+ },
+ "projector_screen": {
+  "arquivo": "modelos/polyhaven/projector_screen/projector_screen_1k.gltf",
+  "nome": "Projector Screen",
+  "categorias": [
+   "office"
+  ],
+  "tags": [
+   "tripod",
+   "film",
+   "presentation",
+   "projection",
+   "roll-up",
+   "conference"
+  ]
+ },
+ "propane_tank": {
+  "arquivo": "modelos/polyhaven/propane_tank/propane_tank_1k.gltf",
+  "nome": "Propane Tank",
+  "categorias": [
+   "props",
+   "industrial"
+  ],
+  "tags": [
+   "worn",
+   "metal",
+   "red barrel",
+   "scratched",
+   "cylinder",
+   "lpg",
+   "fuel"
+  ]
+ },
+ "propane_torch": {
+  "arquivo": "modelos/polyhaven/propane_torch/propane_torch_1k.gltf",
+  "nome": "Propane Torch",
+  "categorias": [
+   "props",
+   "tools"
+  ],
+  "tags": [
+   "garage",
+   "workshop",
+   "maintenance",
+   "propane torch",
+   "gas torch",
+   "welding",
+   "automotive",
+   "repair shop"
+  ]
+ },
+ "propane_torch_02": {
+  "arquivo": "modelos/polyhaven/propane_torch_02/propane_torch_02_1k.gltf",
+  "nome": "Propane Torch 02",
+  "categorias": [
+   "industrial",
+   "tools",
+   "props"
+  ],
+  "tags": [
+   "fuel",
+   "garage",
+   "workshop",
+   "maintenance",
+   "gas torch",
+   "automotive",
+   "repair shop",
+   "construction"
+  ]
+ },
+ "pull_chain_light_socket": {
+  "arquivo": "modelos/polyhaven/pull_chain_light_socket/pull_chain_light_socket_1k.gltf",
+  "nome": "Pull Chain Light Socket",
+  "categorias": [
+   "lighting"
+  ],
+  "tags": [
+   "light",
+   "fitting",
+   "socket",
+   "bulb",
+   "fixture",
+   "ceiling",
+   "lamp",
+   "chord"
+  ]
+ },
+ "quiver_tree_01": {
+  "arquivo": "modelos/polyhaven/quiver_tree_01/quiver_tree_01_1k.gltf",
+  "nome": "Quiver Tree 01",
+  "categorias": [
+   "nature",
+   "plants",
+   "trees"
+  ],
+  "tags": [
+   "karoo",
+   "south africa",
+   "desert",
+   "succulent",
+   "aloe"
+  ]
+ },
+ "quiver_tree_02": {
+  "arquivo": "modelos/polyhaven/quiver_tree_02/quiver_tree_02_1k.gltf",
+  "nome": "Quiver Tree 02",
+  "categorias": [
+   "nature",
+   "trees",
+   "plants"
+  ],
+  "tags": [
+   "south africa",
+   "karoo",
+   "succulent",
+   "aloe"
+  ]
+ },
+ "ratchet_wrench": {
+  "arquivo": "modelos/polyhaven/ratchet_wrench/ratchet_wrench_1k.gltf",
+  "nome": "Ratchet Wrench",
+  "categorias": [
+   "props",
+   "tools",
+   "industrial",
+   "rigged"
+  ],
+  "tags": [
+   "metal",
+   "shed",
+   "workshop",
+   "construction",
+   "garage",
+   "mechanic",
+   "wrench",
+   "nuts"
+  ]
+ },
+ "retro_multimeter": {
+  "arquivo": "modelos/polyhaven/retro_multimeter/retro_multimeter_1k.gltf",
+  "nome": "Retro Multimeter",
+  "categorias": [
+   "electronics",
+   "industrial",
+   "tools",
+   "instrument",
+   "props"
+  ],
+  "tags": [
+   "old",
+   "vintage",
+   "antique",
+   "analog",
+   "engineering",
+   "voltmeter",
+   "ammeter"
+  ]
+ },
+ "rock_07": {
+  "arquivo": "modelos/polyhaven/rock_07/rock_07_1k.gltf",
+  "nome": "Rock 07",
+  "categorias": [
+   "rocks",
+   "nature"
+  ],
+  "tags": [
+   "rock",
+   "stones",
+   "landscape",
+   "geology",
+   "formation",
+   "weathered",
+   "boulder"
+  ]
+ },
+ "rock_09": {
+  "arquivo": "modelos/polyhaven/rock_09/rock_09_1k.gltf",
+  "nome": "Rock 09",
+  "categorias": [
+   "nature",
+   "rocks"
+  ],
+  "tags": [
+   "rock",
+   "landscape",
+   "geology",
+   "formation",
+   "weathered",
+   "stone",
+   "dirt",
+   "boulder"
+  ]
+ },
+ "rock_face_01": {
+  "arquivo": "modelos/polyhaven/rock_face_01/rock_face_01_1k.gltf",
+  "nome": "Rock Face 01",
+  "categorias": [
+   "rocks",
+   "nature"
+  ],
+  "tags": [
+   "cliff",
+   "landscape",
+   "rock face",
+   "rock",
+   "formation",
+   "geology",
+   "weathered",
+   "lichen"
+  ]
+ },
+ "rock_face_02": {
+  "arquivo": "modelos/polyhaven/rock_face_02/rock_face_02_1k.gltf",
+  "nome": "Rock Face 02",
+  "categorias": [
+   "rocks",
+   "nature"
+  ],
+  "tags": [
+   "cliff",
+   "landscape",
+   "rock face",
+   "rock",
+   "formation",
+   "geology",
+   "rocks",
+   "weathered"
+  ]
+ },
+ "rock_moss_set_01": {
+  "arquivo": "modelos/polyhaven/rock_moss_set_01/rock_moss_set_01_1k.gltf",
+  "nome": "Rock Moss Set 01",
+  "categorias": [
+   "rocks",
+   "nature"
+  ],
+  "tags": [
+   "rocks",
+   "outdoor",
+   "stones",
+   "pebbles",
+   "rock",
+   "dirt"
+  ]
+ },
+ "rock_moss_set_02": {
+  "arquivo": "modelos/polyhaven/rock_moss_set_02/rock_moss_set_02_1k.gltf",
+  "nome": "Rock Moss Set 02",
+  "categorias": [
+   "rocks",
+   "nature"
+  ],
+  "tags": [
+   "rocks",
+   "outdoor",
+   "stones",
+   "pebbles",
+   "rock",
+   "dirt"
+  ]
+ },
+ "rollershutter_door": {
+  "arquivo": "modelos/polyhaven/rollershutter_door/rollershutter_door_1k.gltf",
+  "nome": "Rollershutter Door",
+  "categorias": [
+   "structures",
+   "industrial",
+   "buildings"
+  ],
+  "tags": [
+   "urban",
+   "security shutter",
+   "garage door",
+   "shutter door",
+   "warehouse door",
+   "commercial",
+   "roller garage door"
+  ]
+ },
+ "rollershutter_window_01": {
+  "arquivo": "modelos/polyhaven/rollershutter_window_01/rollershutter_window_01_1k.gltf",
+  "nome": "Rollershutter Window 01",
+  "categorias": [
+   "structures",
+   "industrial",
+   "buildings"
+  ],
+  "tags": [
+   "urban",
+   "security",
+   "commercial",
+   "shutters",
+   "garage door",
+   "security shutter",
+   "warehouse door",
+   "roller garage door"
+  ]
+ },
+ "rollershutter_window_02": {
+  "arquivo": "modelos/polyhaven/rollershutter_window_02/rollershutter_window_02_1k.gltf",
+  "nome": "Rollershutter Window 02",
+  "categorias": [
+   "industrial",
+   "structures",
+   "buildings"
+  ],
+  "tags": [
+   "urban",
+   "security shutter",
+   "garage door",
+   "roller garage door",
+   "commercial",
+   "warehouse door"
+  ]
+ },
+ "rollershutter_window_03": {
+  "arquivo": "modelos/polyhaven/rollershutter_window_03/rollershutter_window_03_1k.gltf",
+  "nome": "Rollershutter Window 03",
+  "categorias": [
+   "industrial",
+   "buildings",
+   "structures"
+  ],
+  "tags": [
+   "roller garage door",
+   "shutter door",
+   "security shutter",
+   "warehouse door",
+   "shutters",
+   "garage door"
+  ]
+ },
+ "root_cluster_01": {
+  "arquivo": "modelos/polyhaven/root_cluster_01/root_cluster_01_1k.gltf",
+  "nome": "Root Cluster 01",
+  "categorias": [
+   "nature",
+   "plants",
+   "ground cover"
+  ],
+  "tags": [
+   "root",
+   "tree",
+   "forest",
+   "foliage",
+   "bark",
+   "nature",
+   "plant",
+   "leaves"
+  ]
+ },
+ "root_cluster_02": {
+  "arquivo": "modelos/polyhaven/root_cluster_02/root_cluster_02_1k.gltf",
+  "nome": "Root Cluster 02",
+  "categorias": [
+   "nature",
+   "ground cover"
+  ],
+  "tags": [
+   "roots",
+   "dead tree",
+   "forest",
+   "nature",
+   "natural",
+   "plant",
+   "ground",
+   "forest floor"
+  ]
+ },
+ "round_spectacles": {
+  "arquivo": "modelos/polyhaven/round_spectacles/round_spectacles_1k.gltf",
+  "nome": "Round Spectacles",
+  "categorias": [
+   "props"
+  ],
+  "tags": [
+   "vintage",
+   "round frame",
+   "retro",
+   "eyewear",
+   "accessories",
+   "glasses"
+  ]
+ },
+ "round_wooden_table_01": {
+  "arquivo": "modelos/polyhaven/round_wooden_table_01/round_wooden_table_01_1k.gltf",
+  "nome": "Round Wooden Table 01",
+  "categorias": [
+   "furniture",
+   "table"
+  ],
+  "tags": [
+   "vintage",
+   "wooden",
+   "wood",
+   "polish",
+   "circle",
+   "dark",
+   "old"
+  ]
+ },
+ "round_wooden_table_02": {
+  "arquivo": "modelos/polyhaven/round_wooden_table_02/round_wooden_table_02_1k.gltf",
+  "nome": "Round Wooden Table 02",
+  "categorias": [
+   "furniture",
+   "table"
+  ],
+  "tags": [
+   "antique",
+   "vintage",
+   "wooden",
+   "traditional",
+   "circle",
+   "lounge",
+   "dining"
+  ]
+ },
+ "rubber_boots": {
+  "arquivo": "modelos/polyhaven/rubber_boots/rubber_boots_1k.gltf",
+  "nome": "Rubber Boots",
+  "categorias": [
+   "props"
+  ],
+  "tags": [
+   "clothing",
+   "shoes",
+   "outdoor",
+   "waterproof",
+   "wellies",
+   "rubber",
+   "workwear",
+   "utility"
+  ]
+ },
+ "rubber_duck_toy": {
+  "arquivo": "modelos/polyhaven/rubber_duck_toy/rubber_duck_toy_1k.gltf",
+  "nome": "Rubber Duck Toy",
+  "categorias": [
+   "props",
+   "decorative"
+  ],
+  "tags": [
+   "shed",
+   "toy",
+   "bathroom",
+   "child",
+   "home",
+   "fun",
+   "kids",
+   "play"
+  ]
+ },
+ "russian_food_cans_01": {
+  "arquivo": "modelos/polyhaven/russian_food_cans_01/russian_food_cans_01_1k.gltf",
+  "nome": "Russian Food Cans 01",
+  "categorias": [
+   "containers",
+   "props",
+   "food"
+  ],
+  "tags": [
+   "russian",
+   "food",
+   "culinary",
+   "cooking",
+   "pantry",
+   "tuna",
+   "can"
+  ]
+ },
+ "rusted_hacksaw": {
+  "arquivo": "modelos/polyhaven/rusted_hacksaw/rusted_hacksaw_1k.gltf",
+  "nome": "Rusted Hacksaw",
+  "categorias": [
+   "tools",
+   "props"
+  ],
+  "tags": [
+   "rusted",
+   "corroded",
+   "weathered",
+   "metal",
+   "saw",
+   "woodwork"
+  ]
+ },
+ "rusted_spade_01": {
+  "arquivo": "modelos/polyhaven/rusted_spade_01/rusted_spade_01_1k.gltf",
+  "nome": "Rusted Spade 01",
+  "categorias": [
+   "tools",
+   "props"
+  ],
+  "tags": [
+   "wood",
+   "old",
+   "vintage",
+   "wooden",
+   "worn",
+   "colonial",
+   "farmhouse",
+   "spade"
+  ]
+ },
+ "rusted_wheel_rim_01": {
+  "arquivo": "modelos/polyhaven/rusted_wheel_rim_01/rusted_wheel_rim_01_1k.gltf",
+  "nome": "Rusted Wheel Rim 01",
+  "categorias": [
+   "industrial",
+   "props"
+  ],
+  "tags": [
+   "car",
+   "vehicle",
+   "old",
+   "junkyard",
+   "scrapyard",
+   "trash"
+  ]
+ },
+ "rusted_wheel_rim_02": {
+  "arquivo": "modelos/polyhaven/rusted_wheel_rim_02/rusted_wheel_rim_02_1k.gltf",
+  "nome": "Rusted Wheel Rim 02",
+  "categorias": [
+   "industrial",
+   "props"
+  ],
+  "tags": [
+   "car",
+   "vehicle",
+   "old",
+   "junkyard",
+   "scrapyard",
+   "trash"
+  ]
+ },
+ "sand_rocks_small_01": {
+  "arquivo": "modelos/polyhaven/sand_rocks_small_01/sand_rocks_small_01_1k.gltf",
+  "nome": "Sand Rocks Small 01",
+  "categorias": [
+   "nature",
+   "rocks"
+  ],
+  "tags": [
+   "sand",
+   "rocks",
+   "seaside",
+   "shore",
+   "stones",
+   "pebbles",
+   "shoreline",
+   "coastal"
+  ]
+ },
+ "scandinavian_masonry_heater": {
+  "arquivo": "modelos/polyhaven/scandinavian_masonry_heater/scandinavian_masonry_heater_1k.gltf",
+  "nome": "Scandinavian Masonry Heater",
+  "categorias": [
+   "appliances"
+  ],
+  "tags": [
+   "heater",
+   "home heating",
+   "furnace",
+   "fireplace",
+   "wood stove",
+   "central heating"
+  ]
+ },
+ "screwdriver": {
+  "arquivo": "modelos/polyhaven/screwdriver/screwdriver_1k.gltf",
+  "nome": "Screwdriver",
+  "categorias": [
+   "tools",
+   "props"
+  ],
+  "tags": [
+   "flathead",
+   "slotted",
+   "worn",
+   "red",
+   "aged",
+   "dirty",
+   "hand tool"
+  ]
+ },
+ "screwdrivers_02": {
+  "arquivo": "modelos/polyhaven/screwdrivers_02/screwdrivers_02_1k.gltf",
+  "nome": "Screwdrivers 02",
+  "categorias": [
+   "tools",
+   "props"
+  ],
+  "tags": [
+   "vintage",
+   "flathead",
+   "phillips",
+   "wooden-handle",
+   "metal",
+   "antique",
+   "old"
+  ]
+ },
+ "seadogs_compass": {
+  "arquivo": "modelos/polyhaven/seadogs_compass/seadogs_compass_1k.gltf",
+  "nome": "Seadogs Compass",
+  "categorias": [
+   "props",
+   "tools",
+   "decorative"
+  ],
+  "tags": [
+   "old",
+   "vintage",
+   "antique",
+   "brass",
+   "nautical",
+   "compass",
+   "maritime",
+   "ship"
+  ]
+ },
+ "searsia_burchellii": {
+  "arquivo": "modelos/polyhaven/searsia_burchellii/searsia_burchellii_1k.gltf",
+  "nome": "Searsia Burchellii",
+  "categorias": [
+   "nature",
+   "trees"
+  ],
+  "tags": [
+   "karoo",
+   "bush",
+   "shrub",
+   "large",
+   "dry",
+   "south africa"
+  ]
+ },
+ "searsia_lucida": {
+  "arquivo": "modelos/polyhaven/searsia_lucida/searsia_lucida_1k.gltf",
+  "nome": "Searsia Lucida",
+  "categorias": [
+   "nature",
+   "plants",
+   "trees"
+  ],
+  "tags": [
+   "karoo",
+   "bush",
+   "shrub",
+   "dry",
+   "stick",
+   "botany",
+   "south africa"
+  ]
+ },
+ "security_camera_01": {
+  "arquivo": "modelos/polyhaven/security_camera_01/security_camera_01_1k.gltf",
+  "nome": "Security Camera 01",
+  "categorias": [
+   "electronics",
+   "appliances",
+   "industrial",
+   "rigged"
+  ],
+  "tags": [
+   "cctv",
+   "surveillance",
+   "monitoring",
+   "police",
+   "security",
+   "camera",
+   "utility",
+   "infrastructure"
+  ]
+ },
+ "security_camera_02": {
+  "arquivo": "modelos/polyhaven/security_camera_02/security_camera_02_1k.gltf",
+  "nome": "Security Camera 02",
+  "categorias": [
+   "industrial",
+   "electronics",
+   "appliances",
+   "rigged"
+  ],
+  "tags": [
+   "camera",
+   "surveillance",
+   "monitoring",
+   "cctv",
+   "police",
+   "security",
+   "utility",
+   "infrastructure"
+  ]
+ },
+ "security_light": {
+  "arquivo": "modelos/polyhaven/security_light/security_light_1k.gltf",
+  "nome": "Security Light",
+  "categorias": [
+   "lighting",
+   "industrial"
+  ],
+  "tags": [
+   "outdoor",
+   "exterior",
+   "alleyway",
+   "entrance",
+   "infrastructure"
+  ]
+ },
+ "seeding_tray_01": {
+  "arquivo": "modelos/polyhaven/seeding_tray_01/seeding_tray_01_1k.gltf",
+  "nome": "Seedling Tray 01",
+  "categorias": [
+   "containers"
+  ],
+  "tags": [
+   "outdoor",
+   "nature",
+   "plant",
+   "shed",
+   "greenhouse",
+   "gardening",
+   "landscaping",
+   "garden"
+  ]
+ },
+ "service_pistol": {
+  "arquivo": "modelos/polyhaven/service_pistol/service_pistol_1k.gltf",
+  "nome": "Service Pistol",
+  "categorias": [
+   "props",
+   "weapons",
+   "firearms"
+  ],
+  "tags": [
+   "vintage",
+   "semi-automatic",
+   "metal",
+   "cold war",
+   "bullet",
+   "gun",
+   "handgun"
+  ]
+ },
+ "ship_pinnace": {
+  "arquivo": "modelos/polyhaven/ship_pinnace/ship_pinnace_1k.gltf",
+  "nome": "Ship Pinnace",
+  "categorias": [
+   "ships",
+   "rigged"
+  ],
+  "tags": [
+   "old",
+   "wooden",
+   "wood",
+   "colonial",
+   "maritime",
+   "ship",
+   "boat",
+   "ocean"
+  ]
+ },
+ "shrub_01": {
+  "arquivo": "modelos/polyhaven/shrub_01/shrub_01_1k.gltf",
+  "nome": "Shrub 01",
+  "categorias": [
+   "nature",
+   "plants",
+   "ground cover",
+   "flowers"
+  ],
+  "tags": [
+   "plant",
+   "foliage",
+   "nature",
+   "forest",
+   "leaf",
+   "botany",
+   "green",
+   "leaves"
+  ]
+ },
+ "shrub_02": {
+  "arquivo": "modelos/polyhaven/shrub_02/shrub_02_1k.gltf",
+  "nome": "Shrub 02",
+  "categorias": [
+   "nature",
+   "plants",
+   "ground cover"
+  ],
+  "tags": [
+   "sapling",
+   "vegetation",
+   "environment",
+   "ground cover",
+   "foliage",
+   "forest",
+   "leaves",
+   "bush"
+  ]
+ },
+ "shrub_03": {
+  "arquivo": "modelos/polyhaven/shrub_03/shrub_03_1k.gltf",
+  "nome": "Shrub 03",
+  "categorias": [
+   "nature",
+   "plants",
+   "ground cover"
+  ],
+  "tags": [
+   "meadow",
+   "field",
+   "shrub",
+   "botany",
+   "green",
+   "nature",
+   "plant",
+   "leaf"
+  ]
+ },
+ "shrub_04": {
+  "arquivo": "modelos/polyhaven/shrub_04/shrub_04_1k.gltf",
+  "nome": "Shrub 04",
+  "categorias": [
+   "nature",
+   "plants",
+   "ground cover"
+  ],
+  "tags": [
+   "plant",
+   "shrub",
+   "bush",
+   "nature",
+   "green",
+   "leaf",
+   "foliage",
+   "ground cover"
+  ]
+ },
+ "shrub_sorrel_01": {
+  "arquivo": "modelos/polyhaven/shrub_sorrel_01/shrub_sorrel_01_1k.gltf",
+  "nome": "Shrub Sorrel 01",
+  "categorias": [
+   "plants",
+   "flowers",
+   "nature"
+  ],
+  "tags": [
+   "nature",
+   "sorrel",
+   "potplant",
+   "bush",
+   "shrub",
+   "leaf",
+   "leaves",
+   "green"
+  ]
+ },
+ "side_table_01": {
+  "arquivo": "modelos/polyhaven/side_table_01/side_table_01_1k.gltf",
+  "nome": "Side Table 01",
+  "categorias": [
+   "furniture",
+   "table"
+  ],
+  "tags": [
+   "table",
+   "wood",
+   "minimalist",
+   "modern",
+   "decor",
+   "living room",
+   "bedroom",
+   "shelf"
+  ]
+ },
+ "side_table_tall_01": {
+  "arquivo": "modelos/polyhaven/side_table_tall_01/side_table_tall_01_1k.gltf",
+  "nome": "Side Table Tall 01",
+  "categorias": [
+   "furniture",
+   "table"
+  ],
+  "tags": [
+   "vintage",
+   "antique",
+   "worn",
+   "old",
+   "wood",
+   "side table",
+   "side",
+   "table"
+  ]
+ },
+ "signal_flashlight": {
+  "arquivo": "modelos/polyhaven/signal_flashlight/signal_flashlight_1k.gltf",
+  "nome": "Signal Flashlight",
+  "categorias": [
+   "props",
+   "electronics"
+  ],
+  "tags": [
+   "handheld",
+   "light",
+   "torch",
+   "signal device",
+   "portable beacon",
+   "emergency signal",
+   "vintage"
+  ]
+ },
+ "single_root": {
+  "arquivo": "modelos/polyhaven/single_root/single_root_1k.gltf",
+  "nome": "Single Root",
+  "categorias": [
+   "nature",
+   "plants",
+   "ground cover"
+  ],
+  "tags": [
+   "roots",
+   "tree",
+   "forest",
+   "natural",
+   "nature",
+   "leaf",
+   "plant",
+   "foliage"
+  ]
+ },
+ "sledgehammer_01": {
+  "arquivo": "modelos/polyhaven/sledgehammer_01/sledgehammer_01_1k.gltf",
+  "nome": "Sledgehammer 01",
+  "categorias": [
+   "props",
+   "tools",
+   "industrial"
+  ],
+  "tags": [
+   "outdoor",
+   "construction",
+   "hammer",
+   "nails",
+   "heavy",
+   "shed"
+  ]
+ },
+ "small_lpg_tank": {
+  "arquivo": "modelos/polyhaven/small_lpg_tank/small_lpg_tank_1k.gltf",
+  "nome": "Small Lpg Tank",
+  "categorias": [
+   "props",
+   "industrial"
+  ],
+  "tags": [
+   "worn",
+   "metal",
+   "red barrel",
+   "scratched",
+   "cylinder",
+   "lpg",
+   "fuel",
+   "propane"
+  ]
+ },
+ "small_oil_can_01": {
+  "arquivo": "modelos/polyhaven/small_oil_can_01/small_oil_can_01_1k.gltf",
+  "nome": "Small Oil Can 01",
+  "categorias": [
+   "industrial",
+   "tools",
+   "props"
+  ],
+  "tags": [
+   "oil",
+   "fuel",
+   "can",
+   "dropper",
+   "mechanic",
+   "tools",
+   "repair"
+  ]
+ },
+ "small_plastic_torch": {
+  "arquivo": "modelos/polyhaven/small_plastic_torch/small_plastic_torch_1k.gltf",
+  "nome": "Small Plastic Torch",
+  "categorias": [
+   "tools",
+   "props"
+  ],
+  "tags": [
+   "vintage",
+   "old",
+   "worn",
+   "plastic",
+   "flashlight"
+  ]
+ },
+ "small_wooden_table_01": {
+  "arquivo": "modelos/polyhaven/small_wooden_table_01/small_wooden_table_01_1k.gltf",
+  "nome": "Small Wooden Table 01",
+  "categorias": [
+   "furniture",
+   "table"
+  ],
+  "tags": [
+   "vintage",
+   "wood",
+   "small",
+   "table",
+   "wooden"
+  ]
+ },
+ "sofa_02": {
+  "arquivo": "modelos/polyhaven/sofa_02/sofa_02_1k.gltf",
+  "nome": "Sofa 02",
+  "categorias": [
+   "furniture",
+   "seating"
+  ],
+  "tags": [
+   "wood",
+   "furniture",
+   "chair",
+   "prop",
+   "couch",
+   "leather",
+   "fabric"
+  ]
+ },
+ "sofa_03": {
+  "arquivo": "modelos/polyhaven/sofa_03/sofa_03_1k.gltf",
+  "nome": "Sofa 03",
+  "categorias": [
+   "furniture",
+   "seating"
+  ],
+  "tags": [
+   "vintage",
+   "chair",
+   "couch",
+   "seat",
+   "fancy",
+   "mansion",
+   "manor",
+   "victorian"
+  ]
+ },
+ "spinning_wheel_01": {
+  "arquivo": "modelos/polyhaven/spinning_wheel_01/spinning_wheel_01_1k.gltf",
+  "nome": "Spinning Wheel 01",
+  "categorias": [
+   "props",
+   "tools"
+  ],
+  "tags": [
+   "vintage",
+   "victorian",
+   "loom",
+   "fabric",
+   "cloth",
+   "yarn",
+   "village",
+   "wooden"
+  ]
+ },
+ "spray_paint_bottles": {
+  "arquivo": "modelos/polyhaven/spray_paint_bottles/spray_paint_bottles_1k.gltf",
+  "nome": "Spray Paint Bottles",
+  "categorias": [
+   "props",
+   "containers",
+   "industrial"
+  ],
+  "tags": [
+   "shed",
+   "cleaning",
+   "garage",
+   "workshop",
+   "metal",
+   "clutter",
+   "spray",
+   "can"
+  ]
+ },
+ "spray_paint_bottles_02": {
+  "arquivo": "modelos/polyhaven/spray_paint_bottles_02/spray_paint_bottles_02_1k.gltf",
+  "nome": "Spray Paint Bottles 02",
+  "categorias": [
+   "industrial",
+   "props",
+   "tools"
+  ],
+  "tags": [
+   "graffiti",
+   "street art",
+   "spray paint",
+   "paint",
+   "urban art"
+  ]
+ },
+ "standing_chalkboard_01": {
+  "arquivo": "modelos/polyhaven/standing_chalkboard_01/standing_chalkboard_01_1k.gltf",
+  "nome": "Standing Chalkboard 01",
+  "categorias": [
+   "decorative"
+  ],
+  "tags": [
+   "resturant",
+   "sign",
+   "signage",
+   "chalk",
+   "board",
+   "coffee",
+   "workshop",
+   "cafe"
+  ]
+ },
+ "standing_picture_frame_01": {
+  "arquivo": "modelos/polyhaven/standing_picture_frame_01/standing_picture_frame_01_1k.gltf",
+  "nome": "Standing Picture Frame 01",
+  "categorias": [
+   "decorative"
+  ],
+  "tags": [
+   "modern",
+   "minimalist",
+   "clean",
+   "frame",
+   "photo",
+   "simple",
+   "art"
+  ]
+ },
+ "standing_picture_frame_02": {
+  "arquivo": "modelos/polyhaven/standing_picture_frame_02/standing_picture_frame_02_1k.gltf",
+  "nome": "Standing Picture Frame 02",
+  "categorias": [
+   "decorative"
+  ],
+  "tags": [
+   "wood",
+   "painting",
+   "old",
+   "art",
+   "frame",
+   "photo"
+  ]
+ },
+ "stationery_supplies": {
+  "arquivo": "modelos/polyhaven/stationery_supplies/stationery_supplies_1k.gltf",
+  "nome": "Stationery Supplies",
+  "categorias": [
+   "props",
+   "office"
+  ],
+  "tags": [
+   "pen",
+   "pencil",
+   "eraser",
+   "stationery",
+   "art supplies",
+   "writing",
+   "office",
+   "desk"
+  ]
+ },
+ "steel_frame_shelves_01": {
+  "arquivo": "modelos/polyhaven/steel_frame_shelves_01/steel_frame_shelves_01_1k.gltf",
+  "nome": "Steel Frame Shelves 01",
+  "categorias": [
+   "furniture",
+   "shelves",
+   "industrial"
+  ],
+  "tags": [
+   "commercial",
+   "modern",
+   "shelf",
+   "bookshelf",
+   "metal",
+   "wood"
+  ]
+ },
+ "steel_frame_shelves_02": {
+  "arquivo": "modelos/polyhaven/steel_frame_shelves_02/steel_frame_shelves_02_1k.gltf",
+  "nome": "Steel Frame Shelves 02",
+  "categorias": [
+   "furniture",
+   "industrial",
+   "shelves"
+  ],
+  "tags": [
+   "commercial",
+   "modern",
+   "shelf",
+   "bookshelf",
+   "metal",
+   "wood"
+  ]
+ },
+ "steel_frame_shelves_03": {
+  "arquivo": "modelos/polyhaven/steel_frame_shelves_03/steel_frame_shelves_03_1k.gltf",
+  "nome": "Steel Frame Shelves 03",
+  "categorias": [
+   "shelves",
+   "furniture"
+  ],
+  "tags": [
+   "storage",
+   "home decor",
+   "contemporary",
+   "minimalist",
+   "display",
+   "frame"
+  ]
+ },
+ "stick_grenade": {
+  "arquivo": "modelos/polyhaven/stick_grenade/stick_grenade_1k.gltf",
+  "nome": "Stick Grenade",
+  "categorias": [
+   "weapons"
+  ],
+  "tags": [
+   "hand grenade",
+   "world war 2",
+   "bomb",
+   "explosive",
+   "german",
+   "wooden handle"
+  ]
+ },
+ "stone_01": {
+  "arquivo": "modelos/polyhaven/stone_01/stone_01_1k.gltf",
+  "nome": "Stone 01",
+  "categorias": [
+   "rocks",
+   "nature"
+  ],
+  "tags": [
+   "rock",
+   "stone",
+   "pebbles",
+   "dirt",
+   "terrain",
+   "gravel",
+   "quartz"
+  ]
+ },
+ "stone_fire_pit": {
+  "arquivo": "modelos/polyhaven/stone_fire_pit/stone_fire_pit_1k.gltf",
+  "nome": "Stone Fire Pit",
+  "categorias": [
+   "structures",
+   "buildings",
+   "furniture"
+  ],
+  "tags": [
+   "outdoor",
+   "garden",
+   "fire",
+   "bbq",
+   "farm",
+   "farmhouse",
+   "landscaping",
+   "patio"
+  ]
+ },
+ "strawberry_chocolate_cake": {
+  "arquivo": "modelos/polyhaven/strawberry_chocolate_cake/strawberry_chocolate_cake_1k.gltf",
+  "nome": "Strawberry Chocolate Cake",
+  "categorias": [
+   "props",
+   "food"
+  ],
+  "tags": [
+   "cooking",
+   "culinary",
+   "cake",
+   "baked goods",
+   "bakery",
+   "treat"
+  ]
+ },
+ "street_lamp_01": {
+  "arquivo": "modelos/polyhaven/street_lamp_01/street_lamp_01_1k.gltf",
+  "nome": "Street Lamp 01",
+  "categorias": [
+   "lighting",
+   "industrial"
+  ],
+  "tags": [
+   "street",
+   "road",
+   "light",
+   "lamppost",
+   "outdoor",
+   "pole",
+   "sidewalk",
+   "night"
+  ]
+ },
+ "street_lamp_02": {
+  "arquivo": "modelos/polyhaven/street_lamp_02/street_lamp_02_1k.gltf",
+  "nome": "Street Lamp 02",
+  "categorias": [
+   "lighting",
+   "industrial"
+  ],
+  "tags": [
+   "street",
+   "road",
+   "light",
+   "lamppost",
+   "outdoor",
+   "pole",
+   "sidewalk",
+   "night"
+  ]
+ },
+ "street_rat": {
+  "arquivo": "modelos/polyhaven/street_rat/street_rat_1k.gltf",
+  "nome": "Street Rat",
+  "categorias": [
+   "nature",
+   "creature"
+  ],
+  "tags": [
+   "rat",
+   "mouse",
+   "animal",
+   "vermin",
+   "rodent",
+   "alleyway",
+   "pest",
+   "feral"
+  ]
+ },
+ "sungka_board": {
+  "arquivo": "modelos/polyhaven/sungka_board/sungka_board_1k.gltf",
+  "nome": "Sungka Board",
+  "categorias": [
+   "decorative",
+   "props"
+  ],
+  "tags": [
+   "shed",
+   "game",
+   "boardgame",
+   "wooden",
+   "traditional",
+   "filipino",
+   "hand made"
+  ]
+ },
+ "sungka_board_02": {
+  "arquivo": "modelos/polyhaven/sungka_board_02/sungka_board_02_1k.gltf",
+  "nome": "Sungka Board 02",
+  "categorias": [
+   "decorative",
+   "props"
+  ],
+  "tags": [
+   "game",
+   "boardgame",
+   "wooden",
+   "filipino",
+   "traditional",
+   "hand-carved",
+   "handmade",
+   "shell"
+  ]
+ },
+ "sweet_potato": {
+  "arquivo": "modelos/polyhaven/sweet_potato/sweet_potato_1k.gltf",
+  "nome": "Sweet Potato",
+  "categorias": [
+   "food",
+   "nature"
+  ],
+  "tags": [
+   "potato",
+   "root",
+   "vegetable",
+   "dirty",
+   "raw",
+   "organic",
+   "oblong",
+   "sweet potato"
+  ]
+ },
+ "tea_set_01": {
+  "arquivo": "modelos/polyhaven/tea_set_01/tea_set_01_1k.gltf",
+  "nome": "Tea Set 01",
+  "categorias": [
+   "props",
+   "dishes"
+  ],
+  "tags": [
+   "antique",
+   "tea",
+   "cup",
+   "english",
+   "ornate",
+   "vintage",
+   "floral",
+   "decorative"
+  ]
+ },
+ "television_02": {
+  "arquivo": "modelos/polyhaven/television_02/television_02_1k.gltf",
+  "nome": "Television 02",
+  "categorias": [
+   "electronics"
+  ],
+  "tags": [
+   "old",
+   "vintage",
+   "crt",
+   "cathode ray tube",
+   "tv",
+   "retro",
+   "boxy",
+   "screen"
+  ]
+ },
+ "throw_pillows_01": {
+  "arquivo": "modelos/polyhaven/throw_pillows_01/throw_pillows_01_1k.gltf",
+  "nome": "Throw Pillows 01",
+  "categorias": [
+   "decorative"
+  ],
+  "tags": [
+   "decorative",
+   "pillow",
+   "throw",
+   "pattern",
+   "african",
+   "red",
+   "triangle",
+   "orange"
+  ]
+ },
+ "tire_pump": {
+  "arquivo": "modelos/polyhaven/tire_pump/tire_pump_1k.gltf",
+  "nome": "Tire Pump",
+  "categorias": [
+   "tools",
+   "props"
+  ],
+  "tags": [
+   "shed",
+   "garage",
+   "wheel",
+   "tire",
+   "pump",
+   "inflate",
+   "matress"
+  ]
+ },
+ "tongue_groove_pliers": {
+  "arquivo": "modelos/polyhaven/tongue_groove_pliers/tongue_groove_pliers_1k.gltf",
+  "nome": "Tongue & Groove Pliers",
+  "categorias": [
+   "tools"
+  ],
+  "tags": [
+   "wrench",
+   "adjustable wrench",
+   "serrated jaws",
+   "black grips",
+   "rubber grips",
+   "scratched"
+  ]
+ },
+ "tool_cart": {
+  "arquivo": "modelos/polyhaven/tool_cart/tool_cart_1k.gltf",
+  "nome": "Tool Cart",
+  "categorias": [
+   "industrial",
+   "furniture",
+   "table"
+  ],
+  "tags": [
+   "rusted",
+   "metal",
+   "cart",
+   "drawer",
+   "rolling",
+   "workshop",
+   "casters",
+   "garage"
+  ]
+ },
+ "trashbag": {
+  "arquivo": "modelos/polyhaven/trashbag/trashbag_1k.gltf",
+  "nome": "Trashbag",
+  "categorias": [
+   "props"
+  ],
+  "tags": [
+   "garbage bag",
+   "refuse",
+   "street waste",
+   "trash",
+   "street",
+   "scrapyard",
+   "junkyard",
+   "garbage"
+  ]
+ },
+ "treasure_chest": {
+  "arquivo": "modelos/polyhaven/treasure_chest/treasure_chest_1k.gltf",
+  "nome": "Treasure Chest",
+  "categorias": [
+   "props",
+   "containers",
+   "decorative"
+  ],
+  "tags": [
+   "old",
+   "wooden",
+   "chest",
+   "treasure",
+   "pirates",
+   "gold",
+   "crate",
+   "maritime"
+  ]
+ },
+ "tree_small_02": {
+  "arquivo": "modelos/polyhaven/tree_small_02/tree_small_02_1k.gltf",
+  "nome": "Tree Small 02",
+  "categorias": [
+   "nature",
+   "plants",
+   "trees"
+  ],
+  "tags": [
+   "tree",
+   "natural",
+   "nature",
+   "plant",
+   "outdoor",
+   "green",
+   "botany",
+   "leaf"
+  ]
+ },
+ "tree_stump_01": {
+  "arquivo": "modelos/polyhaven/tree_stump_01/tree_stump_01_1k.gltf",
+  "nome": "Tree Stump 01",
+  "categorias": [
+   "nature",
+   "plants",
+   "ground cover",
+   "trees"
+  ],
+  "tags": [
+   "tree",
+   "trunk",
+   "stump",
+   "dead tree",
+   "bark",
+   "forest",
+   "natural",
+   "nature"
+  ]
+ },
+ "tree_stump_02": {
+  "arquivo": "modelos/polyhaven/tree_stump_02/tree_stump_02_1k.gltf",
+  "nome": "Tree Stump 02",
+  "categorias": [
+   "nature",
+   "plants",
+   "ground cover",
+   "trees"
+  ],
+  "tags": [
+   "woodland",
+   "tree",
+   "stump",
+   "dead",
+   "environment",
+   "trunk",
+   "bark",
+   "forest"
+  ]
+ },
+ "trowel_01": {
+  "arquivo": "modelos/polyhaven/trowel_01/trowel_01_1k.gltf",
+  "nome": "Trowel 01",
+  "categorias": [
+   "props",
+   "tools"
+  ],
+  "tags": [
+   "outdoor",
+   "plant",
+   "garden",
+   "gardening",
+   "landscaping",
+   "shed",
+   "digging",
+   "hand"
+  ]
+ },
+ "utility_box_01": {
+  "arquivo": "modelos/polyhaven/utility_box_01/utility_box_01_1k.gltf",
+  "nome": "Utility Box 01",
+  "categorias": [
+   "industrial",
+   "structures"
+  ],
+  "tags": [
+   "utility",
+   "box",
+   "electrical",
+   "power",
+   "circuit",
+   "breakers",
+   "transformer",
+   "distributionpanel"
+  ]
+ },
+ "utility_box_02": {
+  "arquivo": "modelos/polyhaven/utility_box_02/utility_box_02_1k.gltf",
+  "nome": "Utility Box 02",
+  "categorias": [
+   "structures",
+   "industrial"
+  ],
+  "tags": [
+   "utility",
+   "box",
+   "electrical",
+   "power",
+   "urban",
+   "city",
+   "road",
+   "circuit"
+  ]
+ },
+ "vintage_binocular": {
+  "arquivo": "modelos/polyhaven/vintage_binocular/vintage_binocular_1k.gltf",
+  "nome": "Vintage Binoculars",
+  "categorias": [
+   "instrument",
+   "props"
+  ],
+  "tags": [
+   "antique",
+   "leather",
+   "optical",
+   "vintage",
+   "brass"
+  ]
+ },
+ "vintage_cabinet_01": {
+  "arquivo": "modelos/polyhaven/vintage_cabinet_01/vintage_cabinet_01_1k.gltf",
+  "nome": "Vintage Cabinet 01",
+  "categorias": [
+   "furniture",
+   "shelves"
+  ],
+  "tags": [
+   "vintage",
+   "farmhouse",
+   "old",
+   "antique",
+   "fancy",
+   "wooden",
+   "varnished",
+   "cupboard"
+  ]
+ },
+ "vintage_crutches_01": {
+  "arquivo": "modelos/polyhaven/vintage_crutches_01/vintage_crutches_01_1k.gltf",
+  "nome": "Vintage Crutches 01",
+  "categorias": [
+   "props"
+  ],
+  "tags": [
+   "vintage",
+   "war",
+   "old",
+   "antique",
+   "wood",
+   "hospital",
+   "medical"
+  ]
+ },
+ "vintage_day_bed": {
+  "arquivo": "modelos/polyhaven/vintage_day_bed/vintage_day_bed_1k.gltf",
+  "nome": "Vintage Day Bed",
+  "categorias": [
+   "furniture",
+   "bed",
+   "seating"
+  ],
+  "tags": [
+   "old",
+   "vintage",
+   "antique",
+   "wooden",
+   "couch",
+   "bench",
+   "sofa-bed",
+   "matress"
+  ]
+ },
+ "vintage_electric_kettle": {
+  "arquivo": "modelos/polyhaven/vintage_electric_kettle/vintage_electric_kettle_1k.gltf",
+  "nome": "Vintage Electric Kettle",
+  "categorias": [
+   "decorative",
+   "appliances"
+  ],
+  "tags": [
+   "old",
+   "vintage",
+   "antique",
+   "electric",
+   "gooseneck spout",
+   "metal",
+   "rusted",
+   "dirty"
+  ]
+ },
+ "vintage_flashlight": {
+  "arquivo": "modelos/polyhaven/vintage_flashlight/vintage_flashlight_1k.gltf",
+  "nome": "Vintage Flashlight",
+  "categorias": [
+   "lighting",
+   "electronics",
+   "props",
+   "tools"
+  ],
+  "tags": [
+   "antique",
+   "vintage",
+   "old",
+   "metal",
+   "torch",
+   "searchlight",
+   "spotlight",
+   "handheld"
+  ]
+ },
+ "vintage_grandfather_clock_01": {
+  "arquivo": "modelos/polyhaven/vintage_grandfather_clock_01/vintage_grandfather_clock_01_1k.gltf",
+  "nome": "Vintage Grandfather Clock 01",
+  "categorias": [
+   "decorative",
+   "appliances",
+   "rigged"
+  ],
+  "tags": [
+   "vintage",
+   "antique",
+   "fancy",
+   "time",
+   "clock",
+   "old",
+   "wooden",
+   "ornate"
+  ]
+ },
+ "vintage_hand_drill": {
+  "arquivo": "modelos/polyhaven/vintage_hand_drill/vintage_hand_drill_1k.gltf",
+  "nome": "Vintage Hand Drill",
+  "categorias": [
+   "tools",
+   "props",
+   "rigged"
+  ],
+  "tags": [
+   "old",
+   "wooden",
+   "vintage",
+   "workshop",
+   "drill",
+   "crank",
+   "carpentry",
+   "shed"
+  ]
+ },
+ "vintage_lighter": {
+  "arquivo": "modelos/polyhaven/vintage_lighter/vintage_lighter_1k.gltf",
+  "nome": "Vintage Lighter",
+  "categorias": [
+   "props",
+   "tools"
+  ],
+  "tags": [
+   "metal",
+   "scratched",
+   "brass",
+   "vintage",
+   "copper",
+   "worn"
+  ]
+ },
+ "vintage_microscope": {
+  "arquivo": "modelos/polyhaven/vintage_microscope/vintage_microscope_1k.gltf",
+  "nome": "Vintage Microscope",
+  "categorias": [
+   "instrument",
+   "industrial",
+   "tools"
+  ],
+  "tags": [
+   "antique",
+   "brass",
+   "scientific",
+   "optical",
+   "lab equipment",
+   "gold"
+  ]
+ },
+ "vintage_microwave": {
+  "arquivo": "modelos/polyhaven/vintage_microwave/vintage_microwave_1k.gltf",
+  "nome": "Vintage Microwave",
+  "categorias": [
+   "appliances",
+   "electronics"
+  ],
+  "tags": [
+   "vintage",
+   "retro",
+   "wooden",
+   "70s",
+   "oven",
+   "analog"
+  ]
+ },
+ "vintage_oil_lamp": {
+  "arquivo": "modelos/polyhaven/vintage_oil_lamp/vintage_oil_lamp_1k.gltf",
+  "nome": "Vintage Oil Lamp",
+  "categorias": [
+   "lighting",
+   "decorative"
+  ],
+  "tags": [
+   "lamp",
+   "oil",
+   "antique",
+   "victorian",
+   "manor",
+   "historic"
+  ]
+ },
+ "vintage_pocket_watch": {
+  "arquivo": "modelos/polyhaven/vintage_pocket_watch/vintage_pocket_watch_1k.gltf",
+  "nome": "Vintage Pocket Watch",
+  "categorias": [
+   "props"
+  ],
+  "tags": [
+   "vintage",
+   "watch",
+   "time",
+   "gold",
+   "antique",
+   "pocket watch",
+   "timepiece",
+   "ornate"
+  ]
+ },
+ "vintage_radio_transceiver": {
+  "arquivo": "modelos/polyhaven/vintage_radio_transceiver/vintage_radio_transceiver_1k.gltf",
+  "nome": "Vintage Radio Transceiver",
+  "categorias": [
+   "appliances",
+   "electronics"
+  ],
+  "tags": [
+   "military",
+   "army",
+   "communications",
+   "frequency dial",
+   "field radio",
+   "radio",
+   "ww2",
+   "telegraph"
+  ]
+ },
+ "vintage_spacecraft_instrument": {
+  "arquivo": "modelos/polyhaven/vintage_spacecraft_instrument/vintage_spacecraft_instrument_1k.gltf",
+  "nome": "Vintage Spacecraft Instrument",
+  "categorias": [
+   "instrument",
+   "electronics",
+   "industrial"
+  ],
+  "tags": [
+   "vintage",
+   "analog",
+   "retro",
+   "weathered",
+   "russian labels",
+   "cyrillic",
+   "classic",
+   "rocket"
+  ]
+ },
+ "vintage_stapler": {
+  "arquivo": "modelos/polyhaven/vintage_stapler/vintage_stapler_1k.gltf",
+  "nome": "Vintage Stapler",
+  "categorias": [
+   "props",
+   "tools",
+   "office"
+  ],
+  "tags": [
+   "vintage",
+   "stationery",
+   "metal",
+   "retro"
+  ]
+ },
+ "vintage_suitcase": {
+  "arquivo": "modelos/polyhaven/vintage_suitcase/vintage_suitcase_1k.gltf",
+  "nome": "Vintage Suitcase",
+  "categorias": [
+   "decorative",
+   "props"
+  ],
+  "tags": [
+   "vintage",
+   "old",
+   "hand made",
+   "stickers",
+   "travel",
+   "garbage",
+   "suitcase",
+   "trunk"
+  ]
+ },
+ "vintage_telephone_wall_clock": {
+  "arquivo": "modelos/polyhaven/vintage_telephone_wall_clock/vintage_telephone_wall_clock_1k.gltf",
+  "nome": "Vintage Telephone Wall Clock",
+  "categorias": [
+   "props",
+   "decorative",
+   "wall decoration"
+  ],
+  "tags": [
+   "old",
+   "vintage",
+   "antique",
+   "rotary phone",
+   "ornate",
+   "red"
+  ]
+ },
+ "vintage_video_camera": {
+  "arquivo": "modelos/polyhaven/vintage_video_camera/vintage_video_camera_1k.gltf",
+  "nome": "Vintage Video Camera",
+  "categorias": [
+   "electronics",
+   "appliances"
+  ],
+  "tags": [
+   "old",
+   "vintage",
+   "photography",
+   "film",
+   "cinematic",
+   "video",
+   "camera",
+   "recording"
+  ]
+ },
+ "vintage_wooden_drawer_01": {
+  "arquivo": "modelos/polyhaven/vintage_wooden_drawer_01/vintage_wooden_drawer_01_1k.gltf",
+  "nome": "Vintage Wooden Drawer 01",
+  "categorias": [
+   "furniture",
+   "shelves",
+   "table"
+  ],
+  "tags": [
+   "vintage",
+   "old",
+   "filing",
+   "drawer",
+   "office",
+   "wooden",
+   "worn",
+   "cabinet"
+  ]
+ },
+ "wall_clock": {
+  "arquivo": "modelos/polyhaven/wall_clock/wall_clock_1k.gltf",
+  "nome": "Wall Clock",
+  "categorias": [
+   "decorative",
+   "appliances"
+  ],
+  "tags": [
+   "time",
+   "timepiece",
+   "watch",
+   "watchface",
+   "wall clock",
+   "analog",
+   "modern",
+   "office decor"
+  ]
+ },
+ "water_manhole_cover": {
+  "arquivo": "modelos/polyhaven/water_manhole_cover/water_manhole_cover_1k.gltf",
+  "nome": "Water Manhole Cover",
+  "categorias": [
+   "industrial",
+   "structures"
+  ],
+  "tags": [
+   "infrastructure",
+   "drainage",
+   "utility",
+   "manhole",
+   "underground",
+   "maintenance",
+   "access cover",
+   "sewer"
+  ]
+ },
+ "watering_can_metal_01": {
+  "arquivo": "modelos/polyhaven/watering_can_metal_01/watering_can_metal_01_1k.gltf",
+  "nome": "Watering Can Metal 01",
+  "categorias": [
+   "containers",
+   "tools",
+   "props"
+  ],
+  "tags": [
+   "metal",
+   "garage",
+   "garden",
+   "gardening",
+   "landscaping",
+   "outdoor",
+   "shed",
+   "irrigation"
+  ]
+ },
+ "weed_plant_02": {
+  "arquivo": "modelos/polyhaven/weed_plant_02/weed_plant_02_1k.gltf",
+  "nome": "Weed Plant 02",
+  "categorias": [
+   "nature",
+   "plants",
+   "ground cover"
+  ],
+  "tags": [
+   "nature",
+   "natural",
+   "bush",
+   "shrub",
+   "green",
+   "plant",
+   "outdoor",
+   "leaf"
+  ]
+ },
+ "wheelchair_01": {
+  "arquivo": "modelos/polyhaven/wheelchair_01/wheelchair_01_1k.gltf",
+  "nome": "Wheelchair 01",
+  "categorias": [
+   "props"
+  ],
+  "tags": [
+   "infirmary",
+   "hospital",
+   "wheelchair",
+   "medical",
+   "clinic",
+   "mobilityaid",
+   "foldingwheelchair"
+  ]
+ },
+ "wicker_basket_01": {
+  "arquivo": "modelos/polyhaven/wicker_basket_01/wicker_basket_01_1k.gltf",
+  "nome": "Wicker Basket 01",
+  "categorias": [
+   "containers",
+   "decorative"
+  ],
+  "tags": [
+   "wood",
+   "wicker",
+   "twine",
+   "basket",
+   "picnic",
+   "outdoor",
+   "kitchen",
+   "dining"
+  ]
+ },
+ "wicker_basket_02": {
+  "arquivo": "modelos/polyhaven/wicker_basket_02/wicker_basket_02_1k.gltf",
+  "nome": "Wicker Basket 02",
+  "categorias": [
+   "containers",
+   "decorative"
+  ],
+  "tags": [
+   "handcrafted",
+   "home decor",
+   "rattan",
+   "basket",
+   "handwoven",
+   "woven",
+   "rustic decor",
+   "wicker"
+  ]
+ },
+ "wild_rooibos_bush": {
+  "arquivo": "modelos/polyhaven/wild_rooibos_bush/wild_rooibos_bush_1k.gltf",
+  "nome": "Wild Rooibos Bush",
+  "categorias": [
+   "nature",
+   "plants"
+  ],
+  "tags": [
+   "karoo",
+   "south africa",
+   "desert",
+   "dried",
+   "dry",
+   "shrub"
+  ]
+ },
+ "wine_barrel_01": {
+  "arquivo": "modelos/polyhaven/wine_barrel_01/wine_barrel_01_1k.gltf",
+  "nome": "Wine Barrel 01",
+  "categorias": [
+   "containers"
+  ],
+  "tags": [
+   "barrel",
+   "wine",
+   "celler",
+   "old",
+   "worn",
+   "grape",
+   "farmhouse",
+   "farm"
+  ]
+ },
+ "wine_bottles_01": {
+  "arquivo": "modelos/polyhaven/wine_bottles_01/wine_bottles_01_1k.gltf",
+  "nome": "Wine Bottles 01",
+  "categorias": [
+   "props",
+   "containers",
+   "dishes"
+  ],
+  "tags": [
+   "wine",
+   "drink",
+   "bottle",
+   "champagne",
+   "grape",
+   "farmhouse",
+   "vineyard"
+  ]
+ },
+ "wooden_axe": {
+  "arquivo": "modelos/polyhaven/wooden_axe/wooden_axe_1k.gltf",
+  "nome": "Wooden Axe",
+  "categorias": [
+   "props"
+  ],
+  "tags": [
+   "tool",
+   "axe",
+   "weapon",
+   "sharp",
+   "lumberjack",
+   "forestry",
+   "forestry tools",
+   "chopping"
+  ]
+ },
+ "wooden_axe_02": {
+  "arquivo": "modelos/polyhaven/wooden_axe_02/wooden_axe_02_1k.gltf",
+  "nome": "Wooden Axe 02",
+  "categorias": [
+   "props"
+  ],
+  "tags": [
+   "tool",
+   "axe",
+   "weapon",
+   "hatchet",
+   "forestry",
+   "firewood",
+   "camping",
+   "hand tool"
+  ]
+ },
+ "wooden_axe_03": {
+  "arquivo": "modelos/polyhaven/wooden_axe_03/wooden_axe_03_1k.gltf",
+  "nome": "Wooden Axe 03",
+  "categorias": [
+   "props",
+   "tools"
+  ],
+  "tags": [
+   "forest",
+   "gardening",
+   "garden",
+   "lumberjack",
+   "woodwork",
+   "firewood",
+   "fireman",
+   "saw"
+  ]
+ },
+ "wooden_barrels_01": {
+  "arquivo": "modelos/polyhaven/wooden_barrels_01/wooden_barrels_01_1k.gltf",
+  "nome": "Wooden Barrels 01",
+  "categorias": [
+   "containers",
+   "props"
+  ],
+  "tags": [
+   "barrel",
+   "celler",
+   "old",
+   "worn",
+   "wood",
+   "antique",
+   "prop",
+   "maritime"
+  ]
+ },
+ "wooden_bookshelf_worn": {
+  "arquivo": "modelos/polyhaven/wooden_bookshelf_worn/wooden_bookshelf_worn_1k.gltf",
+  "nome": "Wooden Bookshelf Worn",
+  "categorias": [
+   "furniture",
+   "shelves"
+  ],
+  "tags": [
+   "old",
+   "wooden",
+   "wood",
+   "worn",
+   "garage",
+   "shed",
+   "rustic",
+   "antique"
+  ]
+ },
+ "wooden_bowl_01": {
+  "arquivo": "modelos/polyhaven/wooden_bowl_01/wooden_bowl_01_1k.gltf",
+  "nome": "Wooden Bowl 01",
+  "categorias": [
+   "props",
+   "decorative",
+   "dishes"
+  ],
+  "tags": [
+   "bowl",
+   "wooden",
+   "carved",
+   "fruit",
+   "fruitbowl",
+   "decoration"
+  ]
+ },
+ "wooden_bowl_02": {
+  "arquivo": "modelos/polyhaven/wooden_bowl_02/wooden_bowl_02_1k.gltf",
+  "nome": "Wooden Bowl 02",
+  "categorias": [
+   "props",
+   "decorative",
+   "dishes"
+  ],
+  "tags": [
+   "antique",
+   "vintage",
+   "old",
+   "wooden",
+   "ornate",
+   "traditional",
+   "fruitbowl",
+   "rustic decor"
+  ]
+ },
+ "wooden_broom": {
+  "arquivo": "modelos/polyhaven/wooden_broom/wooden_broom_1k.gltf",
+  "nome": "Wooden Broom",
+  "categorias": [
+   "props",
+   "tools"
+  ],
+  "tags": [
+   "cleaning",
+   "janitorial",
+   "housekeeping",
+   "wood",
+   "worn",
+   "old"
+  ]
+ },
+ "wooden_bucket_01": {
+  "arquivo": "modelos/polyhaven/wooden_bucket_01/wooden_bucket_01_1k.gltf",
+  "nome": "Wooden Bucket 01",
+  "categorias": [
+   "props",
+   "containers"
+  ],
+  "tags": [
+   "wooden",
+   "bucket",
+   "old",
+   "worn",
+   "wood",
+   "prop",
+   "container"
+  ]
+ },
+ "wooden_bucket_02": {
+  "arquivo": "modelos/polyhaven/wooden_bucket_02/wooden_bucket_02_1k.gltf",
+  "nome": "Wooden Bucket 02",
+  "categorias": [
+   "props",
+   "containers"
+  ],
+  "tags": [
+   "old",
+   "wooden",
+   "bucket",
+   "vintage",
+   "wood",
+   "prop",
+   "worn",
+   "antique"
+  ]
+ },
+ "wooden_candlestick": {
+  "arquivo": "modelos/polyhaven/wooden_candlestick/wooden_candlestick_1k.gltf",
+  "nome": "Wooden Candlestick",
+  "categorias": [
+   "decorative",
+   "lighting"
+  ],
+  "tags": [
+   "old",
+   "antique",
+   "vintage",
+   "fancy",
+   "candle",
+   "historic",
+   "victorian"
+  ]
+ },
+ "wooden_crate_01": {
+  "arquivo": "modelos/polyhaven/wooden_crate_01/wooden_crate_01_1k.gltf",
+  "nome": "Wooden Crate 01",
+  "categorias": [
+   "containers"
+  ],
+  "tags": [
+   "vintage",
+   "wood",
+   "old",
+   "wooden",
+   "fancy",
+   "colonial",
+   "chest",
+   "box"
+  ]
+ },
+ "wooden_crate_02": {
+  "arquivo": "modelos/polyhaven/wooden_crate_02/wooden_crate_02_1k.gltf",
+  "nome": "Wooden Crate 02",
+  "categorias": [
+   "containers",
+   "props"
+  ],
+  "tags": [
+   "vintage",
+   "wood",
+   "old",
+   "wooden",
+   "worn",
+   "colonial",
+   "commercial",
+   "maritime"
+  ]
+ },
+ "wooden_cutting_board": {
+  "arquivo": "modelos/polyhaven/wooden_cutting_board/wooden_cutting_board_1k.gltf",
+  "nome": "Wooden Cutting Board",
+  "categorias": [
+   "props",
+   "food"
+  ],
+  "tags": [
+   "culinary",
+   "cooking",
+   "kitchen",
+   "cutting",
+   "chopping",
+   "cheese",
+   "cooking equipment",
+   "wood"
+  ]
+ },
+ "wooden_display_shelves_01": {
+  "arquivo": "modelos/polyhaven/wooden_display_shelves_01/wooden_display_shelves_01_1k.gltf",
+  "nome": "Wooden Display Shelves 01",
+  "categorias": [
+   "furniture",
+   "shelves"
+  ],
+  "tags": [
+   "modern",
+   "wood",
+   "pine",
+   "square",
+   "display",
+   "shelf",
+   "bookshelf"
+  ]
+ },
+ "wooden_hammer_01": {
+  "arquivo": "modelos/polyhaven/wooden_hammer_01/wooden_hammer_01_1k.gltf",
+  "nome": "Wooden Hammer 01",
+  "categorias": [
+   "industrial",
+   "tools",
+   "props"
+  ],
+  "tags": [
+   "wooden",
+   "worn",
+   "used",
+   "old",
+   "dirty",
+   "mallet",
+   "nails",
+   "woodwork"
+  ]
+ },
+ "wooden_handle_saber": {
+  "arquivo": "modelos/polyhaven/wooden_handle_saber/wooden_handle_saber_1k.gltf",
+  "nome": "Wooden Handle Saber",
+  "categorias": [
+   "props"
+  ],
+  "tags": [
+   "sword",
+   "weapon",
+   "pirates",
+   "blade",
+   "combat",
+   "survival",
+   "sharp"
+  ]
+ },
+ "wooden_ladder": {
+  "arquivo": "modelos/polyhaven/wooden_ladder/wooden_ladder_1k.gltf",
+  "nome": "Wooden Ladder",
+  "categorias": [
+   "tools",
+   "industrial"
+  ],
+  "tags": [
+   "scaffolding",
+   "steps",
+   "construction",
+   "workshop",
+   "ladder",
+   "step-ladder",
+   "maintenance",
+   "utility"
+  ]
+ },
+ "wooden_ladder_02": {
+  "arquivo": "modelos/polyhaven/wooden_ladder_02/wooden_ladder_02_1k.gltf",
+  "nome": "Wooden Ladder 02",
+  "categorias": [
+   "tools"
+  ],
+  "tags": [
+   "wooden",
+   "step-ladder",
+   "vintage",
+   "traditional",
+   "folding",
+   "garage",
+   "freestanding"
+  ]
+ },
+ "wooden_lantern_01": {
+  "arquivo": "modelos/polyhaven/wooden_lantern_01/wooden_lantern_01_1k.gltf",
+  "nome": "Wooden Lantern 01",
+  "categorias": [
+   "props",
+   "lighting"
+  ],
+  "tags": [
+   "lantern",
+   "wooden",
+   "wood",
+   "old",
+   "worn",
+   "farmhouse",
+   "maritime",
+   "colonial"
+  ]
+ },
+ "wooden_military_crate": {
+  "arquivo": "modelos/polyhaven/wooden_military_crate/wooden_military_crate_1k.gltf",
+  "nome": "Wooden Military Crate",
+  "categorias": [
+   "containers"
+  ],
+  "tags": [
+   "military",
+   "crate",
+   "box",
+   "army",
+   "chest",
+   "ammunition crate",
+   "wooden",
+   "weathered"
+  ]
+ },
+ "wooden_picnic_table": {
+  "arquivo": "modelos/polyhaven/wooden_picnic_table/wooden_picnic_table_1k.gltf",
+  "nome": "Wooden Picnic Table",
+  "categorias": [
+   "furniture",
+   "seating",
+   "table"
+  ],
+  "tags": [
+   "vintage",
+   "old",
+   "worn",
+   "park",
+   "bench",
+   "outdoor",
+   "weathered",
+   "countryside"
+  ]
+ },
+ "wooden_spoon": {
+  "arquivo": "modelos/polyhaven/wooden_spoon/wooden_spoon_1k.gltf",
+  "nome": "Wooden Spoon",
+  "categorias": [
+   "props",
+   "dishes"
+  ],
+  "tags": [
+   "cutlery",
+   "spoon",
+   "kitchen",
+   "cookware",
+   "cooking",
+   "serving spoon",
+   "mixing spoon",
+   "culinary"
+  ]
+ },
+ "wooden_stool_01": {
+  "arquivo": "modelos/polyhaven/wooden_stool_01/wooden_stool_01_1k.gltf",
+  "nome": "Wooden Stool 01",
+  "categorias": [
+   "seating",
+   "furniture"
+  ],
+  "tags": [
+   "old",
+   "worn",
+   "dirty",
+   "workshop",
+   "outdoor",
+   "stool",
+   "woodwork",
+   "shop"
+  ]
+ },
+ "wooden_stool_02": {
+  "arquivo": "modelos/polyhaven/wooden_stool_02/wooden_stool_02_1k.gltf",
+  "nome": "Wooden Stool 02",
+  "categorias": [
+   "seating",
+   "furniture"
+  ],
+  "tags": [
+   "old",
+   "wooden",
+   "vintage",
+   "antique",
+   "wood",
+   "farmhouse",
+   "carpentry",
+   "handcrafted"
+  ]
+ },
+ "wooden_table_02": {
+  "arquivo": "modelos/polyhaven/wooden_table_02/wooden_table_02_1k.gltf",
+  "nome": "Wooden Table 02",
+  "categorias": [
+   "furniture",
+   "table"
+  ],
+  "tags": [
+   "wooden",
+   "worn",
+   "village",
+   "rural",
+   "natural",
+   "simple"
+  ]
+ },
+ "worn_metal_rack": {
+  "arquivo": "modelos/polyhaven/worn_metal_rack/worn_metal_rack_1k.gltf",
+  "nome": "Worn Metal Rack",
+  "categorias": [
+   "furniture",
+   "shelves",
+   "industrial"
+  ],
+  "tags": [
+   "shelves",
+   "storage",
+   "metal",
+   "rusted",
+   "old",
+   "worn",
+   "workshop",
+   "garage"
+  ]
+ },
+ "yellow_onion": {
+  "arquivo": "modelos/polyhaven/yellow_onion/yellow_onion_1k.gltf",
+  "nome": "Yellow Onion",
+  "categorias": [
+   "props",
+   "food"
+  ],
+  "tags": [
+   "culinary",
+   "kitchen",
+   "cooking",
+   "vegetables",
+   "organic",
+   "produce",
+   "nutrition",
+   "ingredients"
   ]
  }
 }

@@ -5,6 +5,15 @@ O Claude pesquisa e escreve o roteiro, o estúdio busca a mídia, narra, anima, 
 e pode publicar no YouTube. Também edita os seus próprios vídeos: corta vídeos longos em Shorts e monta-os com a
 linguagem dos reels (cortes a cada 3–5 s, apoios visuais, tipografia, dados).
 
+## Exemplos
+Frames gerados pelo próprio estúdio (imagens fixas de vídeos verticais 1080×1920; modelos CC0 do Poly Haven e vídeo de
+stock do Pixabay).
+
+| | | | |
+|:-:|:-:|:-:|:-:|
+| <img src="docs/exemplos/editorial-dividido.jpg" width="200"><br>**Editorial 3D**<br>tipografia de revista + objeto 3D | <img src="docs/exemplos/editorial-centro.jpg" width="200"><br>**Editorial 3D**<br>composição centrada com decorações | <img src="docs/exemplos/vice-sunset.jpg" width="200"><br>**Vice Sunset**<br>cidade costeira ao pôr do sol | <img src="docs/exemplos/pixel3d.jpg" width="200"><br>**Pixel 3D**<br>low poly em pixel com dithering |
+| <img src="docs/exemplos/dado-editorial.jpg" width="200"><br>**Dado editorial**<br>número a contar + barras | <img src="docs/exemplos/faixa-cinema.jpg" width="200"><br>**Faixa de cinema**<br>b-roll 16:9 com número com brilho | <img src="docs/exemplos/palavras-gigantes.jpg" width="200"><br>**Palavras gigantes**<br>cartaz do conceito-chave | <img src="docs/exemplos/lowpoly-neon.jpg" width="200"><br>**Animação 3D low poly**<br>estilo Neon Gamer |
+
 ## O que faz
 - **Roteiros** com pesquisa e fontes, em vários formatos (curiosidades, explicativo, "E se?", quiz, ranking,
   storytelling, livre, Animação 3D, vídeo longo), com validador de qualidade e editor no painel.
@@ -14,7 +23,7 @@ linguagem dos reels (cortes a cada 3–5 s, apoios visuais, tipografia, dados).
 - **Cenas**: faixa de cinema (b-roll 16:9 com número com brilho), palavras gigantes, tipografia editorial, dado
   editorial (número a contar + barras), gráficos, linha do tempo, Manim, modelos 3D, animação 3D low poly (motor
   próprio) e quiz. Fundos pretos com grelha ondulada.
-- **Modelos 3D**: 3.278 modelos low poly CC0 da Kenney, modelos realistas CC0 do Poly Haven
+- **Modelos 3D**: 3.278 modelos low poly CC0 da Kenney, 520 modelos realistas CC0 do Poly Haven
   (`python scripts/baixar_polyhaven.py`) e Sketchfab (só licenças comerciais).
 - **Narração**: Edge (grátis), ElevenLabs ou Chatterbox (local, com clonagem de voz). Legendas palavra a palavra
   com as letras a ondular e destaque por cor.
