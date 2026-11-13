@@ -52,6 +52,10 @@ for (const [cena, i] of clipes) {
   }
 
   const info = JSON.parse(correr("npx", ["remotion", "ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=width,height:format=duration", "-of", "json", cortado]));
+  if (!info.streams?.length) {
+    const quando = cena.inicio !== undefined ? ` (trecho ${cena.inicio.toFixed(0)}–${cena.fim.toFixed(0)} s)` : "";
+    throw new Error(`a cena ${i + 1}${quando} ficou sem imagem, só com som: no vídeo original a imagem acaba antes do áudio. Escolha um momento mais cedo ou analise o vídeo de novo.`);
+  }
   const wav = `out/whisper/${roteiro.id}-${i}.wav`;
   correr("npx", ["remotion", "ffmpeg", "-y", "-loglevel", "error", "-i", cortado, "-ar", "16000", "-ac", "1", "-c:a", "pcm_s16le", wav]);
 

@@ -1206,7 +1206,7 @@ async function mostrarMomentos(a) {
   const r = a.resultado ?? await api(`/api/cortes?arquivo=${encodeURIComponent(a.arquivo)}`);
   if (!r?.cortes?.length) { $("#cortesPasso").textContent = "Não encontrei o resultado desta análise. Analise o vídeo de novo."; return; }
   cortesAtuais = r;
-  $("#cortesPasso").textContent = `${r.cortes.length} momentos em ${tempo(r.duracao)} de vídeo`;
+  $("#cortesPasso").textContent = `${r.cortes.length} momentos em ${tempo(r.duracao)} de vídeo${r.aviso ? `. ⚠ ${r.aviso}` : ""}`;
   desenharCortes();
 }
 async function seguirAnalises() {

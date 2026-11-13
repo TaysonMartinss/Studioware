@@ -2,7 +2,7 @@
 // (nota de viralidade, gancho, título, legenda, palavras-chave com emoji). Depois cada corte escolhido vira um
 // roteiro "clipe" com início e fim, que o pipeline normal recorta, tira silêncios, legenda e enquadra no rosto.
 // Seleção em duas fases adaptada do openshorts (github.com/mutonby/openshorts, MIT).
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { basename, join } from "node:path";
 
@@ -54,6 +54,15 @@ export function criarCortes({ raiz, claudeJSON, guardarProcesso }) {
     return { inicio: Math.max(0, ini - 0.15), fim: Math.min(tr.duracao, fim + 0.3) };
   };
 
+  // duração da IMAGEM do vídeo (há gravações em que o vídeo para e o áudio continua): os cortes só podem cair aí
+  const duracaoImagem = (arquivo) => {
+    const r = spawnSync("npx", ["remotion", "ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=duration:format=duration", "-of", "json", `"${join(raiz, "public", arquivo)}"`], { shell: true, encoding: "utf-8" });
+    try {
+      const j = JSON.parse(r.stdout);
+      return Number(j.streams?.[0]?.duration) || Number(j.format?.duration) || Infinity;
+    } catch { return Infinity; }
+  };
+
   async function analisar(t, d) {
     const arquivo = d.arquivo;
     if (!/^uploads\/[\w.-]+$/.test(arquivo ?? "") || !existsSync(join(raiz, "public", arquivo))) throw new Error("Vídeo não encontrado");
@@ -63,6 +72,17 @@ export function criarCortes({ raiz, claudeJSON, guardarProcesso }) {
     if (t.cancelado) throw new Error("Parado por si");
     if (tr.duracao < 45) throw new Error(`O vídeo tem só ${Math.round(tr.duracao)} s: é curto para cortes (use o modo de clipe normal)`);
     if (tr.palavras.length < 60) throw new Error(`A transcrição só achou ${tr.palavras.length} palavras: o vídeo tem pouca fala para escolher cortes`);
+    // a fala depois do fim da imagem fica de fora (senão o Short sairia só com som)
+    const fimImagem = duracaoImagem(arquivo);
+    let aviso;
+    if (fimImagem < tr.duracao - 2) {
+      const m = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
+      aviso = `A imagem do vídeo acaba aos ${m(fimImagem)} e o som continua até ${m(tr.duracao)}: os cortes só usam a parte com imagem.`;
+      tr.frases = tr.frases.filter((f) => f.fim <= fimImagem - 0.3);
+      tr.palavras = tr.palavras.filter((p) => p.e <= fimImagem - 0.3);
+      tr.duracao = fimImagem;
+      if (tr.frases.length < 5) throw new Error(`${aviso} Sobra pouca fala com imagem para escolher cortes.`);
+    }
     const min = Math.max(10, Number(d.min) || 20), max = Math.max(min + 5, Number(d.max) || 60);
     const js = janelas(tr);
 
@@ -101,7 +121,7 @@ export function criarCortes({ raiz, claudeJSON, guardarProcesso }) {
       .map((c, i) => ({ ...c, ...encaixar(tr, c, min, max), n: i }))
       .sort((a, b) => (b.nota ?? 0) - (a.nota ?? 0));
     if (!cortes.length) throw new Error("O Claude não encontrou cortes com força neste vídeo");
-    const resultado = { arquivo, duracao: tr.duracao, geradoEm: new Date().toISOString(), cortes };
+    const resultado = { arquivo, duracao: tr.duracao, geradoEm: new Date().toISOString(), cortes, ...(aviso ? { aviso } : {}) };
     writeFileSync(join(pasta(arquivo), "cortes.json"), JSON.stringify(resultado, null, 2));
     return resultado;
   }
