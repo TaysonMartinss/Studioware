@@ -6,7 +6,7 @@ import CANAIS from "../canais.json";
 // para quem reposta não conseguir cortá-la com um único recorte. As posições evitam a barra
 // de cima e os botões/legenda das plataformas (Shorts, Reels, TikTok).
 // os canais estão em src/canais.json (logo em public/marca/); o roteiro escolhe com "canal"
-type Canal = { nome: string; arroba: string; logo: string; pixelado?: boolean };
+type Canal = { nome: string; arroba: string; logo: string; pixelado?: boolean; redonda?: boolean };
 export const CANAL_PADRAO = "duckexplica";
 // canal apagado ou desconhecido: o padrão, ou o primeiro que exista (os canais criam-se e apagam-se no painel)
 export const canalDe = (id?: string): Canal => {
@@ -43,7 +43,10 @@ export const MarcaDagua: React.FC<{ canal?: string }> = ({ canal }) => {
         opacity: OPACIDADE * visivel, pointerEvents: "none",
       }}
     >
-      <Img src={staticFile(marca.logo)} style={{ height: 46, imageRendering: marca.pixelado ? "pixelated" : "auto" }} />
+      {/* logo opaca (o fundo não saiu): recortada em círculo, do tamanho da pílula, em vez de um quadrado */}
+      <Img src={staticFile(marca.logo)} style={marca.redonda
+        ? { width: 46, height: 46, borderRadius: "50%", objectFit: "cover", imageRendering: marca.pixelado ? "pixelated" : "auto" }
+        : { height: 46, imageRendering: marca.pixelado ? "pixelated" : "auto" }} />
       <span style={{ fontFamily: FONTES.inter, fontWeight: 800, fontSize: 28, color: "#fff", letterSpacing: "-0.01em", textShadow: "0 2px 6px #0008" }}>{marca.arroba}</span>
     </div>
   );

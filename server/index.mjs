@@ -858,8 +858,9 @@ const rotas = async (req, res) => {
     let id = todos[d.id] ? d.id : slug(arroba.slice(1)) || slug(nome) || "canal";
     if (!todos[d.id]) { const base = id; for (let k = 2; todos[id]; k++) id = `${base}-${k}`; }
     const antigo = todos[id] ?? {};
-    let logo = antigo.logo;
+    let logo = antigo.logo, redonda = antigo.redonda;
     if (typeof d.logo === "string" && /^marca\/rascunho-[a-z0-9]+\.png$/.test(d.logo) && existsSync(join(RAIZ, "public", d.logo))) {
+      redonda = Boolean(d.redonda) || undefined;
       // o rascunho passa a ser a logo do canal (nome novo a cada troca: o render não usa uma versão em cache)
       logo = `marca/${id}-${Date.now().toString(36)}.png`;
       renameSync(join(RAIZ, "public", d.logo), join(RAIZ, "public", logo));
@@ -869,6 +870,7 @@ const rotas = async (req, res) => {
     todos[id] = {
       ...antigo, nome, arroba, logo,
       pixelado: Boolean(d.pixelado) || undefined,
+      redonda, // logo opaca (fundo que não saiu): recortada em círculo na marca d'água
       nicho: String(d.nicho ?? "").trim().slice(0, 600) || undefined,
       categoriaYoutube: Number(d.categoriaYoutube) || antigo.categoriaYoutube || 22,
     };

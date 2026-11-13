@@ -553,7 +553,7 @@ $("#menuCanal").addEventListener("keydown", (e) => {
 document.addEventListener("click", (e) => { if (!$("#menuCanal").hidden && !e.target.closest(".seletor-canal-caixa")) fecharMenuCanal(); });
 
 // ---------- criar e editar canais (nome, @, logo e nicho) ----------
-let canalEmEdicao = null, logoRascunho = null;
+let canalEmEdicao = null, logoRascunho = null, logoOpaca = false;
 function abrirCanais() {
   desenharListaCanais();
   fecharFormCanal();
@@ -591,7 +591,8 @@ function previsualizarMarca() {
   const logo = logoRascunho ?? (canalEmEdicao ? OPCOES.canais[canalEmEdicao]?.logo : null);
   let arroba = $("#canalArroba").value.trim().replace(/\s+/g, "");
   if (arroba && !arroba.startsWith("@")) arroba = `@${arroba}`;
-  $("#marcaPrevia").innerHTML = `${logo ? `<img src="/public/${esc(logo)}" alt="" style="image-rendering:${$("#canalPixelado").checked ? "pixelated" : "auto"}">` : ""}<span>${esc(arroba || "@seucanal")}</span>`;
+  const redonda = logoRascunho ? logoOpaca : Boolean(OPCOES.canais?.[canalEmEdicao]?.redonda);
+  $("#marcaPrevia").innerHTML = `${logo ? `<img src="/public/${esc(logo)}" alt="" class="${redonda ? "redonda" : ""}" style="image-rendering:${$("#canalPixelado").checked ? "pixelated" : "auto"}">` : ""}<span>${esc(arroba || "@seucanal")}</span>`;
 }
 async function enviarLogoCanal() {
   const f = $("#canalLogo").files[0];
@@ -600,6 +601,7 @@ async function enviarLogoCanal() {
     toast("Preparando a logo…", "image");
     const d = await enviarComProgresso(`/api/canais/logo?nome=${encodeURIComponent(f.name)}&fundo=${$("#canalSemFundo").checked ? "remover" : "manter"}`, f);
     logoRascunho = d.logo;
+    logoOpaca = Boolean(d.opaca);
     previsualizarMarca();
     toast(d.fundoRemovido ? "Logo pronta, sem o fundo" : $("#canalSemFundo").checked ? "Logo pronta (não havia um fundo liso para tirar)" : "Logo pronta", "check");
   } catch (e) { toast(e.message, "triangle-alert"); }
@@ -609,7 +611,7 @@ async function guardarCanal() {
   try {
     const d = await api("/api/canais", { method: "POST", body: {
       id: canalEmEdicao, nome: $("#canalNome").value, arroba: $("#canalArroba").value, nicho: $("#canalNicho").value,
-      categoriaYoutube: Number($("#canalCategoria").value), pixelado: $("#canalPixelado").checked, logo: logoRascunho,
+      categoriaYoutube: Number($("#canalCategoria").value), pixelado: $("#canalPixelado").checked, logo: logoRascunho, redonda: logoOpaca,
     } });
     OPCOES.canais = d.canais;
     desenharCanais(d.id);

@@ -53,7 +53,11 @@ def main():
     if img.height > ALTURA:
         img = img.resize((max(1, round(img.width * ALTURA / img.height)), ALTURA), Image.LANCZOS)
     img.save(saida, "PNG", optimize=True)
-    print(json.dumps({"largura": img.width, "altura": img.height, "fundoRemovido": removido}))
+    # opaca: a logo é um bloco cheio (o fundo ficou, ou é um quadrado de cantos redondos): mais de 80% da área
+    # preenchida. A marca d'água recorta-a em círculo para casar com a pílula.
+    alfa = img.split()[3]
+    cheio = sum(alfa.histogram()[201:]) / max(1, img.width * img.height)
+    print(json.dumps({"largura": img.width, "altura": img.height, "fundoRemovido": removido, "opaca": cheio > 0.8}))
 
 
 if __name__ == "__main__":

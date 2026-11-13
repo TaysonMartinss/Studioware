@@ -344,6 +344,7 @@ dialog.modal { margin: auto; width: min(460px, calc(100vw - 32px)); }
 .marca-pilula { position: absolute; top: 14px; left: 14px; display: flex; align-items: center; gap: 8px; padding: 4px 12px 4px 6px;
   border-radius: 999px; background: #0000004d; opacity: .9; color: #fff; font-weight: 800; font-size: 15px; text-shadow: 0 1px 4px #0008; }
 .marca-pilula img { height: 30px; }
+.marca-pilula img.redonda { width: 30px; border-radius: 50%; object-fit: cover; }
 .canal-cartao { display: flex; gap: 14px; align-items: flex-start; padding: 16px; border: 1px solid var(--borda); border-radius: var(--raio-grande); background: var(--painel); }
 .canal-cartao.atual { border-color: var(--acento); box-shadow: inset 0 0 0 1px var(--acento); }
 .canal-logo { width: 48px; height: 48px; flex-shrink: 0; border-radius: 10px; object-fit: contain; padding: 4px;
