@@ -49,6 +49,15 @@ const lerEnv = () => {
     readFileSync(p, "utf-8").split(/\r?\n/).filter((l) => l.includes("=")).map((l) => [l.slice(0, l.indexOf("=")), l.slice(l.indexOf("=") + 1).trim()]),
   );
 };
+// pasta dos temporários (bundles e cópias de vídeo do Remotion, Whisper, ffmpeg): PASTA_TEMP no .env, noutro disco
+// se o C: tiver pouco espaço. Vale para o painel e para tudo o que ele lança (herdam TEMP/TMP).
+{
+  const temp = lerEnv().PASTA_TEMP;
+  if (temp) {
+    try { mkdirSync(temp, { recursive: true }); process.env.TEMP = process.env.TMP = process.env.TMPDIR = temp; }
+    catch (e) { console.warn(`PASTA_TEMP inválida (${temp}): ${e.message}`); }
+  }
+}
 const gravarEnv = (vars) =>
   writeFileSync(join(RAIZ, ".env"), Object.entries({ ...lerEnv(), ...vars }).map(([k, v]) => `${k}=${v}`).join("\n") + "\n");
 
