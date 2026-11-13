@@ -2,7 +2,7 @@
 // O roteiro é escrito pelo Claude Code em modo headless (claude -p, usa a skill novo-video);
 // a narração e o render correm em scripts/produzir.mjs.
 import { spawn, spawnSync } from "node:child_process";
-import { copyFileSync, createReadStream, createWriteStream, existsSync, mkdirSync, readFileSync, readdirSync, renameSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { copyFileSync, cpSync, createReadStream, createWriteStream, existsSync, mkdirSync, readFileSync, readdirSync, renameSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { pipeline } from "node:stream/promises";
 import { CLIMAS, POR_ESTILO, POR_FORMATO, gravarCatalogo, lerCatalogo, listarMusicas } from "../scripts/musica.mjs";
 import { createServer } from "node:http";
@@ -734,18 +734,39 @@ function criarCorte(id, k) {
   return novoId;
 }
 
+// move um ficheiro ou pasta; entre discos diferentes (out/ e public/videos no A:, roteiros no C:) o rename dá EXDEV:
+// copia e só depois apaga o original
+function mover(de, para) {
+  try { renameSync(de, para); }
+  catch (e) {
+    if (e.code !== "EXDEV") throw e;
+    cpSync(de, para, { recursive: true });
+    rmSync(de, { recursive: true, force: true });
+  }
+}
+// move todas as peças; se uma falhar, as que já foram voltam ao sítio (nunca fica um vídeo meio apagado)
+function moverPecas(pares) {
+  const feitos = [];
+  try {
+    for (const [de, para] of pares) { mover(de, para); feitos.push([de, para]); }
+  } catch (e) {
+    for (const [de, para] of feitos.reverse()) { try { mover(para, de); } catch { /* fica onde está */ } }
+    throw e;
+  }
+}
 function moverParaLixeira(id) {
   const destino = join(LIXEIRA, id);
+  const r = JSON.parse(readFileSync(caminhoRoteiro(id), "utf-8"));
+  // uma entrada antiga da lixeira com o mesmo nome só é limpa quando o vídeo está inteiro na biblioteca (lido acima)
   if (existsSync(destino)) rmSync(destino, { recursive: true, force: true });
   mkdirSync(destino, { recursive: true });
-  const r = JSON.parse(readFileSync(caminhoRoteiro(id), "utf-8"));
-  for (const [de, para] of PECAS(id)) if (existsSync(de)) renameSync(de, join(destino, para));
+  moverPecas(PECAS(id).filter(([de]) => existsSync(de)).map(([de, para]) => [de, join(destino, para)]));
   writeFileSync(join(destino, "info.json"), JSON.stringify({ id, titulo: r.titulo, estilo: r.estilo, apagadoEm: Date.now() }));
 }
 function restaurarDaLixeira(id) {
   const origem = join(LIXEIRA, id);
   if (existsSync(caminhoRoteiro(id))) throw new Error("Já existe um vídeo com este nome na biblioteca");
-  for (const [de, para] of PECAS(id)) if (existsSync(join(origem, para))) renameSync(join(origem, para), de);
+  moverPecas(PECAS(id).filter(([, para]) => existsSync(join(origem, para))).map(([de, para]) => [join(origem, para), de]));
   rmSync(origem, { recursive: true, force: true });
 }
 const listarLixeira = () =>
