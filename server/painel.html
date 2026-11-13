@@ -131,6 +131,7 @@
               <select id="gameplay" style="flex:1"><option value="nenhuma">Sem gameplay (layout normal)</option></select>
               <label class="btn peq" style="margin:0"><i class="i" style="--u:url(/icones/upload.svg);width:14px;height:14px"></i>Adicionar<input type="file" accept="video/*" hidden onchange="enviarGameplay(this.files[0])"></label>
             </div>
+            <label class="interruptor" style="margin-top:8px"><span>Intercalar momentos da gameplay <small>a gameplay de baixo salta para outro momento a cada 3 a 5 s, junto com os cortes da câmara</small></span><input type="checkbox" id="gameplayIntercalar" checked></label>
           </div>
           <div class="campo"><label class="interruptor"><span>Exemplos visuais por cima da fala <small>em podcasts e vídeos só de conversa, o Claude mostra vídeos, imagens, low poly ou desenhos do que a pessoa diz (gasta tokens: uma chamada por Short)</small></span><input type="checkbox" id="exemplos" checked></label></div>
           <div class="campo" id="campoDestaques">

@@ -136,12 +136,12 @@ function gameplays() {
   return lista.filter((g) => g.duracaoS > 5);
 }
 // um trecho da biblioteca para um Short: o clipe pedido (ou um ao acaso) e um início ao acaso que caiba
-function trechoGameplay(pedido, duracaoS = 60) {
+function trechoGameplay(pedido, duracaoS = 60, intercalar = false) {
   const lista = gameplays();
   if (!pedido || pedido === "nenhuma" || !lista.length) return undefined;
   const g = lista.find((x) => x.arquivo === pedido) ?? lista[Math.floor(Math.random() * lista.length)];
   const folga = Math.max(0, g.duracaoS - duracaoS - 1);
-  return { arquivo: g.arquivo, duracaoS: g.duracaoS, inicioS: Math.round(Math.random() * folga * 10) / 10 };
+  return { arquivo: g.arquivo, duracaoS: g.duracaoS, inicioS: Math.round(Math.random() * folga * 10) / 10, ...(intercalar ? { intercalar: true } : {}) };
 }
 
 // ---------- parar operações ----------
@@ -1053,7 +1053,7 @@ const rotas = async (req, res) => {
         id: videoId, titulo, formato: "clipe", estilo: d.estilo ?? "hormozi", musica: d.musica ?? "auto",
         ...(canalDe(d.canal) === "nenhum" ? { marcaDagua: false } : canalDe(d.canal) && { canal: d.canal }),
         destaques: Object.keys(emojis), legenda_post: x.legenda_post, nota: x.nota,
-        cenas: [{ tipo: "clipe", bruto: d.arquivo, inicio: x.inicio, fim: x.fim, fala: "", titulo: d.gancho === false ? undefined : x.gancho, cortar: d.cortar !== false, enquadrar: d.enquadrar !== false, exemplos: d.exemplos !== false, gameplay: trechoGameplay(d.gameplay, x.fim - x.inicio) }],
+        cenas: [{ tipo: "clipe", bruto: d.arquivo, inicio: x.inicio, fim: x.fim, fala: "", titulo: d.gancho === false ? undefined : x.gancho, cortar: d.cortar !== false, enquadrar: d.enquadrar !== false, exemplos: d.exemplos !== false, gameplay: trechoGameplay(d.gameplay, x.fim - x.inicio, d.gameplayIntercalar === true) }],
       }, null, 2));
       const job = novoJob({ tipo: "render", formato: "clipe", videoId, tema: titulo, estilo: d.estilo, narracao: "clipe" });
       produzir(job);
@@ -1085,7 +1085,7 @@ const rotas = async (req, res) => {
         id: videoId, titulo: d.tema.trim(), formato: "clipe", estilo: d.estilo ?? "hormozi", musica: d.musica ?? "auto",
         ...(canalDe(d.canal) === "nenhum" ? { marcaDagua: false } : canalDe(d.canal) && { canal: d.canal }),
         destaques: (d.destaques ?? "").split(",").map((x) => x.trim()).filter(Boolean),
-        cenas: arquivos.map((a) => ({ tipo: "clipe", bruto: a, fala: "", cortar: d.cortar !== false, enquadrar: d.enquadrar !== false, exemplos: d.exemplos === true, gameplay: trechoGameplay(d.gameplay) })),
+        cenas: arquivos.map((a) => ({ tipo: "clipe", bruto: a, fala: "", cortar: d.cortar !== false, enquadrar: d.enquadrar !== false, exemplos: d.exemplos === true, gameplay: trechoGameplay(d.gameplay, 60, d.gameplayIntercalar === true) })),
       }, null, 2));
       const job = novoJob({ tipo: "render", formato: "clipe", videoId, tema: d.tema.trim(), estilo: d.estilo, narracao: "clipe" });
       produzir(job);

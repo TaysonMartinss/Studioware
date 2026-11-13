@@ -804,7 +804,7 @@ async function criar() {
       const arquivos = [];
       for (const f of ficheiros) arquivos.push(await enviarFicheiro(f));
       await api("/api/jobs", { method: "POST", body: {
-        formato: "clipe", tema, estilo: estado.estilo, canal: $("#canal").value, arquivos, musica: $("#musica").value, cortar: $("#cortar").checked, destaques: $("#destaquesClipe").value, enquadrar: $("#enquadrar").checked, exemplos: $("#exemplos").checked, gameplay: $("#gameplay").value,
+        formato: "clipe", tema, estilo: estado.estilo, canal: $("#canal").value, arquivos, musica: $("#musica").value, cortar: $("#cortar").checked, destaques: $("#destaquesClipe").value, enquadrar: $("#enquadrar").checked, exemplos: $("#exemplos").checked, gameplay: $("#gameplay").value, gameplayIntercalar: $("#gameplayIntercalar").checked,
       } });
       $("#ficheirosClipe").value = ""; $("#nomesClipe").textContent = "Escolha os vídeos (pela ordem em que entram)";
       toast("Cortando e legendando", "scissors");
@@ -1314,7 +1314,7 @@ async function produzirCortes() {
   try {
     await api("/api/cortes/produzir", { method: "POST", body: {
       arquivo: cortesAtuais.arquivo, cortes: escolhidos, estilo: estado.estilo, canal: $("#canal").value, musica: $("#musica").value,
-      cortar: $("#cortar").checked, enquadrar: $("#enquadrar").checked, gancho: $("#ganchoCortes").checked, exemplos: $("#exemplos").checked, gameplay: $("#gameplay").value,
+      cortar: $("#cortar").checked, enquadrar: $("#enquadrar").checked, gancho: $("#ganchoCortes").checked, exemplos: $("#exemplos").checked, gameplay: $("#gameplay").value, gameplayIntercalar: $("#gameplayIntercalar").checked,
     } });
     dlgCortes.close();
     toast(`${escolhidos.length} Shorts na fila de render`, "scissors");

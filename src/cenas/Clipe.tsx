@@ -1,4 +1,4 @@
-import { AbsoluteFill, Easing, Loop, OffthreadVideo, Sequence, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
+import { AbsoluteFill, Easing, Loop, OffthreadVideo, Sequence, interpolate, random, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import { Conteudo, MidiaCartao } from "../components/MidiaReal";
 import { LowPolyCena } from "../lowpoly/LowPolyCena";
 import { PincelCena } from "../pincel/PincelCena";
@@ -117,7 +117,8 @@ const Exemplo: React.FC<{ b: Broll; cor: string; palavras: Palavra[] }> = ({ b, 
 // Rosto em cima e gameplay em baixo, como o layout de gameplay com webcam: a pessoa a toda a largura no topo
 // (enquadrada no rosto, com os mesmos zooms de plano) e a base dela a desvanecer para dentro da gameplay.
 // A gameplay vem da biblioteca, num trecho diferente em cada Short, sem som (a voz é a da pessoa).
-const Empilhado: React.FC<{ src: string; cena: CenaClipe; f: number; fps: number; L: number; A: number; zoom: number }> = ({ src, cena, f, fps, L, A, zoom }) => {
+const Empilhado: React.FC<{ src: string; cena: CenaClipe; f: number; fps: number; L: number; A: number; zoom: number; cortes: number[] }> = ({ src, cena, f, fps, L, A, zoom, cortes }) => {
+  const { durationInFrames: total } = useVideoConfig();
   const enq = cena.enquadramento, gp = cena.gameplay!;
   const hc = Math.round(A * 0.46); // altura da faixa da pessoa
   const aspeto = L / hc;
@@ -140,9 +141,22 @@ const Empilhado: React.FC<{ src: string; cena: CenaClipe; f: number; fps: number
     <AbsoluteFill style={{ background: "#000" }}>
       {/* a gameplay começa por baixo da pessoa, para a base da pessoa desvanecer por cima dela */}
       <div style={{ position: "absolute", left: 0, top: hc - DESVANECER, width: L, height: A - hc + DESVANECER, overflow: "hidden" }}>
-        <Loop durationInFrames={resto} layout="none">
-          <OffthreadVideo src={staticFile(gp.arquivo)} muted trimBefore={ini} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", transform: `scale(${1 + (zoom - 1) * 0.4})` }} />
-        </Loop>
+        {gp.intercalar ? (
+          // intercalar: a cada corte da câmara (3 a 5 s) a gameplay salta para outro momento do clipe (corte seco)
+          cortes.map((ms, k) => {
+            const de = Math.round((ms / 1000) * fps), ate = k + 1 < cortes.length ? Math.round((cortes[k + 1] / 1000) * fps) : total;
+            const momento = Math.round(random(`gp${gp.arquivo}${k}`) * Math.max(0, gp.duracaoS - 8) * fps);
+            return (
+              <Sequence key={k} from={de} durationInFrames={Math.max(1, ate - de)} layout="none">
+                <OffthreadVideo src={staticFile(gp.arquivo)} muted trimBefore={momento} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", transform: `scale(${1 + (zoom - 1) * 0.4})` }} />
+              </Sequence>
+            );
+          })
+        ) : (
+          <Loop durationInFrames={resto} layout="none">
+            <OffthreadVideo src={staticFile(gp.arquivo)} muted trimBefore={ini} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", transform: `scale(${1 + (zoom - 1) * 0.4})` }} />
+          </Loop>
+        )}
       </div>
       <Recorte src={src} vl={vl} va={va} r={r} caixa={{ top: 0, altura: hc, largura: L }} zoom={zoom}
         mascara={`linear-gradient(180deg, #000 0, #000 ${hc - DESVANECER}px, rgba(0,0,0,.8) ${hc - DESVANECER / 2}px, transparent ${hc}px)`} />
@@ -179,7 +193,7 @@ export const Clipe: React.FC<{ cena: CenaClipe; cor: string }> = ({ cena, cor })
   return (
     <AbsoluteFill>
       {cena.gameplay?.arquivo && !webcam ? (
-        <Empilhado src={src} cena={cena} f={f} fps={fps} L={L} A={A} zoom={zoom} />
+        <Empilhado src={src} cena={cena} f={f} fps={fps} L={L} A={A} zoom={zoom} cortes={cortes} />
       ) : webcam ? (
         <Dividido src={src} enq={enq!} f={f} fps={fps} L={L} A={A} zoom={1 + (zoom - 1) * 0.5} />
       ) : seguir ? (
