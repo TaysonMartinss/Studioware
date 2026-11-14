@@ -19,6 +19,8 @@ import { Cta } from "./cenas/Cta";
 import { Fato } from "./cenas/Fato";
 import { Faixa } from "./cenas/Faixa";
 import { Tipografia } from "./cenas/Tipografia";
+import { TituloEditorial } from "./cenas/TituloEditorial";
+import { BotaoInscrever } from "./cenas/Cta";
 import { DadoEditorial } from "./cenas/DadoEditorial";
 import { Gancho } from "./cenas/Gancho";
 import { Palavras } from "./cenas/Palavras";
@@ -36,6 +38,10 @@ import { FiltroPixel } from "./components/Pixel";
 import { EFEITOS } from "./aprendidos";
 
 const ConteudoCena: React.FC<{ cena: Cena; cor: string; destaques?: Set<string> }> = ({ cena, cor, destaques }) => {
+  // estilos editoriais (Editorial 3D e Vice): o gancho e o fecho também são tipografia editorial animada
+  const { tema } = useEstilo();
+  if ((tema === "editorial" || tema === "vice") && cena.tipo === "gancho") return <TituloEditorial texto={cena.texto_tela} objeto={cena.midia} />;
+  if ((tema === "editorial" || tema === "vice") && cena.tipo === "cta") return <TituloEditorial texto={cena.texto_tela} kicker="FIM" rodape={<BotaoInscrever inicio={25} cor={cor} texto={cena.botao} />} />;
   if (cena.tipo === "dado") return <DadoEditorial cena={cena} />;
   if (cena.tipo === "tipografia") return <Tipografia cena={cena} cor={cor} destaques={destaques} />;
   if (cena.tipo === "faixa") return <Faixa cena={cena} cor={cor} />;
@@ -91,7 +97,7 @@ const CenaCompleta: React.FC<{ cena: Cena; indice: number; cor: string; destaque
       {/* papel: um recorte novo a cada 3 palavras (o gancho já tem as letras de resgate e o CTA o botão) */}
       {tema === "papel" && !["gancho", "cta", "clipe"].includes(cena.tipo) && <ColagemPapel palavras={palavras} />}
       {/* a tipografia editorial já escreve a fala no ecrã */}
-      {cena.tipo !== "tipografia" && cena.tipo !== "dado" && <Legendas palavras={palavrasLegenda} destaques={destaques} cor={cor} emojis={emojis} />}
+      {cena.tipo !== "tipografia" && cena.tipo !== "dado" && !((tema === "editorial" || tema === "vice") && (cena.tipo === "gancho" || cena.tipo === "cta")) && <Legendas palavras={palavrasLegenda} destaques={destaques} cor={cor} emojis={emojis} />}
     </AbsoluteFill>
   );
 };

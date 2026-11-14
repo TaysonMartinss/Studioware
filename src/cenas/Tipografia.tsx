@@ -3,6 +3,7 @@ import { Sfx } from "../components/Sfx";
 import { Decoracoes } from "./Decoracoes";
 import { usePaleta } from "./DadoEditorial";
 import { FundoVice } from "../components/Vice";
+import { DesfoqueMovimento } from "../aprendidos/_kit";
 import { Conteudo } from "../components/MidiaReal";
 import { FONTES, normalizar, pop, useFrame } from "../components/motion";
 import { useEstilo } from "../estilos";
@@ -62,7 +63,8 @@ export const Tipografia: React.FC<{ cena: CenaTipografia; cor: string; destaques
   const topoObjeto = acima ? A * 0.44 : A * 0.1;
   const sBloco = pop(f, fps, Math.round((bloco[0].inicioMs / 1000) * fps), 8);
   const palavraChave = limpar(chave.texto).toLowerCase();
-  const tamanhoChave = Math.min(220, (L * 0.9) / (Math.max(4, palavraChave.length) * 0.56));
+  // com folga para a câmara (zoom e pan): a palavra-chave nunca encosta às margens
+  const tamanhoChave = Math.min(200, (L * 0.76) / (Math.max(4, palavraChave.length) * 0.6));
   const visivel = (p: Palavra) => ms >= p.inicioMs - 40;
   const entra = (p: Palavra) => pop(f, fps, Math.round((p.inicioMs / 1000) * fps), 6);
   const etiqueta = String(indice + 1).padStart(3, "0");
@@ -71,15 +73,23 @@ export const Tipografia: React.FC<{ cena: CenaTipografia; cor: string; destaques
   // câmara: cada frase tem o seu enquadramento (zoom, pan e uma leve rotação); a passagem é suave (0,7 s)
   // e dentro da frase a câmara continua a avançar devagar (dolly), para nunca parar
   const enquadramento = (i: number) => ({
-    z: random(`cz${i}`) * 150, x: (random(`cx${i}`) - 0.5) * 80, y: (random(`cy${i}`) - 0.5) * 70,
-    ry: (random(`cr${i}`) - 0.5) * 11, rx: (random(`cq${i}`) - 0.5) * 7,
+    z: random(`cz${i}`) * 90, x: (random(`cx${i}`) - 0.5) * 90, y: (random(`cy${i}`) - 0.5) * 70,
+    ry: (random(`cr${i}`) - 0.5) * 18, rx: (random(`cq${i}`) - 0.5) * 10,
   });
   const iniBloco = Math.round((bloco[0].inicioMs / 1000) * fps);
-  const passagem = interpolate(f, [iniBloco, iniBloco + 0.7 * fps], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: Easing.bezier(0.65, 0, 0.35, 1) });
   const de = enquadramento(Math.max(0, indice - 1)), para = enquadramento(indice);
-  const mix = (a: number, b: number) => a + (b - a) * (indice === 0 ? 1 : passagem);
-  const dolly = ((f - iniBloco) / fps) * 22;
-  const camara = `translate3d(${-mix(de.x, para.x)}px, ${-mix(de.y, para.y)}px, ${mix(de.z, para.z) + dolly}px) rotateX(${mix(de.rx, para.rx)}deg) rotateY(${mix(de.ry, para.ry)}deg)`;
+  // a câmara num frame qualquer (para calcular a velocidade do motion blur): passagem rápida e com aceleração
+  // forte (0,5 s, como um "ease" de After Effects) e depois um avanço lento, limitado para nada sair do ecrã
+  const camEm = (q: number) => {
+    const p = indice === 0 ? 1 : interpolate(q, [iniBloco, iniBloco + 0.5 * fps], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: Easing.bezier(0.8, 0, 0.2, 1) });
+    const m = (a: number, b: number) => a + (b - a) * p;
+    const dolly = Math.min(55, Math.max(0, ((q - iniBloco) / fps) * 18));
+    return { x: m(de.x, para.x), y: m(de.y, para.y), z: m(de.z, para.z) + dolly, rx: m(de.rx, para.rx), ry: m(de.ry, para.ry) };
+  };
+  const c = camEm(f), c0 = camEm(f - 1);
+  // motion blur na direção do movimento da câmara (deslocamento + rotação + aproximação)
+  const vx = (c.x - c0.x) + (c.ry - c0.ry) * 34, vy = (c.y - c0.y) + (c.rx - c0.rx) * 34 + (c.z - c0.z) * 0.35;
+  const camara = `translate3d(${-c.x}px, ${-c.y}px, ${c.z}px) rotateX(${c.rx}deg) rotateY(${c.ry}deg)`;
   const z = (v: number): React.CSSProperties => ({ transform: `translateZ(${v}px)`, transformStyle: "preserve-3d" });
 
   const Linha: React.FC<{ ws: Palavra[]; estilo: React.CSSProperties }> = ({ ws, estilo }) => (
@@ -91,6 +101,7 @@ export const Tipografia: React.FC<{ cena: CenaTipografia; cor: string; destaques
   );
 
   return (
+    <DesfoqueMovimento vx={vx} vy={vy} forca={0.4}>
     <AbsoluteFill style={{ perspective: 1400, perspectiveOrigin: "50% 45%", overflow: "hidden" }}>
       {/* sound design: woosh em cada frase nova (a primeira já tem o da cena) e um toque quando a palavra-chave entra */}
       {lista.map((b, i) => {
@@ -165,5 +176,6 @@ export const Tipografia: React.FC<{ cena: CenaTipografia; cor: string; destaques
         )}
       </div>
     </AbsoluteFill>
+    </DesfoqueMovimento>
   );
 };

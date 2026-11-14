@@ -53,7 +53,7 @@ const Botao: React.FC<{ children: React.ReactNode; cor: string; style?: React.CS
 
 // Botão de inscrição: aparece em `inicio`, o cursor carrega nele, passa a "Inscrito" e o sino balança.
 // Nos CTA de comentar e de link aparece mais pequeno, depois da ação principal (todo o vídeo pede a inscrição).
-const BotaoInscrever: React.FC<{ inicio: number; cor: string; texto?: string; pequeno?: boolean }> = ({ inicio, cor, texto, pequeno }) => {
+export const BotaoInscrever: React.FC<{ inicio: number; cor: string; texto?: string; pequeno?: boolean }> = ({ inicio, cor, texto, pequeno }) => {
   const f = useFrame() - inicio;
   const { fps } = useVideoConfig();
   const e = useEstilo();
