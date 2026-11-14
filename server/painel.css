@@ -242,6 +242,8 @@ select { appearance: none; background-image: linear-gradient(45deg, transparent 
 .job { padding: 16px 18px; border-bottom: 1px solid var(--borda); }
 .job:last-child { border-bottom: 0; }
 .analises { margin-bottom: 16px; }
+.estilo.aprender { display: flex; flex-direction: column; gap: 6px; }
+.estilo.aprender .aprender-mais { display: grid; place-items: center; width: 100%; aspect-ratio: 9 / 16; border-radius: var(--raio-peq); background: var(--elevado); color: var(--acento); border: 1px dashed var(--borda-forte); }
 .pedido-ia textarea { width: 100%; min-height: 96px; margin-top: 10px; font-family: var(--mono, monospace); font-size: 12.5px; }
 .pedido-ia .linha { gap: 8px; margin-top: 8px; flex-wrap: wrap; }
 .analise-passo { margin-top: 6px; font-size: 13px; color: var(--suave); }

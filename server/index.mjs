@@ -145,6 +145,208 @@ function trechoGameplay(pedido, duracaoS = 60, intercalar = false) {
   return { arquivo: g.arquivo, duracaoS: g.duracaoS, inicioS: Math.round(Math.random() * folga * 10) / 10, ...(intercalar ? { intercalar: true } : {}) };
 }
 
+// ---------- "Aprendo com seu exemplo": um estilo novo a partir de um vídeo de referência ----------
+// Do link só se usam as imagens públicas (YouTube: capa e os 3 frames automáticos; Instagram: a capa), sem descarregar
+// o vídeo. Com o vídeo enviado, tiram-se 12 frames. O Claude vê as imagens e traduz a direção de arte nas peças do motor.
+const PASTA_APRENDIDOS = join(RAIZ, "out/estilos-aprendidos");
+const OPCOES_ESTILO = {
+  tema: ["grelha", "gradiente", "solido", "papel", "estrelas", "claro", "synthwave", "hud", "cartesiano", "mundo3d", "editorial", "vice"],
+  overlay: ["scan", "vhs", "hud", "papel", "grao", null],
+  transicao: ["whip", "corte", "suave", "papel", "forma", "vhs", "hud", "voo", "folha"],
+  legenda: ["padrao", "hormozi", "papel", "pilula", "elegante", "neon", "hud", "marcador", "aquarela"],
+  fonte: ["anton", "archivo", "kalam", "inter", "montserrat", "marker", "poppins", "grotesk", "vt323", "orbitron", "mono", "serif", "stix"],
+};
+const NAVEGADOR = { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130 Safari/537.36" };
+async function baixarImagem(url, destino) {
+  const r = await fetch(url, { headers: NAVEGADOR });
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  const b = Buffer.from(await r.arrayBuffer());
+  if (b.length < 2000) throw new Error("imagem vazia");
+  writeFileSync(destino, b);
+  return destino;
+}
+async function imagensDoLink(link, pasta) {
+  const out = [];
+  const yt = link.match(/(?:youtu\.be\/|[?&]v=|shorts\/|embed\/)([\w-]{11})/);
+  if (yt) {
+    for (const n of ["maxresdefault", "hqdefault", "hq1", "hq2", "hq3"]) {
+      try { out.push(await baixarImagem(`https://i.ytimg.com/vi/${yt[1]}/${n}.jpg`, join(pasta, `youtube-${n}.jpg`))); } catch { /* nem todos existem */ }
+    }
+  } else if (/instagram\.com\//.test(link)) {
+    try {
+      const html = await (await fetch(link, { headers: NAVEGADOR })).text();
+      const og = html.match(/property="og:image"\s+content="([^"]+)"/)?.[1]?.replace(/&amp;/g, "&");
+      if (og) out.push(await baixarImagem(og, join(pasta, "instagram-capa.jpg")));
+    } catch { /* o Instagram às vezes pede sessão */ }
+  }
+  return out;
+}
+// ffmpeg e ffprobe do próprio Remotion, chamados diretamente (sem passar pela shell: "%02d" e vírgulas nos filtros
+// partiam-se no cmd do Windows)
+const BINARIOS = join(RAIZ, "node_modules/@remotion/compositor-win32-x64-msvc");
+const ffmpegDireto = (args) => (existsSync(join(BINARIOS, "ffmpeg.exe"))
+  ? spawnSync(join(BINARIOS, "ffmpeg.exe"), args, { encoding: "utf-8" })
+  : spawnSync("npx", ["remotion", "ffmpeg", ...args.map((a) => `"${a}"`)], { shell: true, encoding: "utf-8" }));
+const ffprobeDuracao = (video) => {
+  const r = existsSync(join(BINARIOS, "ffprobe.exe"))
+    ? spawnSync(join(BINARIOS, "ffprobe.exe"), ["-v", "error", "-select_streams", "v:0", "-show_entries", "stream=duration:format=duration", "-of", "json", video], { encoding: "utf-8" })
+    : spawnSync("npx", ["remotion", "ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=duration:format=duration", "-of", "json", `"${video}"`], { shell: true, encoding: "utf-8" });
+  // a duração da imagem (há gravações em que o áudio continua depois de a imagem acabar)
+  try { const j = JSON.parse(r.stdout); return Number(j.streams?.[0]?.duration) || Number(j.format?.duration) || 60; } catch { return 60; }
+};
+// 12 frames espalhados (direção de arte) + 4 rajadas de 6 frames seguidos a 0,1 s (movimento: transições, câmara,
+// motion blur, entrada das letras), cada rajada numa tira só para o Claude comparar os frames lado a lado.
+// O ffmpeg do Remotion não tem os filtros fps/tile: um salto por frame, -r 10 nas rajadas e a tira feita com o Pillow.
+function framesDoVideo(arquivo, pasta) {
+  const video = join(RAIZ, "public", arquivo);
+  const dur = ffprobeDuracao(video);
+  for (let k = 0; k < 12; k++) {
+    const t = (dur * (k + 0.5)) / 12;
+    ffmpegDireto(["-y", "-loglevel", "error", "-ss", t.toFixed(2), "-i", video, "-frames:v", "1", "-vf", "scale=-2:540", join(pasta, `frame-${String(k + 1).padStart(2, "0")}.jpg`)]);
+  }
+  [0.15, 0.38, 0.62, 0.85].forEach((q, k) => {
+    const partes = join(pasta, `parte-${k + 1}-%d.jpg`);
+    ffmpegDireto(["-y", "-loglevel", "error", "-ss", (dur * q).toFixed(2), "-i", video, "-r", "10", "-frames:v", "6", "-vf", "scale=-2:360", partes]);
+    spawnSync("python", ["-c", [
+      "import sys, glob; from PIL import Image",
+      "fs = sorted(glob.glob(sys.argv[1]), key=lambda f: int(f.rsplit('-', 1)[1].split('.')[0]))",
+      "ims = [Image.open(f) for f in fs]",
+      "w = sum(i.width for i in ims); h = max(i.height for i in ims); t = Image.new('RGB', (w, h)); x = 0",
+      "for i in ims: t.paste(i, (x, 0)); x += i.width",
+      "t.save(sys.argv[2], quality=85) if ims else None",
+    ].join("\n"), join(pasta, `parte-${k + 1}-*.jpg`), join(pasta, `rajada-${k + 1}.jpg`)], { encoding: "utf-8" });
+  });
+  for (const f of readdirSync(pasta)) if (f.startsWith("parte-")) rmSync(join(pasta, f), { force: true });
+  return readdirSync(pasta).filter((f) => /^(frame|rajada)-/.test(f)).sort().map((f) => join(pasta, f));
+}
+const hex = (v, padrao) => (typeof v === "string" && /^#[0-9a-f]{6}([0-9a-f]{2})?$/i.test(v.trim()) ? v.trim() : padrao);
+const entre = (v, a, b, padrao) => (Number.isFinite(Number(v)) ? Math.min(b, Math.max(a, Number(v))) : padrao);
+const de = (lista, v, padrao) => (lista.includes(v) ? v : padrao);
+// ---------- nível 2: o módulo de efeitos do estilo (o Claude escreve src/aprendidos/<id>.tsx) ----------
+const PASTA_MODULOS = join(RAIZ, "src/aprendidos");
+// registo dos módulos: um import por ficheiro <id>.tsx (os que começam por "_" são o kit e o exemplo)
+function regenerarRegistoEfeitos() {
+  const ids = readdirSync(PASTA_MODULOS).filter((f) => /^[a-z0-9-]+\.tsx$/.test(f)).map((f) => f.replace(/\.tsx$/, ""));
+  const nome = (id) => `m_${id.replace(/-/g, "_")}`;
+  writeFileSync(join(PASTA_MODULOS, "index.ts"), [
+    "// Registo dos módulos de efeitos dos estilos aprendidos. Gerado pelo servidor (\"Aprendo com seu exemplo\"):",
+    "// não editar à mão. Cada entrada liga o id do estilo (src/estilos.json) ao seu módulo src/aprendidos/<id>.tsx.",
+    'import type { EfeitosEstilo } from "./_kit";',
+    ...ids.map((id) => `import { efeitos as ${nome(id)} } from "./${id}";`),
+    "",
+    `export const EFEITOS: Record<string, EfeitosEstilo> = {${ids.map((id) => ` "${id}": ${nome(id)}`).join(",")}${ids.length ? " " : ""}};`,
+    "",
+  ].join("\n"));
+}
+// o Claude como agente: lê as imagens, o kit e o exemplo, e escreve o módulo
+const rodarAgente = (t, sistema, prompt) => new Promise((ok, falha) => {
+  const p = guardarProcesso(t, spawn("claude", ["-p", prompt, "--append-system-prompt", sistema, "--output-format", "json", "--permission-mode", "acceptEdits",
+    "--allowedTools", "Read", "Write", "Edit", "Glob", "Grep"], { cwd: RAIZ, stdio: ["ignore", "pipe", "pipe"], env: envClaude() }));
+  let out = "";
+  p.stdout.on("data", (d) => (out += d));
+  p.on("error", (e) => falha(new Error(`Não consegui iniciar o Claude Code: ${e.message}`)));
+  p.on("close", (code) => {
+    let r = "";
+    try { r = String(JSON.parse(out).result ?? ""); } catch { /* sem resumo */ }
+    return code === 0 ? ok(r) : falha(erroClaude(r, "O Claude terminou com erro"));
+  });
+});
+// erros de tipos só deste módulo (o resto do projeto já compila)
+const errosDoModulo = (id) => {
+  const r = spawnSync("npx", ["tsc", "--noEmit", "-p", "."], { cwd: RAIZ, shell: true, encoding: "utf-8" });
+  return String(r.stdout || "").split(/\r?\n/).filter((l) => l.includes(`aprendidos/${id}.tsx`) || l.includes("aprendidos/index.ts")).join("\n");
+};
+const renderOk = (id) => new Promise((ok) => {
+  const m = spawn(process.execPath, ["scripts/miniaturas.mjs", id], { cwd: RAIZ, stdio: "ignore" });
+  m.on("close", (code) => ok(code === 0));
+  m.on("error", () => ok(false));
+});
+async function aprenderEfeitos(t, id, novo, guia, imagens) {
+  const arquivo = join(PASTA_MODULOS, `${id}.tsx`);
+  const sistema = readFileSync(join(RAIZ, ".claude/skills/novo-video/aprender-efeitos.md"), "utf-8");
+  const prompt = [
+    `O id do estilo é "${id}": escreve src/aprendidos/${id}.tsx.`,
+    "Imagens do vídeo de referência (frames e rajadas de 6 frames seguidos; lê cada uma com Read):",
+    ...imagens.map((f) => `- ${f}`),
+    `Direção de arte já escolhida: ${JSON.stringify(novo)}`,
+    guia ? `Guia do roteirista para este estilo: ${guia}` : "",
+    "Lê primeiro src/aprendidos/_kit.tsx e src/aprendidos/_exemplo.tsx.",
+  ].filter(Boolean).join("\n");
+  t.passo = "🎬 O Claude está a recriar os efeitos (câmara, transições, motion blur, legendas)…";
+  let resumo = await rodarAgente(t, sistema, prompt);
+  if (!existsSync(arquivo)) return { efeitos: false, motivo: "o Claude não escreveu o módulo de efeitos" };
+  regenerarRegistoEfeitos();
+  t.passo = "🔍 A verificar o código dos efeitos…";
+  let erros = errosDoModulo(id);
+  if (erros) {
+    t.passo = "🛠 A corrigir o código dos efeitos…";
+    resumo = await rodarAgente(t, sistema, `Corrige src/aprendidos/${id}.tsx: o TypeScript deu estes erros (mantém os efeitos):\n${erros.slice(0, 3000)}`);
+    erros = errosDoModulo(id);
+  }
+  t.passo = "🖼 A testar os efeitos num render…";
+  if (!erros && await renderOk(id)) return { efeitos: true, resumo };
+  // não ficou válido: o estilo fica só com a direção de arte (o ficheiro sai do registo)
+  rmSync(arquivo, { force: true });
+  regenerarRegistoEfeitos();
+  await renderOk(id);
+  return { efeitos: false, motivo: erros ? "o código dos efeitos não compilou" : "o render de teste falhou" };
+}
+
+async function aprenderEstilo(t, d) {
+  const pasta = join(PASTA_APRENDIDOS, Date.now().toString(36));
+  mkdirSync(pasta, { recursive: true });
+  t.passo = "🔎 A recolher imagens do exemplo…";
+  const imagens = [
+    ...(d.link ? await imagensDoLink(String(d.link).trim(), pasta) : []),
+    ...(typeof d.arquivo === "string" && /^uploads\/[\w.-]+$/.test(d.arquivo) ? framesDoVideo(d.arquivo, pasta) : []),
+  ];
+  if (!imagens.length) throw new Error("Não consegui imagens deste exemplo. O Instagram às vezes pede sessão: envie também o vídeo (o estilo sai mais fiel).");
+  t.passo = `👁 O Claude está a estudar o estilo (${imagens.length} imagens)…`;
+  const todos = estilos();
+  const pedido = [
+    "Imagens do vídeo de referência (lê cada uma com Read):",
+    ...imagens.map((f) => `- ${f}`),
+    d.link ? `Link do exemplo: ${d.link}` : "",
+    d.notas ? `O que o criador quer deste estilo: ${String(d.notas).slice(0, 400)}` : "",
+    `Estilos que já existem (o novo tem de ser diferente): ${Object.values(todos).map((e) => e.nome).join(", ")}`,
+  ].filter(Boolean).join("\n");
+  // precisa de ver as imagens: corre sempre com o Claude, mesmo no modo IA externa
+  const r = await claudeJSONPeloClaude(t, join(RAIZ, ".claude/skills/novo-video/aprender-estilo.md"), pedido, ["Read"]);
+  const e = r.estilo ?? {}, base = todos.neon;
+  const novo = {
+    nome: String(r.nome ?? "Meu estilo").slice(0, 32), descricao: String(r.descricao ?? "").slice(0, 160),
+    cor: hex(e.cor, base.cor), cor2: hex(e.cor2, base.cor2), fundo: hex(e.fundo, base.fundo), corTexto: hex(e.corTexto, base.corTexto),
+    sombra: typeof e.sombra === "string" ? e.sombra.slice(0, 60) : base.sombra, superficie: hex(e.superficie, base.superficie),
+    tema: de(OPCOES_ESTILO.tema, e.tema, "solido"), overlay: de(OPCOES_ESTILO.overlay, e.overlay ?? null, null),
+    transicao: de(OPCOES_ESTILO.transicao, e.transicao, "corte"), legenda: de(OPCOES_ESTILO.legenda, e.legenda, "padrao"),
+    titulo: de(OPCOES_ESTILO.fonte, e.titulo, "anton"), corpo: de(OPCOES_ESTILO.fonte, e.corpo, "inter"),
+    glitch: e.glitch === true, shake: entre(e.shake, 0, 1.5, 0.4), flash: entre(e.flash, 0, 0.5, 0), passo: entre(e.passo, 1, 3, 1),
+    raio: entre(e.raio, 0, 30, 10), brilho: e.brilho === true, ...(typeof e.tracking === "string" ? { tracking: e.tracking.slice(0, 12) } : {}),
+    ...(e.pixel && typeof e.pixel === "object" ? { pixel: { tamanho: entre(e.pixel.tamanho, 4, 16, 10), niveis: entre(e.pixel.niveis, 4, 12, 8) } } : {}),
+    aprendido: { link: d.link || null, em: new Date().toISOString(), observado: String(r.observado ?? "").slice(0, 300) },
+  };
+  let id = `meu-${slug(novo.nome) || "estilo"}`.slice(0, 32);
+  for (let k = 2; todos[id]; k++) id = `${id.replace(/-\d+$/, "")}-${k}`;
+  writeFileSync(join(RAIZ, "src/estilos.json"), JSON.stringify({ ...todos, [id]: novo }, null, 2) + "\n");
+  // o guia do roteirista para este estilo (lido pelo "Roteiro de outra IA" e pelo roteirista)
+  if (r.guia) {
+    const fx = join(RAIZ, ".claude/skills/novo-video/formatos-externo.md");
+    const txt = readFileSync(fx, "utf-8");
+    writeFileSync(fx, txt.replace("## estilo: editorial", `## estilo: ${id}\n${String(r.guia).trim()}\n\n## estilo: editorial`));
+  }
+  // nível 2 (opcional): os efeitos em código; sem ele (ou se falhar) fica só a direção de arte
+  let efeitos = { efeitos: false };
+  if (d.efeitos !== false) {
+    try { efeitos = await aprenderEfeitos(t, id, novo, r.guia, imagens); }
+    catch (e) { if (t.cancelado) throw e; efeitos = { efeitos: false, motivo: e.message }; }
+  }
+  if (!efeitos.efeitos) {
+    t.passo = "🖼 A gerar a miniatura do estilo…";
+    await renderOk(id);
+  }
+  return { id, nome: novo.nome, descricao: novo.descricao, observado: novo.aprendido.observado, ...efeitos };
+}
+
 // ---------- parar operações ----------
 // o processo em curso fica guardado fora do JSON (não enumerável) para o botão Parar o poder matar
 const guardarProcesso = (alvo, p) => {
@@ -1013,7 +1215,7 @@ const rotas = async (req, res) => {
       // ficheiro inteiro para o Temp, por isso uma gameplay de 450 MB pesava 450 MB por vídeo. Corre em segundo plano.
       const final = join(PASTA_GAMEPLAY, nome.replace(/\.\w+$/, ".mp4"));
       const aspas = (x) => `"${x}"`;
-      const conv = spawn("npx", ["remotion", "ffmpeg", "-y", "-loglevel", "error", "-i", aspas(bruto), "-vf", aspas("scale=-2:720,fps=30"), "-c:v", "libx264", "-preset", "veryfast", "-crf", "26", "-an", aspas(`${final}.tmp.mp4`)], { shell: true, stdio: "ignore" });
+      const conv = spawn("npx", ["remotion", "ffmpeg", "-y", "-loglevel", "error", "-i", aspas(bruto), "-vf", aspas("scale=-2:720"), "-r", "30", "-c:v", "libx264", "-preset", "veryfast", "-crf", "26", "-an", aspas(`${final}.tmp.mp4`)], { shell: true, stdio: "ignore" });
       conv.on("close", (code) => {
         try {
           if (code === 0) { renameSync(`${final}.tmp.mp4`, final); rmSync(bruto, { force: true }); }
@@ -1140,6 +1342,11 @@ const rotas = async (req, res) => {
     try { valor = tirarJSONExterno(d.texto); } catch (e) { return json(res, 400, { erro: e.message }); }
     writeFileSync(`${base}.resposta.json`, JSON.stringify(valor));
     return json(res, 200, { ok: true });
+  }
+  if (b === "estilos" && c === "aprender" && req.method === "POST") {
+    const d = await corpo(req);
+    if (!d.link && !d.arquivo) return json(res, 400, { erro: "Cole um link do YouTube ou do Instagram, ou envie o vídeo" });
+    return json(res, 202, novaTarefa("estilo", (t) => aprenderEstilo(t, d)));
   }
   if (b === "ia-modo" && req.method === "POST") {
     const d = await corpo(req);

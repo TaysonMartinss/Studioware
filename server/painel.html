@@ -378,6 +378,19 @@
 </div>
 
 <!-- ================= JANELAS (ações dentro de uma página) ================= -->
+<dialog id="dlgAprender" class="modal" style="width:min(560px, calc(100vw - 32px))">
+  <div class="modal-caixa">
+  <div class="gaveta-topo"><b>Aprendo com seu exemplo</b><button class="btn fantasma icone" onclick="dlgAprender.close()" title="Fechar" aria-label="Fechar"><i class="i" style="--u:url(/icones/x.svg)"></i></button></div>
+  <div class="gaveta-corpo" style="display:flex;flex-direction:column;gap:14px">
+    <div class="dica">Mostre um vídeo com o visual que quer e o estúdio cria um estilo novo com as mesmas cores, letra, fundo e ritmo. Do link usa só as imagens públicas (capa e frames); para o estilo sair mais fiel, envie também o vídeo.</div>
+    <div class="campo"><label class="rotulo" for="aprenderLink">Link do YouTube ou do Instagram</label><input id="aprenderLink" placeholder="https://www.youtube.com/shorts/… ou https://www.instagram.com/reel/…"></div>
+    <div class="campo"><label class="rotulo" for="aprenderVideo">O vídeo (opcional, recomendado)</label><input type="file" id="aprenderVideo" accept="video/*"></div>
+    <div class="campo"><label class="interruptor"><span>Aprender também os efeitos <small>câmara 3D, transições, motion blur, animação das letras e do fundo: o Claude escreve os efeitos em código (demora mais e gasta mais tokens; com o vídeo enviado sai muito melhor)</small></span><input type="checkbox" id="aprenderEfeitos" checked></label></div>
+    <div class="campo"><label class="rotulo" for="aprenderNotas">O que mais gosta nele (opcional)</label><input id="aprenderNotas" placeholder="Ex.: as legendas amarelas e o fundo escuro com grão"></div>
+    <div class="linha" style="gap:10px"><button class="btn primario" id="btnAprender" onclick="aprenderEstilo()"><i class="i" style="--u:url(/icones/sparkles.svg)"></i>Aprender estilo</button><span class="meta" id="aprenderPasso"></span></div>
+  </div>
+  </div>
+</dialog>
 <dialog id="dlgOutraIA" class="modal" style="width:min(560px, calc(100vw - 32px))">
   <div class="modal-caixa">
   <div class="gaveta-topo"><b>Roteiro feito em outra IA</b><button class="btn fantasma icone" onclick="dlgOutraIA.close()" title="Fechar" aria-label="Fechar"><i class="i" style="--u:url(/icones/x.svg)"></i></button></div>

@@ -374,12 +374,34 @@ async function apagarFaixa(arquivo) {
 const estilosVisiveis = (atual) => Object.entries(OPCOES.estilos).filter(([k, e]) => !e.oculto || k === atual);
 function desenharEstilos() {
   if (OPCOES.estilos[estado.estilo]?.oculto) estado.estilo = "neon";
-  $("#estilos").innerHTML = estilosVisiveis().map(([k, e]) => `
+  $("#estilos").innerHTML = estilosVisiveis().filter(([k]) => k).map(([k, e]) => `
     <button class="estilo ${k === estado.estilo ? "ativo" : ""}" data-k="${k}" title="${esc(e.descricao)}">
       <img src="/miniaturas/${k}.jpg" alt="" loading="lazy"><span>${esc(e.nome)}</span>
     </button>`).join("");
+  // cartão para criar um estilo a partir de um exemplo (YouTube, Instagram ou o próprio vídeo)
+  $("#estilos").insertAdjacentHTML("beforeend", `<button class="estilo aprender" type="button" onclick="abrirAprender()" title="Criar um estilo novo a partir de um vídeo de exemplo"><span class="aprender-mais">${ic("sparkles", 26)}</span><span>Aprendo com seu exemplo</span></button>`);
   $("#estiloDesc").textContent = OPCOES.estilos[estado.estilo]?.descricao ?? "";
-  document.querySelectorAll(".estilo").forEach((el) => (el.onclick = () => { estado.estilo = el.dataset.k; desenharEstilos(); atualizarDicaMusica(); }));
+  document.querySelectorAll(".estilo[data-k]").forEach((el) => (el.onclick = () => { estado.estilo = el.dataset.k; desenharEstilos(); atualizarDicaMusica(); }));
+}
+
+// ---------- "Aprendo com seu exemplo" ----------
+function abrirAprender() { $("#aprenderPasso").textContent = ""; $("#btnAprender").disabled = false; dlgAprender.showModal(); }
+async function aprenderEstilo() {
+  const link = $("#aprenderLink").value.trim(), f = $("#aprenderVideo").files[0];
+  if (!link && !f) return toast("Cole um link ou escolha o vídeo", "link");
+  $("#btnAprender").disabled = true;
+  try {
+    let arquivo;
+    if (f) { $("#aprenderPasso").textContent = "A enviar o vídeo…"; arquivo = await enviarFicheiro(f); }
+    const t = await api("/api/estilos/aprender", { method: "POST", body: { link, arquivo, notas: $("#aprenderNotas").value.trim(), efeitos: $("#aprenderEfeitos").checked } });
+    const r = await esperarTarefa(t, (p) => ($("#aprenderPasso").textContent = p ?? ""));
+    OPCOES = await api("/api/opcoes");
+    estado.estilo = r.id;
+    desenharEstilos();
+    dlgAprender.close();
+    toast(r.efeitos ? `Estilo novo com efeitos: ${r.nome}` : `Estilo novo: ${r.nome}${r.motivo ? ` (só a direção de arte: ${r.motivo})` : ""}`, "sparkles");
+  } catch (e) { $("#aprenderPasso").textContent = ""; toast(e.message, "triangle-alert"); }
+  $("#btnAprender").disabled = false;
 }
 
 // ---------- modo automático ----------

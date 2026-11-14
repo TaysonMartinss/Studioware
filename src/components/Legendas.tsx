@@ -5,6 +5,7 @@ import { Icone } from "./Icone";
 import { AMARELO, FONTES, normalizar, pop } from "./motion";
 import { useEtapa, useFerver, useOndular } from "./PapelMotion";
 import { FAMILIA_LEGENDA } from "./FonteLegenda";
+import { EFEITOS } from "../aprendidos";
 import { bounce6 } from "./ui";
 
 // local = frames desde que a palavra começou; ordem = posição entre os destaques (para alternar cores)
@@ -180,7 +181,8 @@ export const Legendas: React.FC<{ palavras: Palavra[]; destaques: Set<string>; c
   const etapa = useEtapa();
   const ferver = useFerver();
   const ondular = useOndular();
-  const v = VARIANTES[e.legenda] ?? VARIANTES.padrao;
+  // estilo aprendido com animação própria das legendas, senão a variante do estilo
+  const v = ((e.id && EFEITOS[e.id]?.legenda) as Variante | undefined) ?? VARIANTES[e.legenda] ?? VARIANTES.padrao;
   // todas as legendas menos a do papel: fonte Keep Calm (com a do estilo por trás) e letras a ondular
   const papel = e.legenda === "papel";
   const ms = (f / fps) * 1000;

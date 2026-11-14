@@ -5,7 +5,9 @@ import { renderStill, selectComposition } from "@remotion/renderer";
 import { mkdirSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-const estilos = Object.keys(JSON.parse(readFileSync("src/estilos.json", "utf-8")));
+// sem argumentos: todos os estilos; com ids (ex.: node scripts/miniaturas.mjs meu-estilo): só esses
+const pedidos = process.argv.slice(2);
+const estilos = pedidos.length ? pedidos : Object.keys(JSON.parse(readFileSync("src/estilos.json", "utf-8")));
 const palavras = "a melhor escolha hoje".split(" ").map((texto, i) => ({ texto, inicioMs: i * 260, fimMs: i * 260 + 240 }));
 // cena de produto: mostra etiqueta, título, painel, preço e barras (e não tem glitch, que estragaria a miniatura)
 const cenas = [{

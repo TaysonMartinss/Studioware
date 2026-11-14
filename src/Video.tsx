@@ -1,4 +1,4 @@
-import { AbsoluteFill, Html5Audio, Sequence, staticFile, useCurrentFrame } from "remotion";
+import { AbsoluteFill, Html5Audio, Sequence, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import { BarraProgresso } from "./components/BarraProgresso";
 import { Fundo } from "./components/Fundo";
 import { Mundo3D } from "./components/Mundo3D";
@@ -33,6 +33,7 @@ import { Numero } from "./cenas/Numero";
 import { Produto } from "./cenas/Produto";
 import { Cena, FPS, Manifest, framesDaCena } from "./types";
 import { FiltroPixel } from "./components/Pixel";
+import { EFEITOS } from "./aprendidos";
 
 const ConteudoCena: React.FC<{ cena: Cena; cor: string; destaques?: Set<string> }> = ({ cena, cor, destaques }) => {
   if (cena.tipo === "dado") return <DadoEditorial cena={cena} />;
@@ -61,12 +62,14 @@ const CenaCompleta: React.FC<{ cena: Cena; indice: number; cor: string; destaque
   cena, indice, cor, destaques, pico, emojis,
 }) => {
   const f = useCurrentFrame();
+  const { durationInFrames: duracaoCena } = useVideoConfig();
   const palavras = cena.palavras ?? [];
   // nos cortes, enquanto um exemplo editorial (frase de efeito ou dado) está no ecrã, a frase já está escrita: sem legenda
   const editoriais = cena.tipo === "clipe" ? (cena.broll ?? []).filter((b) => b.cena?.tipo === "tipografia" || b.cena?.tipo === "dado") : [];
   const palavrasLegenda = editoriais.length ? palavras.filter((p) => !editoriais.some((b) => p.inicioMs >= b.inicioMs - 60 && p.inicioMs < b.fimMs)) : palavras;
   // zoom punch no início da cena e em cada palavra de destaque (estilos calmos ficam sem)
-  const { shake, rgbSplit, tema } = useEstilo();
+  const estiloAtual = useEstilo();
+  const { shake, rgbSplit, tema } = estiloAtual;
   const gatilhos = shake === 0 ? [] : [0, ...palavras.filter((p) => destaques.has(normalizar(p.texto))).map((p) => Math.round((p.inicioMs / 1000) * FPS)), ...(pico ? [pico.frame] : [])];
 
   return (
@@ -77,7 +80,12 @@ const CenaCompleta: React.FC<{ cena: Cena; indice: number; cor: string; destaque
       {pico && <SonsPico frame={pico.frame} principal={pico.principal} />}
       <Transicao indice={indice} zoom={zoomPunch(f, gatilhos)} filtro={rgbSplit ? "url(#rgb-split)" : undefined}>
         <RitmoCtx.Provider value={["gancho", "cta", "clipe"].includes(cena.tipo) ? 1 : ritmoDaFala(cena.fala)}>
-          <ConteudoCena cena={cena} cor={cor} destaques={destaques} />
+          {(() => {
+            // estilo aprendido: o módulo dele envolve a cena (câmara 3D, transição, motion blur, composição)
+            const conteudo = <ConteudoCena cena={cena} cor={cor} destaques={destaques} />;
+            const ModCena = estiloAtual.id ? EFEITOS[estiloAtual.id]?.Cena : undefined;
+            return ModCena ? <ModCena indice={indice} duracao={duracaoCena} cor={cor}>{conteudo}</ModCena> : conteudo;
+          })()}
         </RitmoCtx.Provider>
       </Transicao>
       {/* papel: um recorte novo a cada 3 palavras (o gancho já tem as letras de resgate e o CTA o botão) */}
@@ -104,7 +112,9 @@ const FiltroRgb: React.FC<{ d: number }> = ({ d }) => (
 );
 
 export const Video: React.FC<{ manifest: Manifest }> = ({ manifest }) => {
-  const estilo = ESTILOS[manifest.estilo ?? "neon"] ?? ESTILOS.neon;
+  const idEstilo = ESTILOS[manifest.estilo ?? "neon"] ? manifest.estilo ?? "neon" : "neon";
+  const estilo = { ...ESTILOS[idEstilo], id: idEstilo };
+  const efeitos = EFEITOS[idEstilo];
   const cor = manifest.cor ?? estilo.cor;
   const destaques = new Set([...(manifest.destaques ?? []), ...Object.keys(manifest.emojis ?? {})].map(normalizar));
   // legendas com emoji desligadas a pedido (as palavras-chave dos cortes continuam a ser destaque de cor)
@@ -117,7 +127,7 @@ export const Video: React.FC<{ manifest: Manifest }> = ({ manifest }) => {
     <EstiloCtx.Provider value={estilo}>
     <SfxCtx.Provider value={SFX_PADRAO * (manifest.sfxVolume ?? 1)}>
     <AbsoluteFill>
-      <Fundo cor={cor} />
+      {efeitos?.Fundo ? <efeitos.Fundo cor={cor} /> : <Fundo cor={cor} />}
       {estilo.tema === "mundo3d" && <Mundo3D cenas={manifest.cenas} inicios={inicios} cor={cor} />}
       <Musica manifest={manifest} />
       {manifest.cenas.map((cena, i) => {
@@ -131,6 +141,7 @@ export const Video: React.FC<{ manifest: Manifest }> = ({ manifest }) => {
         return el;
       })}
       <Overlay />
+      {efeitos?.Overlay && <efeitos.Overlay cor={cor} />}
       {manifest.marcaDagua !== false && <MarcaDagua canal={manifest.canal} />}
       {estilo.rgbSplit ? <FiltroRgb d={estilo.rgbSplit} /> : null}
       {estilo.pixel ? <FiltroPixel tamanho={estilo.pixel.tamanho} niveis={estilo.pixel.niveis} /> : null}
