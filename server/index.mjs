@@ -9,6 +9,7 @@ import { createServer } from "node:http";
 import { basename, join, resolve } from "node:path";
 import { criarYouTube } from "./youtube.mjs";
 import { criarCortes } from "./cortes.mjs";
+import { esperarExterno, modoIA, pedidosPendentes, tirarJSON as tirarJSONExterno } from "../scripts/ia.mjs";
 import { criarAutomatico } from "./automatico.mjs";
 
 const RAIZ = resolve(import.meta.dirname, "..");
@@ -275,6 +276,18 @@ async function editorChefe(job, problemas) {
     "Mantém o formato JSON, os ids, o estilo, a narração, a voz e a mídia que já estão certos. Grava o arquivo.",
     "No fim responde numa linha com o que mudaste.",
   ].join("\n");
+  if (modoIA(RAIZ) === "externa") {
+    const atual = readFileSync(caminhoRoteiro(job.videoId), "utf-8");
+    const pedido = prompt.replace(/Grava o arquivo\.\nNo fim responde numa linha com o que mudaste\./, "Devolve o roteiro COMPLETO já corrigido, no mesmo formato JSON.") +
+      `\n\nO roteiro atual:\n${atual}`;
+    registar(job, "🧑‍💻 À espera do editor-chefe da IA externa (Produção)");
+    const r = await esperarExterno({ raiz: RAIZ, rotulo: `Editor-chefe: ${job.tema}`, pedido, ferramentas: ["WebSearch"], deveParar: () => Boolean(job.cancelado) });
+    if (r.json) {
+      const corrigido = lerRoteiroExterno(JSON.stringify(r.json));
+      writeFileSync(caminhoRoteiro(job.videoId), JSON.stringify({ id: job.videoId, ...corrigido }, null, 2));
+      return;
+    }
+  }
   await rodarClaude(job, prompt);
 }
 
@@ -291,7 +304,20 @@ function tirarJSON(texto) {
 }
 
 // o pedido vai pelo stdin (os roteiros longos passariam o limite da linha de comandos do Windows)
-function claudeJSON(tarefa, guia, pedido, ferramentas = []) {
+// nomes dos passos que aparecem na Produção quando a IA é externa
+const ROTULO_GUIA = { "ideias.md": "Ideias de vídeos", "publicacao.md": "Título, descrição e tags", "ganchos.md": "Variantes de gancho", "cortes.md": "Cortes de um vídeo longo" };
+async function claudeJSON(tarefa, guia, pedido, ferramentas = []) {
+  if (modoIA(RAIZ) === "externa") {
+    const nome = guia.split(/[\\/]/).pop();
+    if (nome === "revisao-visual.md") throw new Error("a revisão visual só funciona com o Claude (precisa de ver os frames)");
+    if (tarefa && typeof tarefa === "object") tarefa.passo = "🧑‍💻 À espera da IA externa: copie o pedido na Produção e cole a resposta";
+    const sistema = readFileSync(/[\\/]/.test(guia) ? guia : join(GUIAS, guia), "utf-8");
+    const r = await esperarExterno({ raiz: RAIZ, rotulo: ROTULO_GUIA[nome] ?? nome.replace(/\.md$/, ""), sistema, pedido, ferramentas, deveParar: () => Boolean(tarefa?.cancelado) });
+    if (r.json) return r.json;
+  }
+  return claudeJSONPeloClaude(tarefa, guia, pedido, ferramentas);
+}
+function claudeJSONPeloClaude(tarefa, guia, pedido, ferramentas = []) {
   return new Promise((ok, falha) => {
     const sistema = readFileSync(/[\\/]/.test(guia) ? guia : join(GUIAS, guia), "utf-8");
     const p = spawn("claude", [
@@ -429,6 +455,23 @@ function revisaoVisual(id, aoPasso = () => {}) {
   });
 }
 
+// IA externa: o pedido completo do "Roteiro de outra IA" fica na Produção; a resposta (o roteiro em JSON) é validada
+// como no import e o vídeo segue. "Usar o Claude neste" volta ao caminho normal.
+async function escreverRoteiroExterno(job, promptClaude) {
+  registar(job, "🧑‍💻 À espera do roteiro da IA externa (copie o pedido na Produção e cole a resposta)");
+  const r = await esperarExterno({ raiz: RAIZ, rotulo: `Roteiro: ${job.tema}`, pedido: promptExterno(job), ferramentas: ["WebSearch"], deveParar: () => Boolean(job.cancelado) });
+  if (r.claude) {
+    registar(job, "🤖 Claude pesquisando e escrevendo o roteiro…");
+    await rodarClaude(job, promptClaude);
+    if (!existsSync(caminhoRoteiro(job.videoId))) throw new Error("O Claude não gravou o roteiro");
+  } else {
+    const roteiro = lerRoteiroExterno(JSON.stringify(r.json));
+    writeFileSync(caminhoRoteiro(job.videoId), JSON.stringify({ id: job.videoId, ...roteiro }, null, 2));
+  }
+  aplicarEscolhas(job);
+  registar(job, "✅ Primeira versão do roteiro pronta");
+}
+
 function escreverRoteiro(job) {
   const est = estilos()[job.estilo] ?? estilos().neon;
   const prompt = [
@@ -464,6 +507,7 @@ ${guiaDe("formato: animado")}` : "",
   ].filter(Boolean).join("\n");
 
   job.estado = "roteiro";
+  if (modoIA(RAIZ) === "externa") return escreverRoteiroExterno(job, prompt);
   registar(job, "🤖 Claude pesquisando e escrevendo o roteiro…");
   return rodarClaude(job, prompt).then(() => {
     if (!existsSync(caminhoRoteiro(job.videoId))) throw new Error("O Claude não gravou o roteiro");
@@ -1083,6 +1127,25 @@ const rotas = async (req, res) => {
     return json(res, 201, criados);
   }
 
+  // IA externa: pedidos à espera (copiar e colar noutra IA) e o modo
+  if (b === "ia-externa" && !c && req.method === "GET") return json(res, 200, { modo: modoIA(RAIZ), pedidos: pedidosPendentes(RAIZ) });
+  const pedidoDe = url.pathname.match(/^\/api\/ia-externa\/([a-z0-9]{6,20})\/(resposta|claude)$/);
+  if (pedidoDe && req.method === "POST") {
+    const [, idPedido, acao] = pedidoDe;
+    const base = join(RAIZ, "out/ia-externa", idPedido);
+    if (!existsSync(`${base}.json`)) return json(res, 404, { erro: "Esse pedido já não está à espera" });
+    if (acao === "claude") { writeFileSync(`${base}.claude`, "1"); return json(res, 200, { ok: true }); }
+    const d = await corpo(req);
+    let valor;
+    try { valor = tirarJSONExterno(d.texto); } catch (e) { return json(res, 400, { erro: e.message }); }
+    writeFileSync(`${base}.resposta.json`, JSON.stringify(valor));
+    return json(res, 200, { ok: true });
+  }
+  if (b === "ia-modo" && req.method === "POST") {
+    const d = await corpo(req);
+    gravarEnv({ IA_MODO: d.modo === "externa" ? "externa" : "claude" });
+    return json(res, 200, { modo: modoIA(RAIZ) });
+  }
   if (b === "gameplay" && !c && req.method === "GET") return json(res, 200, gameplays());
   if (b === "jobs" && req.method === "GET") return json(res, 200, [...jobs.values()].sort((x, y) => y.criado - x.criado));
   if (b === "jobs" && c === "parar-tudo" && req.method === "POST") {

@@ -706,7 +706,66 @@ $("#ouvir").onclick = () => {
 };
 $("#pais").onchange = () => desenharVozes();
 
+// ---------- motor de IA: Claude Code ou IA externa (copiar e colar) ----------
+let modoIA = "claude";
+function desenharIaModo() {
+  document.querySelectorAll("#iaModo button").forEach((b) => b.classList.toggle("ativo", b.dataset.v === modoIA));
+  $("#iaModoDica").textContent = modoIA === "externa"
+    ? "Cada passo que precisa de IA (roteiro, editor-chefe, ideias, cortes, exemplos, título e descrição) fica à espera em Produção: copie o pedido, cole no ChatGPT, Gemini ou outra IA e cole a resposta de volta. Em qualquer passo pode escolher \"Usar o Claude neste\". A revisão visual precisa de ver imagens e só funciona com o Claude."
+    : "O Claude Code faz todos os passos sozinho, com a sua sessão ou o token configurado abaixo.";
+}
+document.querySelectorAll("#iaModo button").forEach((b) => (b.onclick = async () => {
+  try { modoIA = (await api("/api/ia-modo", { method: "POST", body: { modo: b.dataset.v } })).modo; desenharIaModo(); toast(modoIA === "externa" ? "IA externa: os pedidos aparecem em Produção" : "A usar o Claude Code", "check"); }
+  catch (e) { toast(e.message, "triangle-alert"); }
+}));
+
+// pedidos à espera da IA externa (na Produção): copiar o pedido, colar a resposta, ou usar o Claude neste
+let pedidosDesenhados = "";
+async function atualizarPedidosIA() {
+  const d = await api("/api/ia-externa");
+  modoIA = d.modo;
+  const assinatura = d.pedidos.map((p) => p.id).join(",");
+  if (assinatura !== pedidosDesenhados) {
+    pedidosDesenhados = assinatura;
+    const caixa = $("#pedidosIA");
+    // guarda o que já foi colado nas caixas que continuam
+    const colados = Object.fromEntries([...caixa.querySelectorAll("textarea[data-id]")].map((t) => [t.dataset.id, t.value]));
+    caixa.hidden = !d.pedidos.length;
+    window.__pedidosIA = Object.fromEntries(d.pedidos.map((p) => [p.id, p.texto]));
+    caixa.innerHTML = d.pedidos.map((p) => `
+      <div class="job pedido-ia">
+        <div class="job-linha">
+          <div class="job-titulo">${ic("bot", 15)} ${esc(p.rotulo)}</div>
+          <span class="estado"><span class="ponto espera"></span>À espera da IA externa · ${decorrido(Date.now() - p.criado)}</span>
+        </div>
+        <div class="linha">
+          <button class="btn primario peq" onclick="copiarPedidoIA('${p.id}')">${ic("copy", 14)}Copiar pedido</button>
+          <button class="btn fantasma peq" onclick="usarClaudeIA('${p.id}')">${ic("sparkles", 14)}Usar o Claude neste</button>
+          <span class="meta">${Math.round(p.texto.length / 1000)} mil caracteres</span>
+        </div>
+        <textarea data-id="${p.id}" placeholder="Cole aqui a resposta da outra IA (o JSON)">${esc(colados[p.id] ?? "")}</textarea>
+        <div class="linha"><button class="btn peq" onclick="enviarRespostaIA('${p.id}')">${ic("check", 14)}Enviar resposta</button></div>
+      </div>`).join("");
+  }
+  return d.pedidos.length;
+}
+async function copiarPedidoIA(id) {
+  try { await navigator.clipboard.writeText(window.__pedidosIA?.[id] ?? ""); toast("Pedido copiado: cole-o na outra IA", "copy"); }
+  catch { toast("Não consegui copiar; selecione o texto à mão", "triangle-alert"); }
+}
+async function enviarRespostaIA(id) {
+  const texto = document.querySelector(`#pedidosIA textarea[data-id="${id}"]`)?.value ?? "";
+  if (!texto.trim()) return toast("Cole primeiro a resposta da outra IA", "clipboard");
+  try { await api(`/api/ia-externa/${id}/resposta`, { method: "POST", body: { texto } }); toast("Resposta recebida, o processo continua", "check"); pedidosDesenhados = ""; atualizarPedidosIA(); }
+  catch (e) { toast(e.message, "triangle-alert"); }
+}
+async function usarClaudeIA(id) {
+  try { await api(`/api/ia-externa/${id}/claude`, { method: "POST" }); toast("A usar o Claude neste passo", "sparkles"); pedidosDesenhados = ""; atualizarPedidosIA(); }
+  catch (e) { toast(e.message, "triangle-alert"); }
+}
+
 function abrirConfig() {
+  desenharIaModo();
   $("#chave").value = ""; $("#chavePixabay").value = ""; $("#chaveSketchfab").value = "";
   $("#estadoSketchfab").textContent = OPCOES.temSketchfab ? "· configurada" : "";
   $("#estadoEleven").textContent = OPCOES.temElevenLabs ? "· configurada" : "";
@@ -830,7 +889,7 @@ const nomeFormato = (k) => FORMATOS.find(([f]) => f === k)?.[2] ?? "";
 let jobsAntes = {}, logsAbertos = new Set();
 let filaDesenhada = "";
 async function atualizarJobs() {
-  const analisando = await seguirAnalises().catch(() => 0);
+  const analisando = (await seguirAnalises().catch(() => 0)) + (await atualizarPedidosIA().catch(() => 0));
   const jobs = await api("/api/jobs");
   const ativos = jobs.filter((j) => j.estado !== "pronto" || Date.now() - j.criado < 10 * 60e3);
   const emCurso = ativos.filter((j) => !["pronto", "erro", "parado"].includes(j.estado)).length + analisando;

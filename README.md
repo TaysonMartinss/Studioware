@@ -25,6 +25,9 @@ stock do Pixabay).
   próprio) e quiz. Fundos pretos com grelha ondulada.
 - **Modelos 3D**: 3.278 modelos low poly CC0 da Kenney, 520 modelos realistas CC0 do Poly Haven
   (`python scripts/baixar_polyhaven.py`) e Sketchfab (só licenças comerciais).
+- **Motor de IA**: Claude Code (automático) ou qualquer outra IA (ChatGPT, Gemini…) por copiar e colar: cada
+  passo que precisa de IA (roteiro, editor-chefe, ideias, cortes, exemplos, título e descrição) fica à espera na
+  Produção com o pedido completo, e a resposta em JSON é validada antes de o processo continuar.
 - **Narração**: Edge (grátis), ElevenLabs ou Chatterbox (local, com clonagem de voz). Legendas palavra a palavra
   com as letras a ondular e destaque por cor.
 - **Os seus vídeos (clipes e cortes)**:

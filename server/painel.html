@@ -220,6 +220,7 @@
     <section class="vista" id="vista-producao" data-vista="producao" hidden>
       <div class="cabeca-pagina"><div><h1>Produção</h1><p class="sub">Os vídeos a ser feitos agora, etapa a etapa. Os prontos vão para a Biblioteca.</p></div>
         <button class="btn" id="pararTudo" onclick="pararTudo()" hidden><i class="i" style="--u:url(/icones/square.svg)"></i>Parar tudo</button></div>
+      <div class="fila analises" id="pedidosIA" hidden></div>
       <div class="fila analises" id="analises" hidden></div>
       <div class="fila" id="jobs"><div class="vazio">Nada em produção.</div></div>
     </section>
@@ -326,6 +327,11 @@
     <!-- ================= CONFIGURAÇÕES ================= -->
     <section class="vista" id="vista-configuracoes" data-vista="configuracoes" hidden>
       <div class="cabeca-pagina"><div><h1>Configurações</h1><p class="sub">Chaves de API, bibliotecas e manutenção. Tudo fica só neste computador.</p></div></div>
+      <section class="superficie" style="margin-bottom:16px">
+        <h2 class="titulo-superficie">Motor de IA</h2>
+        <div class="seg" id="iaModo" style="max-width:520px"><button type="button" data-v="claude">Claude Code</button><button type="button" data-v="externa">IA externa (copiar e colar)</button></div>
+        <div class="dica" id="iaModoDica" style="margin-top:8px"></div>
+      </section>
       <div class="duas-colunas">
         <section class="superficie">
           <h2 class="titulo-superficie">Chaves de API</h2>

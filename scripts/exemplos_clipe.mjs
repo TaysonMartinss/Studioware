@@ -44,7 +44,17 @@ const CENARIOS = new Set([...(tipos.match(/tipo: "lowpoly";\s*cenario: ([^;]+);/
 const FONTES = new Set(["pexels", "pixabay", "wikimedia", "steam"]);
 const temChave = (nome) => !!process.env[nome] || readFileSync(".env", "utf-8").split(/\r?\n/).some((l) => l.startsWith(`${nome}=`) && l.length > nome.length + 1);
 
-const claude = (sistema, pedido) => new Promise((ok, falha) => {
+import { esperarExterno, modoIA } from "./ia.mjs";
+// no modo IA externa, o pedido espera na Produção do painel; "Usar o Claude neste" volta ao Claude
+const claude = async (sistema, pedido) => {
+  if (modoIA() === "externa") {
+    console.log("  🧑‍💻 à espera da IA externa: copie o pedido na Produção do painel e cole a resposta");
+    const r = await esperarExterno({ rotulo: `Exemplos visuais: ${roteiro.titulo ?? roteiro.id}`, sistema, pedido });
+    if (r.json) return r.json;
+  }
+  return claudeDireto(sistema, pedido);
+};
+const claudeDireto = (sistema, pedido) => new Promise((ok, falha) => {
   const p = spawn("claude", ["-p", "--append-system-prompt", sistema, "--output-format", "json", "--allowedTools", "Read"], { stdio: ["pipe", "pipe", "pipe"], env: process.env });
   let out = "", err = "";
   p.stdout.on("data", (d) => (out += d));
