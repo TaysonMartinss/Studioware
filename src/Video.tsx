@@ -1,3 +1,6 @@
+import { SomMeme } from "./components/SomMeme";
+import { EfeitosCena } from "./components/EfeitosCena";
+import { IndiceCenaCtx } from "./cenas/DadoEditorial";
 import { AbsoluteFill, Html5Audio, Sequence, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import { BarraProgresso } from "./components/BarraProgresso";
 import { Fundo } from "./components/Fundo";
@@ -5,7 +8,7 @@ import { Mundo3D } from "./components/Mundo3D";
 import { Legendas } from "./components/Legendas";
 import { MarcaDagua } from "./components/MarcaDagua";
 import { Musica } from "./components/Musica";
-import { Sfx, SfxCtx, SFX_PADRAO } from "./components/Sfx";
+import { SfxCtx, SFX_PADRAO, SomEntrada, TrocaSonsCtx } from "./components/Sfx";
 import { Overlay } from "./components/Overlay";
 import { ColagemPapel, FiltrosFerver, FiltrosOndular } from "./components/PapelMotion";
 import { FiltrosAquarela } from "./components/Aquarela";
@@ -22,12 +25,14 @@ import { Tipografia } from "./cenas/Tipografia";
 import { TituloEditorial } from "./cenas/TituloEditorial";
 import { BotaoInscrever } from "./cenas/Cta";
 import { DadoEditorial } from "./cenas/DadoEditorial";
+import { CalendarioEditorial } from "./cenas/CalendarioEditorial";
 import { Gancho } from "./cenas/Gancho";
 import { Palavras } from "./cenas/Palavras";
 import { Grafico } from "./cenas/Grafico";
 import { LinhaTempo } from "./cenas/LinhaTempo";
 import { ManimCena } from "./cenas/ManimCena";
 import { Quiz } from "./cenas/Quiz";
+import { Print } from "./cenas/Print";
 import { LowPolyCena } from "./lowpoly/LowPolyCena";
 import { PincelCena } from "./pincel/PincelCena";
 import { Modelo3DCena } from "./cenas/Modelo3DCena";
@@ -43,8 +48,10 @@ const ConteudoCena: React.FC<{ cena: Cena; cor: string; destaques?: Set<string> 
   if ((tema === "editorial" || tema === "vice") && cena.tipo === "gancho") return <TituloEditorial texto={cena.texto_tela} objeto={cena.midia} />;
   if ((tema === "editorial" || tema === "vice") && cena.tipo === "cta") return <TituloEditorial texto={cena.texto_tela} kicker="FIM" rodape={<BotaoInscrever inicio={25} cor={cor} texto={cena.botao} />} />;
   if (cena.tipo === "dado") return <DadoEditorial cena={cena} />;
+  if (cena.tipo === "calendario") return <CalendarioEditorial cena={cena} />;
   if (cena.tipo === "tipografia") return <Tipografia cena={cena} cor={cor} destaques={destaques} />;
   if (cena.tipo === "faixa") return <Faixa cena={cena} cor={cor} />;
+  if (cena.tipo === "print") return <Print cena={cena} cor={cor} />;
   if (cena.tipo === "palavras") return <Palavras cena={cena} cor={cor} />;
   if (cena.tipo === "gancho") return <Gancho cena={cena} cor={cor} />;
   if (cena.tipo === "produto") return <Produto cena={cena} cor={cor} />;
@@ -71,8 +78,8 @@ const CenaCompleta: React.FC<{ cena: Cena; indice: number; cor: string; destaque
   const { durationInFrames: duracaoCena } = useVideoConfig();
   const palavras = cena.palavras ?? [];
   // nos cortes, enquanto um exemplo editorial (frase de efeito ou dado) está no ecrã, a frase já está escrita: sem legenda
-  const editoriais = cena.tipo === "clipe" ? (cena.broll ?? []).filter((b) => b.cena?.tipo === "tipografia" || b.cena?.tipo === "dado") : [];
-  const palavrasLegenda = editoriais.length ? palavras.filter((p) => !editoriais.some((b) => p.inicioMs >= b.inicioMs - 60 && p.inicioMs < b.fimMs)) : palavras;
+  const editoriais = cena.tipo === "clipe" ? (cena.broll ?? []).filter((b) => b.cena?.tipo === "tipografia" || b.cena?.tipo === "dado" || b.cena?.tipo === "calendario") : [];
+  const palavrasLegenda = editoriais.length ? palavras.filter((p) => !editoriais.some((b) => p.inicioMs >= b.inicioMs - 20 && p.inicioMs < b.fimMs)) : palavras;
   // zoom punch no início da cena e em cada palavra de destaque (estilos calmos ficam sem)
   const estiloAtual = useEstilo();
   const { shake, rgbSplit, tema } = estiloAtual;
@@ -80,8 +87,9 @@ const CenaCompleta: React.FC<{ cena: Cena; indice: number; cor: string; destaque
 
   return (
     <AbsoluteFill>
-      {indice > 0 && <Sfx nome="whoosh" volume={0.6} />}
-      {cena.audio && <Html5Audio src={staticFile(cena.audio)} />}
+      {indice > 0 && <SomEntrada escolha={cena.somEntrada} volume={0.6} />}
+      {/* no player do painel, espera a narração carregar em vez de seguir sem ela (no render não faz nada) */}
+      {cena.audio && <Html5Audio src={staticFile(cena.audio)} pauseWhenBuffering />}
       {/* revelação preparada com [pausa longa]: riser até ao golpe, impacto e (na principal) chime */}
       {pico && <SonsPico frame={pico.frame} principal={pico.principal} />}
       <Transicao indice={indice} zoom={zoomPunch(f, gatilhos)} filtro={rgbSplit ? "url(#rgb-split)" : undefined}>
@@ -97,7 +105,7 @@ const CenaCompleta: React.FC<{ cena: Cena; indice: number; cor: string; destaque
       {/* papel: um recorte novo a cada 3 palavras (o gancho já tem as letras de resgate e o CTA o botão) */}
       {tema === "papel" && !["gancho", "cta", "clipe"].includes(cena.tipo) && <ColagemPapel palavras={palavras} />}
       {/* a tipografia editorial já escreve a fala no ecrã */}
-      {cena.tipo !== "tipografia" && cena.tipo !== "dado" && !((tema === "editorial" || tema === "vice") && (cena.tipo === "gancho" || cena.tipo === "cta")) && <Legendas palavras={palavrasLegenda} destaques={destaques} cor={cor} emojis={emojis} />}
+      {cena.tipo !== "tipografia" && cena.tipo !== "dado" && cena.tipo !== "calendario" && !((tema === "editorial" || tema === "vice") && (cena.tipo === "gancho" || cena.tipo === "cta")) && <Legendas palavras={palavrasLegenda} destaques={destaques} cor={cor} emojis={emojis} />}
     </AbsoluteFill>
   );
 };
@@ -140,7 +148,16 @@ export const Video: React.FC<{ manifest: Manifest }> = ({ manifest }) => {
         const dur = framesDaCena(cena);
         const el = (
           <Sequence key={i} from={inicio} durationInFrames={dur} name={`${i + 1}. ${cena.tipo}`}>
-            <CenaCompleta cena={cena} indice={i} cor={cor} destaques={destaques} emojis={emojis} pico={picos.find((p) => p.cena === i)} />
+            <IndiceCenaCtx.Provider value={i}>
+              <TrocaSonsCtx.Provider value={cena.trocaSons}>
+                <EfeitosCena efeitos={cena.efeitos}>
+                  <CenaCompleta cena={cena} indice={i} cor={cor} destaques={destaques} emojis={emojis} pico={picos.find((p) => p.cena === i)} />
+                </EfeitosCena>
+              </TrocaSonsCtx.Provider>
+            </IndiceCenaCtx.Provider>
+            {cena.tipo !== "clipe" && cena.som && <SomMeme som={{ nome: cena.som.nome, emMs: Math.round((cena.som.em ?? 0) * 1000) }} />}
+            {/* sons postos à mão (editor): nos cortes, o Clipe toca-os por dentro */}
+            {cena.tipo !== "clipe" && (cena.sons ?? []).map((s, k) => <SomMeme key={`som${k}`} som={s} />)}
           </Sequence>
         );
         inicio += dur;

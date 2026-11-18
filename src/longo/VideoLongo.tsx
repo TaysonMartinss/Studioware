@@ -9,7 +9,9 @@ import { Overlay } from "../components/Overlay";
 import { FiltrosFerver } from "../components/PapelMotion";
 import { FiltrosAquarela } from "../components/Aquarela";
 import { Pico, SonsPico, calcularPicos } from "../components/Picos";
-import { Sfx, SfxCtx, SFX_PADRAO } from "../components/Sfx";
+import { SfxCtx, SFX_PADRAO, SomEntrada, TrocaSonsCtx } from "../components/Sfx";
+import { SomMeme } from "../components/SomMeme";
+import { EfeitosCena } from "../components/EfeitosCena";
 import { Transicao } from "../components/Transicao";
 import { FONTES, RitmoCtx, normalizar, pop, ritmoDaFala, zoomPunch } from "../components/motion";
 import { ManimCena } from "../cenas/ManimCena";
@@ -103,8 +105,9 @@ const CenaL: React.FC<{ cena: Cena; indice: number; cor: string; destaques: Set<
   const gatilhos = shake === 0 ? [] : [0, ...palavras.filter((p) => destaques.has(normalizar(p.texto))).map((p) => Math.round((p.inicioMs / 1000) * FPS))];
   return (
     <AbsoluteFill>
-      {indice > 0 && <Sfx nome="whoosh" volume={0.35} />}
-      {cena.audio && <Html5Audio src={staticFile(cena.audio)} />}
+      {indice > 0 && <SomEntrada escolha={cena.somEntrada} volume={0.35} />}
+      {/* no player do painel, espera a narração carregar em vez de seguir sem ela (no render não faz nada) */}
+      {cena.audio && <Html5Audio src={staticFile(cena.audio)} pauseWhenBuffering />}
       {pico && <SonsPico frame={pico.frame} principal={pico.principal} />}
       <Transicao indice={indice} zoom={zoomPunch(f, gatilhos, 0.03)} filtro={rgbSplit ? "url(#rgb-split)" : undefined}>
         <RitmoCtx.Provider value={["gancho", "cta", "clipe"].includes(cena.tipo) ? 1 : ritmoDaFala(cena.fala)}>
@@ -133,7 +136,13 @@ export const VideoLongo: React.FC<{ manifest: Manifest }> = ({ manifest }) => {
       <Musica manifest={manifest} />
       {manifest.cenas.map((cena, i) => (
         <Sequence key={i} from={inicios[i]} durationInFrames={framesDaCena(cena)} name={`${i + 1}. ${cena.tipo}`}>
-          <CenaL cena={cena} indice={i} cor={cor} destaques={destaques} pico={picos.find((p) => p.cena === i)} />
+          <TrocaSonsCtx.Provider value={cena.trocaSons}>
+            <EfeitosCena efeitos={cena.efeitos}>
+              <CenaL cena={cena} indice={i} cor={cor} destaques={destaques} pico={picos.find((p) => p.cena === i)} />
+            </EfeitosCena>
+          </TrocaSonsCtx.Provider>
+          {cena.som && <SomMeme som={{ nome: cena.som.nome, emMs: Math.round((cena.som.em ?? 0) * 1000) }} />}
+          {(cena.sons ?? []).map((s, k) => <SomMeme key={`som${k}`} som={s} />)}
         </Sequence>
       ))}
       <CapituloAtual capitulos={capitulos} cor={cor} />

@@ -4,7 +4,11 @@ export type Spec = { label: string; valor: number };
 
 // Imagem ou b-roll real. O roteiro diz onde procurar; scripts/buscar_midia.py descarrega e preenche "arquivo".
 export type Midia = {
-  fonte: "steam" | "wikimedia" | "pixabay" | "pexels" | "url" | "arquivo" | "sketchfab" | "procedural";
+  // emoji: emoji 3D da Microsoft (material 2D); cs2: skin ou faca do Counter-Strike 2; anatomia: modelo 3D de saúde
+  fonte: "steam" | "wikimedia" | "pixabay" | "pexels" | "url" | "arquivo" | "sketchfab" | "procedural" | "polyhaven" | "anatomia" | "emoji" | "cs2" | "icone";
+  modelo?: string; // id do catálogo (polyhaven, anatomia)
+  raridade?: string; // cs2: Covert, Classified...
+  corRaridade?: string;
   consulta?: string; // nome do jogo, termo de pesquisa ou URL direta
   tipo?: "imagem" | "video" | "modelo3d"; // preferência
   indice?: number; // qual resultado usar (0 = primeiro)
@@ -13,11 +17,17 @@ export type Midia = {
   duracaoS?: number;
   inicioS?: number; // salta o início (ex.: logos de trailers)
   credito?: string;
+  pontos?: { x: number; y: number; zoom?: number; rx?: number; ry?: number; rz?: number }[]; // passeio de câmara 3D (cena print)
 };
 
 type Base = {
   fala: string;
   midia?: Midia;
+  som?: { nome: string; em?: number }; // som de efeito popular (sons-meme.md); em = segundos desde o início da cena
+  sons?: { nome: string; emMs: number; volume?: number }[]; // sons de efeito (memes do catálogo ou do estúdio: whoosh, impacto…) em momentos da cena; volume: 1 = normal
+  efeitos?: { cor?: string; movimento?: string; entrada?: number; saida?: number }; // editor: cor, movimento e fades (components/EfeitosCena.tsx)
+  somEntrada?: string; // som da passagem para esta cena: vazio = whoosh, "nenhum" = sem som, ou outro som
+  trocaSons?: Record<string, string>; // troca os sons automáticos de dentro da cena (whoosh, clique, impacto, pop…): outro som ou "nenhum"
   // Preenchidos pelo scripts/narrar.py
   audio?: string;
   duracaoMs?: number;
@@ -90,8 +100,10 @@ export type CenaClipe = Base & {
   titulo?: string;
   // b-roll: cartão por cima do vídeo, ou (cheio) exemplo de ecrã inteiro com a pessoa num canto e a voz a continuar
   // layout "faixa": a mídia numa faixa 16:9 com título com brilho; cena "palavras": cartaz de palavras gigantes (estes dois cortam seco, sem a pessoa no canto)
-  broll?: { inicioMs: number; fimMs: number; midia?: Midia; cena?: CenaLowPoly | CenaPincel | CenaPalavras | CenaNumero | CenaTipografia | CenaDado; cheio?: boolean; layout?: "faixa"; titulo?: string }[];
-  gameplay?: { arquivo: string; inicioS: number; duracaoS: number; intercalar?: boolean }; // layout rosto em cima + gameplay em baixo (intercalar: salta de momento a cada corte da câmara)
+  broll?: { inicioMs: number; fimMs: number; midia?: Midia; cena?: CenaLowPoly | CenaPincel | CenaPalavras | CenaNumero | CenaTipografia | CenaDado | CenaCalendario; cheio?: boolean; layout?: "faixa" | "passeio"; titulo?: string; telaCheia?: boolean }[]; // telaCheia: o print com câmara 3D cobre a tela toda
+  gameplay?: { arquivo: string; inicioS: number; duracaoS: number; intercalar?: boolean };
+  // (sons, somEntrada e trocaSons: em Base, valem para todas as cenas)
+  // (gameplay, acima: layout rosto em cima + gameplay em baixo; intercalar salta de momento a cada corte da câmara)
   exemplos?: boolean; // pedir ao Claude exemplos visuais (scripts/exemplos_clipe.mjs)
   exemplosFeitos?: boolean;
   inicio?: number; fim?: number; // momento de um vídeo longo (segundos do original); o script recorta-o
@@ -162,7 +174,11 @@ export type CenaTipografia = Base & {
   objeto?: Midia; // objeto 3D (sketchfab) ou imagem recortada que flutua ao lado do texto
   layout?: "centro" | "dividido"; // dividido: frase no topo à direita, objeto grande ao centro, palavra-chave em baixo à esquerda
   chaves?: string[]; // palavras-chave a pôr em grande (padrão: um destaque do roteiro, senão a palavra mais comprida de cada frase)
+  fundo?: FundoEditorial; // sem ele, o fundo alterna sozinho ao longo do vídeo
+  variante?: "revista" | "titulo"; // revista: palavra a palavra (padrão); titulo: a frase sobe de uma máscara, como o gancho
+  texto?: string; // nos cortes: o texto na tela escrito à mão (sem ele, as palavras que a pessoa diz nesse trecho)
 };
+export type FundoEditorial = "papel" | "topografia" | "grelha" | "tunel";
 
 // Dado em formato editorial: número enorme a contar, rótulo em serifa e, se houver, barras a crescer
 export type CenaDado = Base & {
@@ -173,9 +189,28 @@ export type CenaDado = Base & {
   rotulo: string; // o que o número significa (curto)
   barras?: { rotulo: string; valor: number; formato?: string }[]; // até 6; a última (ou "destaque") a vermelho
   destaque?: number;
+  fundo?: FundoEditorial;
+};
+
+// Passagem do tempo (editorial): calendário de arrancar com as folhas a cair de "de" até "ate".
+// Datas: "2010" (anos), "03/2015" (meses) ou "12/05/2020" (dias); a unidade é a mais fina das duas.
+export type CenaCalendario = Base & {
+  tipo: "calendario";
+  de: string;
+  ate: string;
+  rotulo?: string; // título curto (ex.: "13 anos depois")
+  fundo?: FundoEditorial;
 };
 
 // Faixa de cinema: mídia 16:9 a toda a largura sobre fundo escuro, título curto com brilho por cima
+// Passeio de câmara 3D sobre um print ou vídeo (máscara, câmara com nulo, 65/65, motion blur e profundidade de campo)
+export type CenaPrint = Base & {
+  tipo: "print";
+  titulo?: string; // etiqueta curta no topo (ex.: "O COMUNICADO DA FAA")
+  pontos?: Midia["pontos"]; // pontos de interesse por ordem; sem eles a câmara faz um percurso automático
+  telaCheia?: boolean; // a imagem cobre a tela toda (sem o fundo de túnel), com o mesmo movimento
+};
+
 export type CenaFaixa = Base & {
   tipo: "faixa";
   titulo?: string; // até ~3 palavras, ex. "475M VIEWS"
@@ -216,21 +251,21 @@ export type CenaQuiz = Base & {
 export type Posicao3D = "esquerda" | "centro" | "direita" | "fundo" | [number, number];
 export type PersonagemLowPoly = {
   nome?: string; // para outra personagem olhar para esta
-  visual?: "pessoa" | "jogador" | "arbitro" | "gamer" | "cientista" | "astronauta" | "crianca" | "executivo" | "mergulhador" | "medico" | "alienigena" | "robo" | "piloto" | "piloto_capacete" | "mecanico" | "relojoeiro";
+  visual?: "pessoa" | "jogador" | "arbitro" | "gamer" | "cientista" | "astronauta" | "crianca" | "executivo" | "mergulhador" | "medico" | "alienigena" | "robo" | "piloto" | "piloto_capacete" | "mecanico" | "relojoeiro" | "motoboy" | "politico" | "presidente";
   cor?: string; pele?: string; cabelo?: string;
-  acao?: "parado" | "andar" | "correr" | "acenar" | "apontar" | "celebrar" | "choque" | "pensar" | "falar" | "encolher" | "bracos_cruzados" | "chutar" | "torcer" | "dancar" | "sentar" | "digitar" | "apitar" | "cartao" | "var" | "cair" | "flutuar" | "triste";
+  acao?: "parado" | "andar" | "correr" | "acenar" | "apontar" | "celebrar" | "choque" | "pensar" | "falar" | "encolher" | "bracos_cruzados" | "chutar" | "torcer" | "dancar" | "sentar" | "digitar" | "apitar" | "cartao" | "var" | "cair" | "flutuar" | "triste" | "beber" | "beber_sentado" | "cheirar" | "baforar" | "tontura" | "nervoso" | "ao_telefone" | "entregar" | "rolar_celular" | "celular_sentado" | "cabeca_nas_maos" | "esconder_rosto" | "discursar" | "protestar";
   expressao?: "neutro" | "feliz" | "triste" | "choque" | "bravo" | "pensativo" | "convencido";
   posicao?: Posicao3D;
   destino?: Posicao3D; // anda (ou corre, com acao "correr") até aqui durante a cena
   olhar?: string; // "camera" (padrão), "esquerda", "direita", "fundo" ou o nome de outra personagem
-  segura?: "cartao_amarelo" | "cartao_vermelho" | "apito" | "celular" | "trofeu" | "bola" | "bandeira" | "portatil" | "comando" | "geiger" | "bandeira_xadrez" | "bandeira_brasil" | "champanhe" | "dinheiro" | "pinca" | "relogio";
+  segura?: "cartao_amarelo" | "cartao_vermelho" | "apito" | "celular" | "trofeu" | "bola" | "bandeira" | "portatil" | "comando" | "geiger" | "bandeira_xadrez" | "bandeira_brasil" | "champanhe" | "dinheiro" | "pinca" | "relogio" | "copo_gin" | "garrafa_gin" | "nota_enrolada" | "lanca_perfume" | "pano" | "cartao_banco" | "maquininha" | "microfone" | "placa_protesto" | "carteira_trabalho";
   fala?: boolean; // a boca mexe enquanto a narração fala
   rotulo?: string; // etiqueta 3D por cima da cabeça
 };
 export type ObjetoLowPoly = {
   tipo: "foguetao" | "satelite" | "estacao" | "asteroide" | "atomo" | "molecula" | "adn" | "celula" | "vulcao"
     | "cubo" | "esfera" | "piramide" | "cilindro" | "cone" | "dodecaedro" | "icosaedro" | "toro" | "superficie" | "eixos"
-    | "explosao" | "fogo" | "fumo" | "bola" | "trofeu" | "frasco" | "tiranossauro" | "braquiossauro" | "pterossauro" | "tubarao" | "baleia" | "cardume" | "ovni" | "vaca" | "cristal" | "portal" | "cogumelo" | "bomba" | "missil" | "bombardeiro" | "radiacao" | "carro_f1" | "velas" | "seta" | "touro" | "urso" | "moedas" | "dinheiro" | "empresa" | "modelo" | "placa_mae" | "processador" | "placa_de_video" | "memoria_ram" | "ssd" | "cooler" | "fonte" | "console" | "controle" | "tv" | "codigo" | "motor_jogo" | "arte_3d" | "som" | "nivel" | "bug" | "relogio" | "mecanismo" | "engrenagens" | "escape" | "mola_real" | "rubi" | "lingotes" | "fundicao" | "maquina_cnc" | "tanque_agua";
+    | "explosao" | "fogo" | "fumo" | "bola" | "trofeu" | "frasco" | "tiranossauro" | "braquiossauro" | "pterossauro" | "tubarao" | "baleia" | "cardume" | "ovni" | "vaca" | "cristal" | "portal" | "cogumelo" | "bomba" | "missil" | "bombardeiro" | "radiacao" | "carro_f1" | "velas" | "seta" | "touro" | "urso" | "moedas" | "dinheiro" | "empresa" | "modelo" | "placa_mae" | "processador" | "placa_de_video" | "memoria_ram" | "ssd" | "cooler" | "fonte" | "console" | "controle" | "tv" | "codigo" | "motor_jogo" | "arte_3d" | "som" | "nivel" | "bug" | "relogio" | "mecanismo" | "engrenagens" | "escape" | "mola_real" | "rubi" | "lingotes" | "fundicao" | "maquina_cnc" | "tanque_agua" | "smartphone" | "cerebro" | "urna" | "mala_dinheiro" | "plataforma_petroleo" | "pulpito";
   modelo?: string; // tipo "modelo": "pack/nome" do catálogo (.claude/skills/novo-video/modelos-lowpoly.md)
   rotacao?: number; // graus (0 = de frente para a câmara)
   posicao?: Posicao3D | [number, number, number];
@@ -244,9 +279,9 @@ export type ObjetoLowPoly = {
 export type CenaLowPoly = Base & {
   tipo: "lowpoly";
   cenario: "estadio" | "cidade" | "quarto" | "natureza" | "planeta" | "espaco" | "laboratorio" | "estudio"
-    | "fundo_mar" | "pre_historia" | "corrida" | "sala_aula" | "sala_estar" | "hospital" | "nave" | "planeta_alien" | "abrigo" | "bolsa" | "estudio_jogos" | "oficina_relojoaria" | "boutique_luxo";
+    | "fundo_mar" | "pre_historia" | "corrida" | "sala_aula" | "sala_estar" | "hospital" | "nave" | "planeta_alien" | "abrigo" | "bolsa" | "estudio_jogos" | "oficina_relojoaria" | "boutique_luxo" | "balada" | "lounge" | "banheiro_balada" | "carnaval" | "rua_sp" | "quarto_escuro" | "consultorio" | "brasilia" | "plenario" | "supermercado";
   hora?: "dia" | "tarde" | "noite";
-  variante?: string; // natureza: floresta | deserto | neve; planeta: sol | mercurio | venus | terra | lua | marte | jupiter | saturno | urano | neptuno; espaco: sistema_solar | buraco_negro | escala | vazio; corrida: chuva | boxes | podio | vazia; bolsa: alta | queda; cidade: ruinas
+  variante?: string; // natureza: floresta | deserto | neve; planeta: sol | mercurio | venus | terra | lua | marte | jupiter | saturno | urano | neptuno; espaco: sistema_solar | buraco_negro | escala | vazio; corrida: chuva | boxes | podio | vazia; bolsa: alta | queda; cidade: ruinas; quarto_escuro: manha; brasilia: protesto; plenario: sem_votacao
   corpos?: string[]; // espaco "escala": que corpos comparar (ex.: ["terra", "jupiter", "sol"])
   objetos?: ObjetoLowPoly[];
   rotulos?: boolean; // nomes dos planetas no sistema solar e na escala (padrão: só na escala)
@@ -283,7 +318,7 @@ export type CenaPincel = Base & {
   tremer?: boolean; // o traço treme como numa animação desenhada (padrão: sim)
 };
 
-export type Cena = CenaDado | CenaTipografia | CenaFaixa | CenaPalavras | CenaGancho | CenaQuiz | CenaLowPoly | CenaPincel | CenaProduto | CenaFato | CenaGrafico | CenaLinhaTempo | CenaManim | CenaClipe | CenaNumero | CenaComparacao | CenaModelo3D | CenaCapitulo | CenaCta;
+export type Cena = CenaDado | CenaCalendario | CenaTipografia | CenaPrint | CenaFaixa | CenaPalavras | CenaGancho | CenaQuiz | CenaLowPoly | CenaPincel | CenaProduto | CenaFato | CenaGrafico | CenaLinhaTempo | CenaManim | CenaClipe | CenaNumero | CenaComparacao | CenaModelo3D | CenaCapitulo | CenaCta;
 
 export type Manifest = {
   id: string;
@@ -300,6 +335,7 @@ export type Manifest = {
   // no manifest final: caminho do ficheiro escolhido (scripts/produzir.mjs resolve)
   musica?: string;
   musicaVolume?: number; // multiplicador (1 = normal)
+  musicaInicio?: number; // segundo da faixa onde a música começa (escolhido no painel, como no Instagram)
   thumbnail?: string; // texto curto para a capa (3 a 5 palavras)
   legenda_post?: string; // legenda pronta para a publicação (hashtags e créditos)
   sfxVolume?: number; // efeitos sonoros: 0 = sem efeitos, 1 = normal

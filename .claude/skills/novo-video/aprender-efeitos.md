@@ -10,8 +10,15 @@ entram e saem, o motion blur, como as palavras animam, as texturas por cima e a 
   rotação 3D, máscara, corte seco), o motion blur (rasto na direção do movimento), a entrada das letras (escala, deslize,
   escrita, ondulação) e os movimentos de câmara (push-in, pan, órbita, tremor).
 - O estilo já escolhido (JSON) e o guia que o roteirista vai seguir.
-- `src/aprendidos/_kit.tsx`: as peças que podes usar (`Camara3D`, `DesfoqueMovimento`, `progresso`, `useTempo`, `random`,
-  `interpolate`, `Easing`, `spring`, e os tipos). **Lê-o primeiro.**
+- `src/aprendidos/_kit.tsx`: as peças que podes usar (`Camara3D`, `DesfoqueMovimento`, `PasseioCamera`, `estadoPasseio`,
+  `CURVA_65`, `progresso`, `useTempo`, `random`, `interpolate`, `Easing`, `spring`, e os tipos). **Lê-o primeiro.**
+- Se o vídeo de referência percorre prints, páginas ou vídeos com uma câmara 3D (o plano inclinado a deslizar de detalhe
+  em detalhe, com desfoque fora do foco), usa a técnica do estúdio: câmara com um nulo como pai, keyframes de posição,
+  escala e orientação no nulo com curva 65/65 (`CURVA_65`), motion blur e profundidade de campo. `PasseioCamera` faz
+  tudo isto sobre uma mídia; `estadoPasseio` dá os valores do nulo para aplicar o mesmo movimento à tua `Cena`.
+- Às vezes, `analise.json` (o vídeo medido plano a plano): usa `planos[].duracao` para o tempo das transições,
+  `planos[].movimentos` (tipo, `suavizacao`, `desliza`, `escala`) para a curva e a direção dos movimentos, e
+  `textos[].entrada`/`saida`, `caixa` e `estilo` (cor, contorno, peso) para a animação e o aspeto das letras.
 - `src/aprendidos/_exemplo.tsx`: um módulo completo de exemplo. **Lê-o** e segue a mesma forma.
 
 ## O que escreves

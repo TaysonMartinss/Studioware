@@ -12,7 +12,7 @@ const roteiro = JSON.parse(readFileSync(caminho, "utf-8"));
 
 // o guia + os campos da cena lowpoly tirados do esquema dos roteiros (para não haver duas versões)
 function guia() {
-  const base = readFileSync(".claude/skills/novo-video/exemplos-clipe.md", "utf-8");
+  const base = readFileSync(".claude/skills/novo-video/exemplos-clipe.md", "utf-8") + "\n\n" + readFileSync(".claude/skills/novo-video/sons-meme.md", "utf-8");
   const esquema = readFileSync(".claude/skills/novo-video/esquema-roteiro.md", "utf-8").split(/\r?\n/);
   const ini = esquema.findIndex((l) => l.startsWith("- **lowpoly**"));
   if (ini < 0) return base;
@@ -28,6 +28,9 @@ function objetoDe(o) {
   if (!o || typeof o !== "object") return undefined;
   // Poly Haven: o buscar_midia encontra o ficheiro pelo id (ou pelo mais parecido no catálogo)
   if (o.fonte === "polyhaven" && typeof (o.modelo ?? o.consulta) === "string") return { fonte: "polyhaven", modelo: String(o.modelo ?? o.consulta).slice(0, 60), tipo: "modelo3d" };
+  // anatomia e saúde (coração, cérebro, esqueleto...): catálogo src/lowpoly/anatomia.json
+  if (o.fonte === "anatomia" && typeof (o.modelo ?? o.consulta) === "string") return { fonte: "anatomia", modelo: String(o.modelo ?? o.consulta).slice(0, 60), tipo: "modelo3d" };
+  if (o.fonte === "icone" && typeof (o.consulta ?? o.nome) === "string") return { fonte: "icone", consulta: String(o.consulta ?? o.nome).slice(0, 40), arquivo: `icone:${String(o.consulta ?? o.nome).slice(0, 40)}`, formato: "icone" };
   if (o.fonte === "sketchfab" && typeof o.consulta === "string") return { fonte: "sketchfab", consulta: o.consulta.slice(0, 80), tipo: "modelo3d" };
   if (o.fonte === "kenney" && typeof o.modelo === "string") {
     const n = o.modelo.toLowerCase().replace(/\.glb$/, "");
@@ -41,10 +44,13 @@ function objetoDe(o) {
 // os cenários low poly válidos, lidos do tipo (um cenário inventado partia o render)
 const tipos = readFileSync("src/types.ts", "utf-8");
 const CENARIOS = new Set([...(tipos.match(/tipo: "lowpoly";\s*cenario: ([^;]+);/)?.[1] ?? "").matchAll(/"(\w+)"/g)].map((m) => m[1]));
-const FONTES = new Set(["pexels", "pixabay", "wikimedia", "steam"]);
+const FONTES = new Set(["pexels", "pixabay", "wikimedia", "steam", "emoji", "cs2"]);
+// sons que a IA pode marcar sozinha (os "auto" do catálogo de SFX)
+const SONS = new Set(Object.entries(JSON.parse(readFileSync("public/sfx/catalogo.json", "utf-8"))).filter(([, s]) => s.auto).map(([id]) => id));
 const temChave = (nome) => !!process.env[nome] || readFileSync(".env", "utf-8").split(/\r?\n/).some((l) => l.startsWith(`${nome}=`) && l.length > nome.length + 1);
 
 import { esperarExterno, modoIA } from "./ia.mjs";
+import { registarClaude } from "./custos.mjs";
 // no modo IA externa, o pedido espera na Produção do painel; "Usar o Claude neste" volta ao Claude
 const claude = async (sistema, pedido) => {
   if (modoIA() === "externa") {
@@ -62,7 +68,9 @@ const claudeDireto = (sistema, pedido) => new Promise((ok, falha) => {
   p.on("error", (e) => falha(new Error(`não consegui iniciar o Claude: ${e.message}`)));
   p.on("close", (code) => {
     try {
-      const texto = String(JSON.parse(out).result ?? "");
+      const ev = JSON.parse(out);
+      registarClaude(".", ev, { etapa: "Exemplos dos cortes", video: roteiro.id });
+      const texto = String(ev.result ?? "");
       const a = texto.indexOf("{"), b = texto.lastIndexOf("}");
       if (code !== 0 || a < 0) throw new Error((texto || err).slice(0, 200) || `código ${code}`);
       ok(JSON.parse(texto.slice(a, b + 1)));
@@ -92,12 +100,20 @@ function limpar(exemplos, duracaoS) {
     let ini = Math.max(1.5, Number(x.inicio)), fim = Math.min(duracaoS - 1.5, Number(x.fim));
     if (!Number.isFinite(ini) || !Number.isFinite(fim)) continue;
     fim = Math.min(fim, ini + (x.tipo === "editorial" ? 6.5 : 5)); // nada fica muito tempo no ecrã (a frase de efeito pode ir a 6,5 s)
-    if (fim - ini < (["palavras", "numero", "dado"].includes(x.tipo) ? 1.2 : 1.8)) continue;
+    if (fim - ini < (["palavras", "numero", "dado"].includes(x.tipo) ? 1.2 : x.tipo === "calendario" ? 2.2 : 1.8)) continue;
     if (bons.length && ini < bons.at(-1).fimMs / 1000 + 1) continue;
     const item = { inicioMs: Math.round(ini * 1000), fimMs: Math.round(fim * 1000), cheio: true };
     if (x.tipo === "midia" && FONTES.has(x.midia?.fonte) && typeof x.midia?.consulta === "string") {
       const fonte = x.midia.fonte === "pexels" && !temChave("PEXELS_API_KEY") ? "pixabay" : x.midia.fonte;
       item.midia = { fonte, consulta: x.midia.consulta.slice(0, 120), tipo: x.midia.tipo === "imagem" ? "imagem" : "video" };
+    } else if (x.tipo === "print" && FONTES.has(x.midia?.fonte) && typeof x.midia?.consulta === "string") {
+      // print (notícia, tweet, documento, ecrã) percorrido por uma câmara 3D
+      const fonte = x.midia.fonte === "pexels" && !temChave("PEXELS_API_KEY") ? "pixabay" : x.midia.fonte;
+      const num = (v, a, b) => (Number.isFinite(Number(v)) ? Math.min(b, Math.max(a, Number(v))) : undefined);
+      const pontos = (Array.isArray(x.pontos) ? x.pontos : []).slice(0, 5).filter((p) => p && Number.isFinite(Number(p.x)) && Number.isFinite(Number(p.y)))
+        .map((p) => ({ x: num(p.x, 0, 1), y: num(p.y, 0, 1), zoom: num(p.zoom, 0.8, 3), rx: num(p.rx, -35, 35), ry: num(p.ry, -35, 35), rz: num(p.rz, -15, 15) }));
+      item.midia = { fonte, consulta: x.midia.consulta.slice(0, 120), tipo: x.midia.tipo === "video" ? "video" : "imagem", ...(pontos.length ? { pontos } : {}) };
+      item.layout = "passeio";
     } else if (x.tipo === "faixa" && FONTES.has(x.midia?.fonte) && typeof x.midia?.consulta === "string") {
       const fonte = x.midia.fonte === "pexels" && !temChave("PEXELS_API_KEY") ? "pixabay" : x.midia.fonte;
       item.midia = { fonte, consulta: x.midia.consulta.slice(0, 120), tipo: x.midia.tipo === "imagem" ? "imagem" : "video" };
@@ -109,6 +125,9 @@ function limpar(exemplos, duracaoS) {
       const barras = (Array.isArray(x.barras) ? x.barras : []).filter((b) => b && Number.isFinite(Number(b.valor))).slice(0, 6)
         .map((b) => ({ rotulo: String(b.rotulo ?? "").slice(0, 12), valor: Number(b.valor), formato: curto(b.formato, 10) }));
       item.cena = { tipo: "dado", fala: "", valor: Number(x.valor), prefixo: curto(x.prefixo, 8), sufixo: curto(x.sufixo, 10), rotulo: String(x.rotulo ?? x.texto ?? "").slice(0, 48), ...(barras.length ? { barras } : {}) };
+    } else if (x.tipo === "calendario" && /^(\d{1,2}\/){0,2}\d{3,4}$/.test(String(x.de ?? "").trim()) && /^(\d{1,2}\/){0,2}\d{3,4}$/.test(String(x.ate ?? "").trim())) {
+      // tempo a passar: folhas de calendário a cair de uma data até outra
+      item.cena = { tipo: "calendario", fala: "", de: String(x.de).trim(), ate: String(x.ate).trim(), ...(typeof x.rotulo === "string" && x.rotulo.trim() ? { rotulo: x.rotulo.trim().slice(0, 40) } : {}) };
     } else if (x.tipo === "editorial") {
       // frase de efeito em tipografia editorial com um objeto (3D ou imagem); a legenda some enquanto ela está no ecrã
       const objeto = objetoDe(x.objeto);
@@ -147,6 +166,13 @@ for (const [i, cena] of roteiro.cenas.entries()) {
     ].filter(Boolean).join("\n\n"));
     const novos = r.autoexplicativo ? [] : limpar(r.exemplos, duracaoS);
     cena.broll = [...(cena.broll ?? []).filter((b) => !b.cheio), ...novos];
+    // sons de efeito populares: nomes conhecidos, dentro do corte, no máximo 3 e com pelo menos 4 s entre eles
+    const sons = [];
+    for (const x of (Array.isArray(r.sons) ? r.sons : []).filter((x) => SONS.has(x?.nome) && Number.isFinite(Number(x.em))).sort((a, b) => a.em - b.em)) {
+      const em = Math.min(Math.max(0, Number(x.em)), duracaoS - 0.5);
+      if (sons.length < 3 && (!sons.length || em - sons.at(-1).emMs / 1000 >= 4)) sons.push({ nome: x.nome, emMs: Math.round(em * 1000) });
+    }
+    if (sons.length) cena.sons = sons;
     cena.exemplosFeitos = true;
     mudou = true;
     console.log(r.autoexplicativo || !novos.length

@@ -1,3 +1,4 @@
+import { PasseioCamera } from "../components/PasseioCamera";
 import { AbsoluteFill, Easing, Loop, OffthreadVideo, Sequence, interpolate, random, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import { Conteudo, MidiaCartao } from "../components/MidiaReal";
 import { LowPolyCena } from "../lowpoly/LowPolyCena";
@@ -5,8 +6,11 @@ import { PincelCena } from "../pincel/PincelCena";
 import { GrelhaOndulada } from "../components/GrelhaOndulada";
 import { Faixa } from "./Faixa";
 import { Tipografia } from "./Tipografia";
-import { DadoEditorial } from "./DadoEditorial";
+import { TituloEditorial } from "./TituloEditorial";
+import { DadoEditorial, IndiceCenaCtx } from "./DadoEditorial";
+import { CalendarioEditorial } from "./CalendarioEditorial";
 import { Sfx } from "../components/Sfx";
+import { SomMeme } from "../components/SomMeme";
 import { Numero } from "./Numero";
 import { Palavras } from "./Palavras";
 import { pop, useFontes, useFrame } from "../components/motion";
@@ -86,11 +90,21 @@ const Exemplo: React.FC<{ b: Broll; cor: string; palavras: Palavra[] }> = ({ b, 
   const duracaoMs = b.fimMs - b.inicioMs;
   // frase de efeito em tipografia editorial: as palavras ditas nesse trecho, no tempo do exemplo
   if (b.cena?.tipo === "tipografia") {
-    const ws = palavras.filter((p) => p.inicioMs >= b.inicioMs - 60 && p.inicioMs < b.fimMs).map((p) => ({ ...p, inicioMs: Math.max(0, p.inicioMs - b.inicioMs), fimMs: p.fimMs - b.inicioMs }));
+    const faladas = palavras.filter((p) => p.inicioMs >= b.inicioMs - 20 && p.inicioMs < b.fimMs).map((p) => ({ ...p, inicioMs: Math.max(0, p.inicioMs - b.inicioMs), fimMs: p.fimMs - b.inicioMs }));
+    // texto escrito à mão: as palavras entram no mesmo ritmo, espalhadas pelo tempo em que a pessoa fala neste trecho
+    const escritas = (b.cena.texto ?? "").trim().split(/\s+/).filter(Boolean);
+    const ate = Math.max(800, Math.min(duracaoMs * 0.75, faladas.at(-1)?.inicioMs ?? duracaoMs * 0.6));
+    const ws = escritas.length ? escritas.map((texto, k) => ({ texto, inicioMs: Math.round((k / escritas.length) * ate), fimMs: Math.round(((k + 1) / escritas.length) * ate) })) : faladas;
+    if (b.cena.variante === "titulo" && ws.length)
+      return <AbsoluteFill><TituloEditorial texto={ws.map((p) => p.texto).join(" ")} objeto={b.cena.objeto} fundo={b.cena.fundo} kicker="" /></AbsoluteFill>;
     return <AbsoluteFill><Tipografia cena={{ ...b.cena, duracaoMs, palavras: ws }} cor={cor} /></AbsoluteFill>;
   }
   if (b.cena?.tipo === "dado") return <AbsoluteFill><DadoEditorial cena={{ ...b.cena, duracaoMs, palavras: [] }} /></AbsoluteFill>;
+  if (b.cena?.tipo === "calendario") return <AbsoluteFill><CalendarioEditorial cena={{ ...b.cena, duracaoMs, palavras: [] }} /></AbsoluteFill>;
   // como nos reels: a faixa de cinema e as palavras gigantes entram em corte seco e tapam a pessoa (a voz continua)
+  // print percorrido pela câmara 3D (máscara, nulo, 65/65, motion blur e profundidade de campo)
+  if (b.layout === "passeio" && b.midia?.arquivo && b.midia.formato !== "modelo3d")
+    return <AbsoluteFill><PasseioCamera arquivo={b.midia.arquivo} video={b.midia.formato === "video"} inicioS={b.midia.inicioS} pontos={b.midia.pontos} cor={cor} cheio={b.telaCheia} /></AbsoluteFill>;
   if (b.layout === "faixa" && b.midia?.arquivo) return <AbsoluteFill><Faixa cena={{ tipo: "faixa", fala: "", midia: b.midia, titulo: b.titulo, duracaoMs }} cor={cor} /></AbsoluteFill>;
   if (b.cena?.tipo === "numero") {
     return (
@@ -242,14 +256,17 @@ export const Clipe: React.FC<{ cena: CenaClipe; cor: string }> = ({ cena, cor })
           </>
         );
       })()}
+      {/* sons de efeito populares (sino, hit, caverna, rizz) nos momentos marcados */}
+      {(cena.sons ?? []).map((s, i) => <SomMeme key={`som${i}`} som={s} />)}
       {(cena.broll ?? []).map((b, i) => {
         const ini = Math.round((b.inicioMs / 1000) * fps);
         if (b.cheio) {
           return (
             <Sequence key={i} from={ini} durationInFrames={Math.max(1, Math.round(((b.fimMs - b.inicioMs) / 1000) * fps))} layout="none">
               {/* sound design: woosh em cada corte para o apoio (a tipografia e o dado têm os seus próprios sons por dentro) */}
-              {b.cena?.tipo !== "dado" && <Sequence durationInFrames={Math.round(fps)} layout="none"><Sfx nome="whoosh" volume={0.34} /></Sequence>}
-              <Exemplo b={b} cor={cor} palavras={cena.palavras ?? []} />
+              {b.cena?.tipo !== "dado" && b.cena?.tipo !== "calendario" && <Sequence durationInFrames={Math.round(fps)} layout="none"><Sfx nome="whoosh" volume={0.34} /></Sequence>}
+              {/* cada apoio conta como uma cena: os fundos editoriais alternam de um apoio para o outro */}
+              <IndiceCenaCtx.Provider value={i}><Exemplo b={b} cor={cor} palavras={cena.palavras ?? []} /></IndiceCenaCtx.Provider>
             </Sequence>
           );
         }

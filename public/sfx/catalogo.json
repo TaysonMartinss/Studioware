@@ -1,0 +1,892 @@
+{
+  "sino": {
+    "arquivo": "sino.mp3",
+    "nome": "Sino do Undertaker",
+    "categoria": "Suspense e tensão",
+    "quando": "Suspense ou tensão antes de algo impactante: revelação absurda, notícia chocante, virada inesperada",
+    "onde": "logo antes da revelação (na pausa ou na palavra que a anuncia)",
+    "maxS": 5,
+    "volume": 0.85,
+    "auto": true
+  },
+  "hit": {
+    "arquivo": "hit.mp3",
+    "nome": "Hit do Minecraft",
+    "categoria": "Impacto e erro",
+    "quando": "Impacto, erro, susto ou dano: alguém leva um susto, erra uma jogada, recebe uma crítica",
+    "onde": "na palavra do impacto (errou, caiu, bateu)",
+    "maxS": 1.8,
+    "volume": 0.85,
+    "auto": true
+  },
+  "caverna": {
+    "arquivo": "caverna.mp3",
+    "nome": "Ambiente de caverna (Minecraft)",
+    "categoria": "Ambiente e clima",
+    "quando": "Mistério, exploração, solidão ou perigo: investigação, lugar abandonado, história assustadora",
+    "onde": "no começo do trecho misterioso",
+    "maxS": 4.1,
+    "volume": 0.85,
+    "auto": true
+  },
+  "rizz": {
+    "arquivo": "rizz.mp3",
+    "nome": "Rizz",
+    "categoria": "Reação e comédia",
+    "quando": "Atitude charmosa, confiante ou sedutora: cantada boa, jogada estilosa, muito carisma",
+    "onde": "logo depois da frase ou da jogada, como reação",
+    "maxS": 3.4,
+    "volume": 0.85,
+    "auto": true
+  },
+  "sirene_999": {
+    "arquivo": "sirene_999.mp3",
+    "nome": "Sirene de -999",
+    "categoria": "Reação e comédia",
+    "quando": "Alguém faz algo muito errado, vergonhoso ou perde todo o respeito (o '-999 de aura')",
+    "onde": "logo depois da frase ou da ação vergonhosa",
+    "maxS": 4,
+    "volume": 0.85,
+    "auto": true
+  },
+  "bass_drop": {
+    "arquivo": "bass_drop.mp3",
+    "nome": "Bass drop",
+    "categoria": "Transição",
+    "quando": "A entrada de algo grande: a revelação, o momento em que tudo cai, a mudança de cena",
+    "onde": "na palavra da revelação",
+    "maxS": 4,
+    "volume": 0.85,
+    "auto": true
+  },
+  "osso": {
+    "arquivo": "osso.mp3",
+    "nome": "Osso a partir",
+    "categoria": "Impacto e erro",
+    "quando": "Dor exagerada, uma queda, uma resposta que 'parte' alguém",
+    "onde": "no momento do impacto",
+    "maxS": 1.1,
+    "volume": 0.85,
+    "auto": true
+  },
+  "casa_avo": {
+    "arquivo": "casa_avo.mp3",
+    "nome": "Casa da avó (relógio e geladeira)",
+    "categoria": "Ambiente e clima",
+    "quando": "Silêncio constrangedor, ninguém responde, momento parado e nostálgico",
+    "onde": "no começo da pausa",
+    "maxS": 6,
+    "volume": 0.85,
+    "auto": true
+  },
+  "moedas": {
+    "arquivo": "moedas.mp3",
+    "nome": "Moedas (coletar ouro)",
+    "categoria": "Vitória e hype",
+    "quando": "Ganho, dinheiro, recompensa, um ponto ganho",
+    "onde": "no número ou no ganho",
+    "maxS": 3.0,
+    "volume": 0.85,
+    "auto": true
+  },
+  "dexter": {
+    "arquivo": "dexter.mp3",
+    "nome": "Piano sombrio (Dexter)",
+    "categoria": "Suspense e tensão",
+    "quando": "Plano suspeito, pensamento maligno, alguém a tramar algo",
+    "onde": "no começo da frase suspeita",
+    "maxS": 6,
+    "volume": 0.85,
+    "auto": true
+  },
+  "pinguim": {
+    "arquivo": "pinguim.mp3",
+    "nome": "Pinguim deprimido (tema do Guts)",
+    "categoria": "Tristeza e drama",
+    "quando": "Alguém segue sozinho, desiste de tudo e vai embora, decisão solitária",
+    "onde": "no começo do momento",
+    "maxS": 8,
+    "volume": 0.85,
+    "auto": true
+  },
+  "english_spanish": {
+    "arquivo": "english_spanish.mp3",
+    "nome": "English or Spanish? (Static)",
+    "categoria": "Reação e comédia",
+    "quando": "Impasse ou momento de congelar: todos parados, olhar fixo, quem reage primeiro",
+    "onde": "no começo do silêncio",
+    "maxS": 6,
+    "volume": 0.85,
+    "auto": true
+  },
+  "among_us": {
+    "arquivo": "among_us.mp3",
+    "nome": "Among Us (troll face)",
+    "categoria": "Suspense e tensão",
+    "quando": "Algo suspeito ('sus'), alguém a mentir, um plano estranho",
+    "onde": "logo depois da frase suspeita",
+    "maxS": 4.8,
+    "volume": 0.85,
+    "auto": true
+  },
+  "fahhh": {
+    "arquivo": "fahhh.mp3",
+    "nome": "Fahhh",
+    "categoria": "Reação e comédia",
+    "quando": "Frustração, choque ou o momento exato em que algo dá errado",
+    "onde": "no momento da falha",
+    "maxS": 2.5,
+    "volume": 0.85,
+    "auto": true
+  },
+  "flashbang": {
+    "arquivo": "flashbang.mp3",
+    "nome": "Flashbang",
+    "categoria": "Impacto e erro",
+    "quando": "Revelação que cega: informação absurda de repente, tela branca, choque",
+    "onde": "na revelação",
+    "maxS": 3,
+    "volume": 0.85,
+    "auto": true
+  },
+  "escudo_fortnite": {
+    "arquivo": "escudo_fortnite.mp3",
+    "nome": "Poção de escudo (Fortnite)",
+    "categoria": "Vitória e hype",
+    "quando": "Recuperar energia: café, energético, descanso, 'carregar a bateria'",
+    "onde": "no momento em que bebe ou recupera",
+    "maxS": 4,
+    "volume": 0.85,
+    "auto": true
+  },
+  "musica_francesa": {
+    "arquivo": "musica_francesa.mp3",
+    "nome": "Música francesa (meme)",
+    "categoria": "Trilha de momento",
+    "quando": "Momento absurdo e fofinho, nonsense, algo 'chique' exagerado",
+    "onde": "no começo do momento",
+    "maxS": 6,
+    "volume": 0.85,
+    "auto": true
+  },
+  "gay_echo": {
+    "arquivo": "gay_echo.mp3",
+    "nome": "Eco de voz",
+    "categoria": "Reação e comédia",
+    "quando": "Só à mão no editor (o uso típico do meme é gozar com alguém)",
+    "onde": "",
+    "maxS": 4,
+    "volume": 0.85,
+    "auto": false
+  },
+  "get_out": {
+    "arquivo": "get_out.mp3",
+    "nome": "Get out!",
+    "categoria": "Reação e comédia",
+    "quando": "Quando alguém diz algo absurdo ou inaceitável: expulsar a ideia",
+    "onde": "logo depois da frase",
+    "maxS": 1.1,
+    "volume": 0.85,
+    "auto": true
+  },
+  "vidro": {
+    "arquivo": "vidro.mp3",
+    "nome": "Vidro a partir",
+    "categoria": "Impacto e erro",
+    "quando": "Algo se quebra: expectativa, coração, sonho, recorde",
+    "onde": "no momento da quebra",
+    "maxS": 2.2,
+    "volume": 0.85,
+    "auto": true
+  },
+  "god_damn": {
+    "arquivo": "god_damn.mp3",
+    "nome": "God damn!",
+    "categoria": "Reação e comédia",
+    "quando": "Algo impressionante: número absurdo, jogada incrível, resultado inesperado",
+    "onde": "logo depois",
+    "maxS": 1.3,
+    "volume": 0.85,
+    "auto": true
+  },
+  "lula_molusco": {
+    "arquivo": "lula_molusco.mp3",
+    "nome": "Lula Molusco a andar",
+    "categoria": "Reação e comédia",
+    "quando": "Sair de fininho, ir embora sem graça, caminhada desconfortável",
+    "onde": "no começo do momento",
+    "maxS": 5.7,
+    "volume": 0.85,
+    "auto": true
+  },
+  "risada_brinquedo": {
+    "arquivo": "risada_brinquedo.mp3",
+    "nome": "Risada de brinquedo",
+    "categoria": "Reação e comédia",
+    "quando": "Depois de uma piada ruim ou de alguém que se deu mal",
+    "onde": "logo depois",
+    "maxS": 4,
+    "volume": 0.85,
+    "auto": true
+  },
+  "brain_fart": {
+    "arquivo": "brain_fart.mp3",
+    "nome": "Peido cerebral",
+    "categoria": "Reação e comédia",
+    "quando": "Ideia burra, cérebro a falhar, alguém sem entender nada",
+    "onde": "na pausa de confusão",
+    "maxS": 4,
+    "volume": 0.85,
+    "auto": true
+  },
+  "level_up": {
+    "arquivo": "level_up.mp3",
+    "nome": "Ding mágico (level up)",
+    "categoria": "Interface e pop-up",
+    "quando": "Ideia brilhante, subir de nível, conquista, algo que melhora",
+    "onde": "na palavra da conquista",
+    "maxS": 2.2,
+    "volume": 0.85,
+    "auto": true
+  },
+  "mentality": {
+    "arquivo": "mentality.mp3",
+    "nome": "Mentality (dark talk)",
+    "categoria": "Suspense e tensão",
+    "quando": "Frase fria de 'mentalidade', verdade dura dita sem emoção (edit sigma)",
+    "onde": "logo depois da frase",
+    "maxS": 1.2,
+    "volume": 0.85,
+    "auto": true
+  },
+  "cano": {
+    "arquivo": "cano.mp3",
+    "nome": "Cano de metal a cair",
+    "categoria": "Impacto e erro",
+    "quando": "Barulho absurdo e inesperado: algo cai, susto cómico",
+    "onde": "no momento",
+    "maxS": 2.9,
+    "volume": 0.85,
+    "auto": true
+  },
+  "win95": {
+    "arquivo": "win95.mp3",
+    "nome": "Windows 95 a ligar",
+    "categoria": "Nostalgia e tecnologia",
+    "quando": "Algo antigo, tecnologia velha, 'no meu tempo', começar algo",
+    "onde": "no começo",
+    "maxS": 5,
+    "volume": 0.85,
+    "auto": true
+  },
+  "winxp_liga": {
+    "arquivo": "winxp_liga.mp3",
+    "nome": "Windows XP a ligar",
+    "categoria": "Nostalgia e tecnologia",
+    "quando": "Começar algo, nostalgia dos anos 2000, alguém 'a ligar'",
+    "onde": "no começo",
+    "maxS": 4.9,
+    "volume": 0.85,
+    "auto": true
+  },
+  "winxp_desliga": {
+    "arquivo": "winxp_desliga.mp3",
+    "nome": "Windows XP a desligar",
+    "categoria": "Nostalgia e tecnologia",
+    "quando": "Fim, desistir, alguém que 'desligou' de cansaço, encerrar o assunto",
+    "onde": "no fim da frase",
+    "maxS": 3.4,
+    "volume": 0.85,
+    "auto": true
+  },
+  "optimus": {
+    "arquivo": "optimus.mp3",
+    "nome": "Transformação (Optimus Prime)",
+    "categoria": "Transição",
+    "quando": "Transformação, glow up, antes e depois, mudança radical",
+    "onde": "na mudança",
+    "maxS": 5,
+    "volume": 0.85,
+    "auto": true
+  },
+  "ps2": {
+    "arquivo": "ps2.mp3",
+    "nome": "PS2 a ligar",
+    "categoria": "Nostalgia e tecnologia",
+    "quando": "Infância, jogos antigos, flashback",
+    "onde": "no começo do flashback",
+    "maxS": 8,
+    "volume": 0.85,
+    "auto": true
+  },
+  "rdr2_honra": {
+    "arquivo": "rdr2_honra.mp3",
+    "nome": "Honra baixa (RDR2)",
+    "categoria": "Reação e comédia",
+    "quando": "Atitude errada, perder honra ou respeito, má decisão",
+    "onde": "logo depois",
+    "maxS": 4,
+    "volume": 0.85,
+    "auto": true
+  },
+  "camara_lenta": {
+    "arquivo": "camara_lenta.mp3",
+    "nome": "Câmara lenta",
+    "categoria": "Transição",
+    "quando": "Momento épico ou dramático em câmara lenta, segundos antes do impacto",
+    "onde": "no começo do momento",
+    "maxS": 6,
+    "volume": 0.85,
+    "auto": true
+  },
+  "spawn": {
+    "arquivo": "spawn.mp3",
+    "nome": "Spawn (aparecer)",
+    "categoria": "Transição",
+    "quando": "Alguém ou algo aparece de repente, entrada em cena",
+    "onde": "na entrada",
+    "maxS": 3.7,
+    "volume": 0.85,
+    "auto": true
+  },
+  "super_idol": {
+    "arquivo": "super_idol.mp3",
+    "nome": "Super Idol",
+    "categoria": "Trilha de momento",
+    "quando": "Felicidade irónica, algo 'perfeito demais', sucesso exagerado",
+    "onde": "no começo",
+    "maxS": 7,
+    "volume": 0.85,
+    "auto": true
+  },
+  "bong": {
+    "arquivo": "bong.mp3",
+    "nome": "Bong (Taco Bell)",
+    "categoria": "Impacto e erro",
+    "quando": "Punchline, plot twist, a frase que encerra a discussão",
+    "onde": "na palavra final",
+    "maxS": 1.7,
+    "volume": 0.85,
+    "auto": true
+  },
+  "travis": {
+    "arquivo": "travis.mp3",
+    "nome": "Travis Scott (ad-lib)",
+    "categoria": "Vitória e hype",
+    "quando": "Flex, momento estiloso, hype",
+    "onde": "logo depois",
+    "maxS": 3.4,
+    "volume": 0.85,
+    "auto": true
+  },
+  "sunshine": {
+    "arquivo": "sunshine.mp3",
+    "nome": "You Are My Sunshine",
+    "categoria": "Tristeza e drama",
+    "quando": "Ironia triste: algo bonito antes de dar errado, humor negro suave",
+    "onde": "no começo",
+    "maxS": 8,
+    "volume": 0.85,
+    "auto": true
+  },
+  "mewing": {
+    "arquivo": "mewing.mp3",
+    "nome": "Bye bye (mewing)",
+    "categoria": "Reação e comédia",
+    "quando": "Alguém fica por cima, resposta convencida, ir embora com estilo",
+    "onde": "depois da frase",
+    "maxS": 6,
+    "volume": 0.85,
+    "auto": true
+  },
+  "don_pollo": {
+    "arquivo": "don_pollo.mp3",
+    "nome": "Don Pollo",
+    "categoria": "Reação e comédia",
+    "quando": "Nonsense total, brainrot, situação absurda sem sentido",
+    "onde": "no começo",
+    "maxS": 6,
+    "volume": 0.85,
+    "auto": true
+  },
+  "hells_kitchen": {
+    "arquivo": "hells_kitchen.mp3",
+    "nome": "Suspense do Hell's Kitchen",
+    "categoria": "Suspense e tensão",
+    "quando": "Expectativa antes de um resultado, veredito ou nota",
+    "onde": "antes do resultado",
+    "maxS": 3.5,
+    "volume": 0.85,
+    "auto": true
+  },
+  "poppin_bottles": {
+    "arquivo": "poppin_bottles.mp3",
+    "nome": "Poppin bottles",
+    "categoria": "Vitória e hype",
+    "quando": "Celebração, festa, ganhar dinheiro, flex",
+    "onde": "no começo da celebração",
+    "maxS": 6,
+    "volume": 0.85,
+    "auto": true
+  },
+  "errado": {
+    "arquivo": "errado.mp3",
+    "nome": "Resposta errada",
+    "categoria": "Interface e pop-up",
+    "quando": "Resposta errada, palpite falhado, erro",
+    "onde": "na palavra do erro",
+    "maxS": 1.7,
+    "volume": 0.85,
+    "auto": true
+  },
+  "ninar": {
+    "arquivo": "ninar.mp3",
+    "nome": "Móbil de bebé",
+    "categoria": "Reação e comédia",
+    "quando": "Momento fofo ou ingénuo, alguém a agir como criança, inocência",
+    "onde": "no começo",
+    "maxS": 6,
+    "volume": 0.85,
+    "auto": true
+  },
+  "ballin": {
+    "arquivo": "ballin.mp3",
+    "nome": "Ballin",
+    "categoria": "Trilha de momento",
+    "quando": "Ostentação, 'a viver bem', rico, sucesso",
+    "onde": "no começo",
+    "maxS": 7,
+    "volume": 0.85,
+    "auto": true
+  },
+  "aplausos": {
+    "arquivo": "aplausos.mp3",
+    "nome": "Multidão a aplaudir",
+    "categoria": "Vitória e hype",
+    "quando": "Conquista, recorde, final feliz",
+    "onde": "logo depois da conquista",
+    "maxS": 6,
+    "volume": 0.85,
+    "auto": true
+  },
+  "geladeira": {
+    "arquivo": "geladeira.mp3",
+    "nome": "Geladeira (silêncio de casa)",
+    "categoria": "Ambiente e clima",
+    "quando": "Calma noturna, silêncio, momento parado em casa",
+    "onde": "no começo",
+    "maxS": 6,
+    "volume": 0.85,
+    "auto": true
+  },
+  "fuck_you": {
+    "arquivo": "fuck_you.mp3",
+    "nome": "F*ck you",
+    "categoria": "Reação e comédia",
+    "quando": "Só à mão no editor (palavrão)",
+    "onde": "",
+    "maxS": 2.7,
+    "volume": 0.85,
+    "auto": false
+  },
+  "gargalhada": {
+    "arquivo": "gargalhada.mp3",
+    "nome": "Gargalhada",
+    "categoria": "Reação e comédia",
+    "quando": "Algo hilariante, rir de alguém",
+    "onde": "logo depois",
+    "maxS": 5,
+    "volume": 0.85,
+    "auto": true
+  },
+  "im_trapped": {
+    "arquivo": "im_trapped.mp3",
+    "nome": "I'm trapped",
+    "categoria": "Reação e comédia",
+    "quando": "Sentir-se preso numa situação sem saída",
+    "onde": "na frase",
+    "maxS": 2.8,
+    "volume": 0.85,
+    "auto": true
+  },
+  "batman_triste": {
+    "arquivo": "batman_triste.mp3",
+    "nome": "Batman triste",
+    "categoria": "Tristeza e drama",
+    "quando": "Tristeza dramática exagerada, decepção",
+    "onde": "no começo",
+    "maxS": 7,
+    "volume": 0.85,
+    "auto": true
+  },
+  "katana": {
+    "arquivo": "katana.mp3",
+    "nome": "Katana",
+    "categoria": "Transição",
+    "quando": "Corte rápido, resposta afiada, mudança brusca de cena",
+    "onde": "na palavra",
+    "maxS": 1.7,
+    "volume": 0.85,
+    "auto": true
+  },
+  "leon_morte": {
+    "arquivo": "leon_morte.mp3",
+    "nome": "Morte do Leon (Resident Evil)",
+    "categoria": "Impacto e erro",
+    "quando": "Alguém 'morre' (cómico): leva uma resposta fatal, falha feio",
+    "onde": "no momento",
+    "maxS": 2.3,
+    "volume": 0.85,
+    "auto": true
+  },
+  "libet": {
+    "arquivo": "libet.mp3",
+    "nome": "Libet's Delay (slowed)",
+    "categoria": "Tristeza e drama",
+    "quando": "Reflexão melancólica, uma realização triste, ironia sombria",
+    "onde": "no começo",
+    "maxS": 7.5,
+    "volume": 0.85,
+    "auto": true
+  },
+  "mensagem": {
+    "arquivo": "mensagem.mp3",
+    "nome": "Mensagem (notificação)",
+    "categoria": "Interface e pop-up",
+    "quando": "Chega uma mensagem ou notificação, alguém manda algo",
+    "onde": "no momento",
+    "maxS": 1.1,
+    "volume": 0.85,
+    "auto": true
+  },
+  "misterio": {
+    "arquivo": "misterio.mp3",
+    "nome": "Som misterioso",
+    "categoria": "Suspense e tensão",
+    "quando": "Algo estranho, pergunta intrigante, uma pista",
+    "onde": "antes da revelação",
+    "maxS": 3.5,
+    "volume": 0.85,
+    "auto": true
+  },
+  "netflix": {
+    "arquivo": "netflix.mp3",
+    "nome": "Netflix (tudum)",
+    "categoria": "Transição",
+    "quando": "Começo de uma história, 'o episódio de hoje', apresentação dramática",
+    "onde": "no começo da história",
+    "maxS": 4.5,
+    "volume": 0.85,
+    "auto": true
+  },
+  "obama": {
+    "arquivo": "obama.mp3",
+    "nome": "Obama (meme)",
+    "categoria": "Reação e comédia",
+    "quando": "Só à mão no editor (conteúdo vulgar)",
+    "onde": "",
+    "maxS": 4,
+    "volume": 0.85,
+    "auto": false
+  },
+  "pergunta": {
+    "arquivo": "pergunta.mp3",
+    "nome": "Pergunta",
+    "categoria": "Interface e pop-up",
+    "quando": "Uma pergunta ao público, dúvida",
+    "onde": "na pergunta",
+    "maxS": 3,
+    "volume": 0.85,
+    "auto": true
+  },
+  "real_talk": {
+    "arquivo": "real_talk.mp3",
+    "nome": "Real talk",
+    "categoria": "Trilha de momento",
+    "quando": "Conversa séria: 'agora a sério', a verdade",
+    "onde": "no começo",
+    "maxS": 8,
+    "volume": 0.85,
+    "auto": true
+  },
+  "sax_relax": {
+    "arquivo": "sax_relax.mp3",
+    "nome": "Saxofone relax",
+    "categoria": "Trilha de momento",
+    "quando": "Momento romântico ou suave exagerado, sedução cómica, tranquilidade",
+    "onde": "no começo",
+    "maxS": 7,
+    "volume": 0.85,
+    "auto": true
+  },
+  "rizz_tiktok": {
+    "arquivo": "rizz_tiktok.mp3",
+    "nome": "Rizz (versão TikTok)",
+    "categoria": "Reação e comédia",
+    "quando": "Cantada ou charme, na versão mais longa e musical",
+    "onde": "logo depois",
+    "maxS": 6,
+    "volume": 0.85,
+    "auto": true
+  },
+  "gosling": {
+    "arquivo": "gosling.mp3",
+    "nome": "Ryan Gosling (polegar para cima)",
+    "categoria": "Reação e comédia",
+    "quando": "Mudança de opinião: começou mal e terminou bem",
+    "onde": "na virada",
+    "maxS": 6,
+    "volume": 0.85,
+    "auto": true
+  },
+  "esqueleto": {
+    "arquivo": "esqueleto.mp3",
+    "nome": "Esqueleto no inferno",
+    "categoria": "Reação e comédia",
+    "quando": "Situação infernal, caos total, castigo cómico",
+    "onde": "no começo",
+    "maxS": 8,
+    "volume": 0.85,
+    "auto": true
+  },
+  "selecao": {
+    "arquivo": "selecao.mp3",
+    "nome": "Seleção suave",
+    "categoria": "Interface e pop-up",
+    "quando": "Escolher uma opção, selecionar ou destacar um item",
+    "onde": "no momento",
+    "maxS": 2,
+    "volume": 0.85,
+    "auto": true
+  },
+  "sunrise_war": {
+    "arquivo": "sunrise_war.mp3",
+    "nome": "Sunrise War",
+    "categoria": "Trilha de momento",
+    "quando": "Preparação para uma batalha, desafio épico, motivação",
+    "onde": "no começo",
+    "maxS": 8,
+    "volume": 0.85,
+    "auto": true
+  },
+  "superman": {
+    "arquivo": "superman.mp3",
+    "nome": "Superman (meme)",
+    "categoria": "Trilha de momento",
+    "quando": "Herói inesperado, salvar o dia, alguém exageradamente heroico",
+    "onde": "no começo",
+    "maxS": 8,
+    "volume": 0.85,
+    "auto": true
+  },
+  "dont_know_me": {
+    "arquivo": "dont_know_me.mp3",
+    "nome": "They don't know me, son",
+    "categoria": "Reação e comédia",
+    "quando": "Alguém subestimado que surpreende, confiança",
+    "onde": "logo depois",
+    "maxS": 6.9,
+    "volume": 0.85,
+    "auto": true
+  },
+  "tom_desce": {
+    "arquivo": "tom_desce.mp3",
+    "nome": "Tom a descer",
+    "categoria": "Transição",
+    "quando": "Algo diminui ou cai: preço, nota, energia",
+    "onde": "no momento",
+    "maxS": 3.8,
+    "volume": 0.85,
+    "auto": true
+  },
+  "tom_sobe": {
+    "arquivo": "tom_sobe.mp3",
+    "nome": "Tom a subir",
+    "categoria": "Transição",
+    "quando": "Algo sobe ou cresce: preço, nível, hype, antes de revelar",
+    "onde": "antes da revelação",
+    "maxS": 3.8,
+    "volume": 0.85,
+    "auto": true
+  },
+  "quilometro": {
+    "arquivo": "quilometro.mp3",
+    "nome": "WTF is a kilometre",
+    "categoria": "Reação e comédia",
+    "quando": "Unidades ou números absurdos, comparação EUA contra o resto do mundo",
+    "onde": "logo depois da frase",
+    "maxS": 5,
+    "volume": 0.85,
+    "auto": true
+  },
+  "wake_up": {
+    "arquivo": "wake_up.mp3",
+    "nome": "Wake up to reality",
+    "categoria": "Tristeza e drama",
+    "quando": "Choque de realidade, um sonho que acaba",
+    "onde": "na frase",
+    "maxS": 2.7,
+    "volume": 0.85,
+    "auto": true
+  },
+  "we_dont_care": {
+    "arquivo": "we_dont_care.mp3",
+    "nome": "We do not care",
+    "categoria": "Reação e comédia",
+    "quando": "Algo irrelevante, desdém, 'ninguém quer saber'",
+    "onde": "logo depois",
+    "maxS": 3,
+    "volume": 0.85,
+    "auto": true
+  },
+  "piscadela": {
+    "arquivo": "piscadela.mp3",
+    "nome": "Piscadela",
+    "categoria": "Reação e comédia",
+    "quando": "Cumplicidade, insinuação, um segredo",
+    "onde": "na frase",
+    "maxS": 2.3,
+    "volume": 0.85,
+    "auto": true
+  },
+  "escrever_fogo": {
+    "arquivo": "escrever_fogo.mp3",
+    "nome": "Escrever com fogo",
+    "categoria": "Reação e comédia",
+    "quando": "Anotar algo com determinação intensa, decisão tomada",
+    "onde": "no começo",
+    "maxS": 6,
+    "volume": 0.85,
+    "auto": true
+  },
+  "yoshi": {
+    "arquivo": "yoshi.mp3",
+    "nome": "Yoshi (mlem)",
+    "categoria": "Reação e comédia",
+    "quando": "Comer, engolir algo, gula",
+    "onde": "no momento",
+    "maxS": 2.1,
+    "volume": 0.85,
+    "auto": true
+  },
+  "you_died": {
+    "arquivo": "you_died.mp3",
+    "nome": "You died (game over)",
+    "categoria": "Impacto e erro",
+    "quando": "Fracasso total, game over, morte cómica",
+    "onde": "logo depois da falha",
+    "maxS": 6,
+    "volume": 0.85,
+    "auto": true
+  },
+  "amarillo": {
+    "arquivo": "amarillo.mp3",
+    "nome": "Amarillo plátano",
+    "categoria": "Reação e comédia",
+    "quando": "Nonsense, algo tolo e absurdo",
+    "onde": "no começo",
+    "maxS": 4.9,
+    "volume": 0.85,
+    "auto": true
+  },
+  "nokia_arabe": {
+    "arquivo": "nokia_arabe.mp3",
+    "nome": "Nokia árabe",
+    "categoria": "Reação e comédia",
+    "quando": "Toque de telemóvel antigo, chamada inesperada",
+    "onde": "no momento",
+    "maxS": 6,
+    "volume": 0.85,
+    "auto": true
+  },
+  "bacon_burger": {
+    "arquivo": "bacon_burger.mp3",
+    "nome": "Barbecue bacon burger",
+    "categoria": "Reação e comédia",
+    "quando": "Comida, fome, gula exagerada",
+    "onde": "na frase da comida",
+    "maxS": 6,
+    "volume": 0.85,
+    "auto": true
+  },
+  "certo": {
+    "arquivo": "certo.mp3",
+    "nome": "Resposta certa",
+    "categoria": "Interface e pop-up",
+    "quando": "Acerto, resposta correta",
+    "onde": "na palavra",
+    "maxS": 1.1,
+    "volume": 0.85,
+    "auto": true
+  },
+  "risos_plateia": {
+    "arquivo": "risos_plateia.mp3",
+    "nome": "Risos de plateia",
+    "categoria": "Reação e comédia",
+    "quando": "Depois de uma piada ou situação ridícula (como numa sitcom)",
+    "onde": "logo depois",
+    "maxS": 5,
+    "volume": 0.85,
+    "auto": true
+  },
+  "flauta_feliz": {
+    "arquivo": "flauta_feliz.mp3",
+    "nome": "Flauta feliz",
+    "categoria": "Trilha de momento",
+    "quando": "Alegria ingénua, tudo corre bem demais (ironia)",
+    "onde": "no começo",
+    "maxS": 7,
+    "volume": 0.85,
+    "auto": true
+  },
+  "guitarra": {
+    "arquivo": "guitarra.mp3",
+    "nome": "Riff de guitarra",
+    "categoria": "Transição",
+    "quando": "Entrada estilosa, revelar algo fixe",
+    "onde": "na entrada",
+    "maxS": 1.6,
+    "volume": 0.85,
+    "auto": true
+  },
+  "frigideira": {
+    "arquivo": "frigideira.mp3",
+    "nome": "Frigideira (PUBG)",
+    "categoria": "Impacto e erro",
+    "quando": "Golpe, pancada, levar com uma resposta",
+    "onde": "no impacto",
+    "maxS": 1.2,
+    "volume": 0.85,
+    "auto": true
+  },
+  "atirar_fora": {
+    "arquivo": "atirar_fora.mp3",
+    "nome": "Atirar fora",
+    "categoria": "Interface e pop-up",
+    "quando": "Descartar algo, ideia rejeitada, deitar ao lixo",
+    "onde": "no momento",
+    "maxS": 1.2,
+    "volume": 0.85,
+    "auto": true
+  },
+  "trovao": {
+    "arquivo": "trovao.mp3",
+    "nome": "Trovão",
+    "categoria": "Ambiente e clima",
+    "quando": "Revelação sombria, ameaça, tempestade, momento dramático",
+    "onde": "na revelação",
+    "maxS": 5,
+    "volume": 0.85,
+    "auto": true
+  },
+  "quarto_hotel": {
+    "arquivo": "quarto_hotel.mp3",
+    "nome": "Quarto de Hotel (speed up)",
+    "categoria": "Trilha de momento",
+    "quando": "Descontração, vibe relax e engraçada",
+    "onde": "no começo",
+    "maxS": 7,
+    "volume": 0.85,
+    "auto": true
+  }
+}

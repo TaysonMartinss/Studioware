@@ -16,7 +16,7 @@ export const Objeto3D: React.FC<{ arquivo: string; style?: React.CSSProperties }
   const [tam, setTam] = useState<[number, number] | null>(null);
   const [espera] = useState(() => delayRender("medir o espaço do modelo 3D"));
   const f = useCurrentFrame();
-  const { width: L, height: A } = useVideoConfig();
+  const { width: L, height: A, fps } = useVideoConfig();
   const e = useEstilo();
 
   // o canvas precisa do tamanho em píxeis: mede o contentor (offsetWidth ignora as transformações de animação)
@@ -48,7 +48,8 @@ export const Objeto3D: React.FC<{ arquivo: string; style?: React.CSSProperties }
     const aspeto = tam[0] / tam[1];
     distancia = (TAMANHO * 1.25) / 0.8 / (2 * Math.tan((FOV * Math.PI) / 360) * Math.min(1, aspeto));
   }
-  const rotY = -0.6 + f * 0.012;
+  // o objeto fica em pé e dá uma volta inteira (360°) a cada 4,5 s, para mostrar todos os lados
+  const rotY = -0.6 + (f / (fps * 4.5)) * Math.PI * 2;
   const flutuar = Math.sin(f / 24) * 0.05;
 
   return (

@@ -17,7 +17,7 @@ export function criarCortes({ raiz, claudeJSON, guardarProcesso }) {
     const p = spawn(process.execPath, ["scripts/transcrever_longo.mjs", join("public", arquivo), saida], { cwd: raiz, stdio: ["ignore", "pipe", "pipe"] });
     guardarProcesso?.(t, p);
     let erro = "";
-    p.stdout.on("data", (d) => { const l = String(d).trim().split(/\r?\n/).pop(); if (l) t.passo = `🎧 ${l}`; });
+    p.stdout.on("data", (d) => { const l = String(d).trim().split(/\r?\n/).pop(); if (l) t.passo = l; });
     p.stderr.on("data", (d) => { erro += d; });
     p.on("close", (code) => (code === 0 ? ok(JSON.parse(readFileSync(saida, "utf-8"))) : falha(new Error(`A transcrição falhou: ${erro.slice(-300)}`))));
   });
@@ -67,7 +67,7 @@ export function criarCortes({ raiz, claudeJSON, guardarProcesso }) {
     const arquivo = d.arquivo;
     if (!/^uploads\/[\w.-]+$/.test(arquivo ?? "") || !existsSync(join(raiz, "public", arquivo))) throw new Error("Vídeo não encontrado");
     mkdirSync(pasta(arquivo), { recursive: true });
-    t.passo = "🎧 Transcrevendo o vídeo (a primeira vez demora)…";
+    t.passo = "Transcrevendo o vídeo (a primeira vez demora)…";
     const tr = await transcrever(t, arquivo);
     if (t.cancelado) throw new Error("Parado por si");
     if (tr.duracao < 45) throw new Error(`O vídeo tem só ${Math.round(tr.duracao)} s: é curto para cortes (use o modo de clipe normal)`);
@@ -90,7 +90,7 @@ export function criarCortes({ raiz, claudeJSON, guardarProcesso }) {
     const notas = [];
     for (let k = 0; k < js.length; k += 30) {
       const lote = js.slice(k, k + 30);
-      t.passo = `🤖 Pontuando os momentos (${Math.min(k + 30, js.length)}/${js.length})…`;
+      t.passo = `Pontuando os momentos (${Math.min(k + 30, js.length)}/${js.length})…`;
       const r = await claudeJSON(t, guia, [
         "FASE: pontuar janelas.",
         `IDIOMA: ${tr.idioma}. DURAÇÃO DO VÍDEO: ${Math.round(tr.duracao)} s.`,
@@ -108,7 +108,7 @@ export function criarCortes({ raiz, claudeJSON, guardarProcesso }) {
     // fase 2: detalhar os cortes das melhores janelas
     const quantos = Number(d.quantidade) || 0;
     const minC = quantos || Math.min(3, curta.length * 2), maxC = quantos || Math.min(12, curta.length * 2);
-    t.passo = `🤖 Escolhendo os cortes em ${curta.length} momentos…`;
+    t.passo = `Escolhendo os cortes em ${curta.length} momentos…`;
     const r = await claudeJSON(t, guia, [
       "FASE: detalhar os cortes.",
       `IDIOMA: ${tr.idioma}. DURAÇÃO DO VÍDEO: ${Math.round(tr.duracao)} s.`,

@@ -5,8 +5,12 @@ Fontes:
   wikimedia  fotos livres do Wikimedia Commons (consoles antigos, hardware, eventos, pessoas)
   pixabay    fotos e vídeos de stock (precisa de PIXABAY_API_KEY no .env; grátis em pixabay.com/api/docs)
   pexels     nome antigo do stock: os roteiros antigos passam a usar o Pixabay (o Pexels só se ainda houver chave)
-  url        link direto para uma imagem, um vídeo ou um modelo 3D .glb (ex.: foto oficial do fabricante)
+  url        link direto para uma imagem, um vídeo ou um modelo 3D .glb, ou link de YouTube/Instagram/TikTok/X
+             (baixado pelo yt-dlp: 40 s a partir do ?t= do link)
   sketchfab  modelo 3D a girar como mídia de qualquer cena (consulta = termo em inglês ou uid:XXXX; só licenças comerciais)
+  anatomia   modelo 3D de saúde já no projeto: coração, cérebro, órgãos, esqueleto, corpo, DNA... (modelo = id do catálogo)
+  emoji      material 2D: emoji 3D da Microsoft com fundo transparente (consulta = "brain", "light bulb", "lâmpada"...)
+  cs2        skin ou faca do Counter-Strike 2 com fundo transparente (consulta = "AK-47 | Redline", "Karambit Doppler")
   procedural modelo 3D desenhado pelo estúdio, sem ficheiro (consulta = gpu | cpu | ram | ssd)
   arquivo    ficheiro que já está em public/ (consulta = caminho; .glb vira modelo 3D)
 
@@ -14,6 +18,9 @@ Uso: python scripts/buscar_midia.py roteiros/x.json [--cena N] [--forcar]
 """
 import json
 import os
+import re
+import shutil
+import subprocess
 import sys
 import urllib.parse
 import urllib.request
@@ -171,7 +178,138 @@ def de_stock(m):
     return de_pexels(m)
 
 
-FONTES = {"steam": de_steam, "wikimedia": de_wikimedia, "pixabay": de_pixabay, "pexels": de_stock, "url": lambda m: (m["consulta"], None, {})}
+# Emojis 3D da Microsoft (Fluent Emoji, licença MIT): imagens isoladas com fundo transparente, boas como material 2D
+# (cérebro, lâmpada acesa, faca, coração, comprimido...). consulta = nome em inglês do emoji ("brain", "light bulb")
+# ou um dos nomes em português abaixo.
+EMOJI_PT = {
+    "cérebro": "brain", "cerebro": "brain", "lâmpada": "light bulb", "lampada": "light bulb", "ideia": "light bulb", "faca": "kitchen knife",
+    "punhal": "dagger", "coração": "anatomical heart", "coracao": "anatomical heart", "pulmões": "lungs", "pulmoes": "lungs", "osso": "bone",
+    "dente": "tooth", "comprimido": "pill", "remédio": "pill", "seringa": "syringe", "vacina": "syringe", "dna": "dna", "vírus": "microbe",
+    "virus": "microbe", "bactéria": "microbe", "sangue": "drop of blood", "estetoscópio": "stethoscope", "raio x": "x-ray", "olho": "eye",
+    "músculo": "flexed biceps", "musculo": "flexed biceps", "hospital": "hospital", "termómetro": "thermometer", "termometro": "thermometer",
+    "fogo": "fire", "dinheiro": "money bag", "troféu": "trophy", "trofeu": "trophy", "foguete": "rocket", "alerta": "warning", "relógio": "alarm clock",
+    "gin": "cocktail glass", "drink": "cocktail glass", "dose": "tumbler glass", "copo": "tumbler glass", "brinde": "clinking glasses",
+    "bêbado": "woozy face", "bebado": "woozy face", "ressaca": "face with spiral eyes", "tontura": "face with spiral eyes", "enjoo": "nauseated face",
+    "vómito": "face vomiting", "vomito": "face vomiting", "gelo": "ice", "limão": "lemon", "limao": "lemon", "vinho": "wine glass",
+    "calendário": "calendar", "calendario": "calendar", "ambulância": "ambulance", "ambulancia": "ambulance", "proibido": "prohibited",
+    "maçã": "red apple", "maca": "red apple", "água": "droplet", "agua": "droplet", "sono": "zzz", "cama": "bed", "caveira": "skull",
+}
+
+
+def de_emoji(m):
+    nome = (m.get("consulta") or "").strip().lower()
+    nome = EMOJI_PT.get(nome, nome)
+    pasta = urllib.parse.quote(nome[:1].upper() + nome[1:])
+    base = "_".join(nome.replace("-", " ").split())
+    raiz = "https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets"
+    # os emojis com tom de pele têm uma pasta "Default" pelo meio
+    for url in (f"{raiz}/{pasta}/3D/{base}_3d.png", f"{raiz}/{pasta}/Default/3D/{base}_3d_default.png"):
+        try:
+            with urllib.request.urlopen(urllib.request.Request(url, method="HEAD", headers={"User-Agent": UA}), timeout=20):
+                return url, None, {}
+        except Exception:
+            continue
+    raise LookupError(f"emoji não encontrado: {m.get('consulta')} (use o nome em inglês do Fluent Emoji, ex. 'brain', 'light bulb')")
+
+
+# Skins e facas do Counter-Strike 2: catálogo aberto do CSGO-API (github.com/ByMykel/CSGO-API, MIT) com as imagens
+# oficiais da Steam (PNG transparente). consulta = nome da skin ("AK-47 | Redline", "Karambit Doppler"). As imagens
+# são da Valve: servem para os vídeos do canal (política de vídeo da Valve), não entram no git.
+CS2_CACHE = Path("out/cache/cs2-skins.json")
+
+
+def cs2_catalogo():
+    import time
+    if not CS2_CACHE.exists() or time.time() - CS2_CACHE.stat().st_mtime > 7 * 86400:
+        CS2_CACHE.parent.mkdir(parents=True, exist_ok=True)
+        req = urllib.request.Request("https://raw.githubusercontent.com/ByMykel/CSGO-API/main/public/api/en/skins.json", headers={"User-Agent": UA})
+        with urllib.request.urlopen(req, timeout=60) as r:
+            CS2_CACHE.write_bytes(r.read())
+    return json.loads(CS2_CACHE.read_text(encoding="utf-8"))
+
+
+def de_cs2(m):
+    pedido = (m.get("consulta") or "").lower().replace("★", "").replace("|", " ")
+    termos = pedido.split()
+    if not termos:
+        raise LookupError("diga o nome da skin (ex.: 'AK-47 | Redline')")
+    def pontos(s):
+        nome = s["name"].lower().replace("★", "").replace("|", " ")
+        exato = " ".join(nome.split()) == " ".join(termos)
+        return (exato, sum(t in nome.split() or t in nome for t in termos), -len(nome))
+    melhor = max(cs2_catalogo(), key=pontos)
+    if pontos(melhor)[1] < max(1, len(termos) - 1):
+        raise LookupError(f"skin não encontrada: {m.get('consulta')}")
+    m["nome"] = melhor["name"]
+    return melhor["image"], None, {"raridade": (melhor.get("rarity") or {}).get("name"), "corRaridade": (melhor.get("rarity") or {}).get("color")}
+
+
+# Anatomia e saúde em 3D (python scripts/baixar_anatomia.py): modelo = id do catálogo ou uma palavra ("coração", "ossos")
+def de_anatomia(m):
+    caminho = Path("src/lowpoly/anatomia.json")
+    catalogo = json.loads(caminho.read_text(encoding="utf-8")) if caminho.exists() else {}
+    import unicodedata
+    sem = lambda s: "".join(c for c in unicodedata.normalize("NFD", s.lower()) if unicodedata.category(c) != "Mn")
+    pedido = sem((m.get("modelo") or m.get("consulta") or "").strip())
+    # o id exato, ou o modelo com mais palavras em comum (nome e etiquetas, sem acentos); sem nenhuma em comum é erro
+    # (antes caía no primeiro do catálogo, o coração, para qualquer palavra desconhecida)
+    pontos = lambda k: sum(t in sem(" ".join([k, catalogo[k]["nome"], *catalogo[k]["tags"]])) for t in pedido.split())
+    chave = pedido if pedido in catalogo else max(catalogo, key=pontos, default=None)
+    if chave and chave != pedido and pontos(chave) == 0:
+        chave = None
+    if not chave or not pedido or not (Path("public") / catalogo[chave]["arquivo"]).exists():
+        raise LookupError(f"modelo de anatomia não encontrado: {pedido} (há: {', '.join(catalogo)})")
+    m["arquivo"], m["formato"], m["credito"] = catalogo[chave]["arquivo"], "modelo3d", catalogo[chave]["credito"]
+
+
+# Link de uma rede (YouTube, Instagram, TikTok, X, Facebook): o vídeo é baixado pelo yt-dlp, o mesmo dos cortes.
+# Só a imagem (o b-roll é mudo) e só um trecho: a partir do tempo do link (?t=90, ?t=1m30s) ou do início.
+REDES = re.compile(r"^https?://(?:[\w-]+\.)*(?:youtube\.com|youtu\.be|instagram\.com|tiktok\.com|x\.com|twitter\.com|facebook\.com|fb\.watch)/", re.I)
+TRECHO_S = 40
+
+
+def inicio_do_link(url):
+    t = (urllib.parse.parse_qs(urllib.parse.urlparse(url).query).get("t") or urllib.parse.parse_qs(urllib.parse.urlparse(url).query).get("start") or ["0"])[0]
+    if t.isdigit():
+        return int(t)
+    p = re.fullmatch(r"(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?", t)
+    return (int(p[1] or 0) * 3600 + int(p[2] or 0) * 60 + int(p[3] or 0)) if p else 0
+
+
+def de_rede(url, destino_sem_ext):
+    inicio = inicio_do_link(url)
+    ffmpeg = Path("node_modules/@remotion/compositor-win32-x64-msvc")
+    node = shutil.which("node")
+    cmd = [sys.executable, "-m", "yt_dlp", url,
+           "-f", "bv*[height<=1080][ext=mp4]/b[height<=1080][ext=mp4]/bv*[height<=1080]/b",
+           "--no-playlist", "--force-overwrites", "--quiet", "--no-warnings",
+           "--download-sections", f"*{inicio}-{inicio + TRECHO_S}", "--remux-video", "mp4",
+           "--print", "after_move:DURACAO %(duration)s", "-o", str(destino_sem_ext) + ".%(ext)s"]
+    if node:
+        cmd += ["--js-runtimes", f"node:{node}"]
+    if (ffmpeg / "ffmpeg.exe").exists():
+        cmd += ["--ffmpeg-location", str(ffmpeg)]
+    try:
+        r = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=300)
+    except FileNotFoundError:
+        raise RuntimeError("yt-dlp não instalado (python -m pip install --user yt-dlp)")
+    destino = destino_sem_ext.with_suffix(".mp4")
+    if r.returncode != 0 or not destino.exists():
+        msg = next((l for l in reversed(r.stderr.splitlines()) if l.startswith("ERROR")), r.stderr.strip().splitlines()[-1] if r.stderr.strip() else "")
+        if "instagram" in url and re.search(r"login|log in|rate-limit|private", msg, re.I):
+            raise RuntimeError("o Instagram pediu sessão iniciada para este vídeo (privado ou limite de pedidos); baixe-o e envie o ficheiro")
+        raise RuntimeError(msg.replace("ERROR: ", "")[:200] or "o site não deixou baixar")
+    total = next((float(l.split()[1]) for l in r.stdout.splitlines() if l.startswith("DURACAO ") and l.split()[1].replace(".", "").isdigit()), None)
+    return destino, max(1.0, min(TRECHO_S, total - inicio)) if total else TRECHO_S
+
+
+def credito_rede(url):
+    host = urllib.parse.urlparse(url).hostname or ""
+    nome = next((n for d, n in (("youtu", "YouTube"), ("instagram", "Instagram"), ("tiktok", "TikTok"), ("x.com", "X"), ("twitter", "X"), ("fb.", "Facebook"), ("facebook", "Facebook")) if d in host), host)
+    return f"Vídeo: {nome}"
+
+
+FONTES = {"steam": de_steam, "wikimedia": de_wikimedia, "pixabay": de_pixabay, "pexels": de_stock, "emoji": de_emoji, "cs2": de_cs2, "url": lambda m: (m["consulta"], None, {})}
 FORMATOS_3D = ("sketchfab", "procedural")
 PROCEDURAIS = ("gpu", "cpu", "ram", "ssd")
 
@@ -199,6 +337,8 @@ def resolver(m, pasta, i, vid):
         m.pop(campo, None)
     if m["fonte"] == "polyhaven":
         return de_polyhaven(m)
+    if m["fonte"] == "anatomia":
+        return de_anatomia(m)
     if e_modelo(m):
         # modelo 3D como mídia: o Remotion desenha-o a girar no lugar da foto ou do vídeo
         if m["fonte"] == "procedural":
@@ -216,10 +356,13 @@ def resolver(m, pasta, i, vid):
         m["arquivo"] = m["consulta"]
         m["formato"] = "video" if caminho.suffix.lower() in (".mp4", ".webm", ".mov") else "imagem"
         return
-    url, credito, extra = FONTES[m["fonte"]](m)
     for antigo in pasta.glob(f"midia-{i}.*"):
         antigo.unlink()
-    if url.startswith("hls:"):
+    url, credito, extra = FONTES[m["fonte"]](m)
+    if m["fonte"] == "url" and REDES.match(url.strip()):
+        destino, extra["duracaoS"] = de_rede(url.strip(), pasta / f"midia-{i}")
+        formato, credito = "video", credito_rede(url)
+    elif url.startswith("hls:"):
         destino, extra["duracaoS"] = descarregar_hls(url[4:], pasta / f"midia-{i}")
         formato = "video"
     else:
@@ -261,7 +404,9 @@ def sketchfab_descarregar(m, pasta, i, vid):
     if consulta.startswith("uid:"):
         uid = consulta[4:]
         info = get_json(f"https://api.sketchfab.com/v3/models/{uid}")
-        escolhido = {"uid": uid, "nome": info["name"], "autor": info["user"]["displayName"], "licenca": (info.get("license") or {}).get("label", ""), "url": info.get("viewerUrl")}
+        imagens = sorted((info.get("thumbnails") or {}).get("images", []), key=lambda im: abs(im.get("width", 0) - 360))
+        escolhido = {"uid": uid, "nome": info["name"], "autor": info["user"]["displayName"], "licenca": (info.get("license") or {}).get("label", ""), "url": info.get("viewerUrl"),
+                     "thumb": imagens[0]["url"] if imagens else None}
         if any(x in escolhido["licenca"] for x in LICENCAS_NAO):
             raise ValueError(f"licença '{escolhido['licenca']}' não permite uso comercial")
     else:
@@ -299,6 +444,10 @@ def resolver_modelo(m, pasta, i, vid):
         return
     if m["fonte"] == "sketchfab":
         return sketchfab_descarregar(m, pasta, i, vid)
+    if m["fonte"] == "anatomia":
+        return de_anatomia(m)
+    if m["fonte"] == "polyhaven":
+        return de_polyhaven(m)
     req = urllib.request.Request(m["consulta"], headers={"User-Agent": UA})
     with urllib.request.urlopen(req, timeout=120) as r:
         dados = r.read(80 * 2**20 + 1)
@@ -345,6 +494,10 @@ def main():
             except Exception as e:  # sem ficheiro, a cena usa o modelo procedural
                 print(f"  ⚠ cena {i + 1}: sem modelo 3D ({modelo.get('consulta')}): {e}")
         for nome, m in midias:
+            # ícone (estilo Editorial): desenhado pelo estúdio, não há nada para descarregar
+            if m and m.get("fonte") == "icone":
+                m["arquivo"], m["formato"] = f"icone:{m.get('consulta') or m.get('nome') or 'circle'}", "icone"
+                continue
             if not m or (not forcar and m.get("arquivo") and (Path("public") / m["arquivo"]).exists()):
                 continue
             try:

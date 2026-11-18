@@ -62,7 +62,13 @@ const objeto = (() => {
   for (const c of r.cenas) if (c.midia?.formato === "modelo3d" && existe(c.midia)) return { arquivo: c.midia.arquivo, formato: "modelo3d" };
   for (const c of r.cenas) if (c.tipo === "modelo3d") return { arquivo: c.modelo?.arquivo && existsSync(`public/${c.modelo.arquivo}`) ? c.modelo.arquivo : `procedural:${c.procedural ?? "gpu"}`, formato: "modelo3d" };
   const hw = r.cenas.find((c) => c.tipo === "produto" && ["gpu", "cpu", "ram", "ssd"].includes(c.icone));
-  return hw ? { arquivo: `procedural:${hw.icone}`, formato: "modelo3d" } : undefined;
+  if (hw) return { arquivo: `procedural:${hw.icone}`, formato: "modelo3d" };
+  // sem 3D: o ícone ou a imagem de objeto isolado de uma cena editorial
+  for (const c of r.cenas) for (const o of [c.objeto, ...(c.broll ?? []).map((b) => b.cena?.objeto)]) {
+    if (o?.arquivo?.startsWith("icone:")) return { arquivo: o.arquivo, formato: "icone" };
+    if (o?.formato === "imagem" && existe(o)) return { arquivo: o.arquivo, formato: "imagem" };
+  }
+  return undefined;
 })();
 
 const anterior = existsSync(`out/capas/${id}.json`) ? JSON.parse(readFileSync(`out/capas/${id}.json`, "utf-8")) : {};

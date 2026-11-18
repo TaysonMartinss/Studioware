@@ -9,7 +9,8 @@ Recebe o roteiro de um vídeo já feito e devolve o texto pronto a colar em cada
 - **curiosidade**: lacuna de curiosidade ou emoção, sem mentir ("A placa que a NVIDIA não quer que você compre").
 - **misto**: a palavra-chave dentro de uma frase com curiosidade.
 - Shorts: 20 a 40 caracteres (o feed corta a partir de uns 40). Vídeo longo: até 70 caracteres, palavra-chave nos primeiros 40.
-- Números ajudam ("3", "R$ 2 mil", "2026"). Sem MAIÚSCULAS em tudo, sem emojis em excesso (no máximo 1).
+- **Os títulos são sempre escritos todos em CAIXA ALTA** (ex.: "A PLACA QUE A NVIDIA NÃO QUER QUE VOCÊ COMPRE"), com os acentos.
+- Números ajudam ("3", "R$ 2 MIL", "2026"). Sem emojis em excesso (no máximo 1).
 
 ## YouTube
 - **Descrição**: as 2 primeiras linhas (uns 125 caracteres) são o anúncio. Palavra-chave nas primeiras 25 palavras.
@@ -21,7 +22,12 @@ Recebe o roteiro de um vídeo já feito e devolve o texto pronto a colar em cada
 
 ## TikTok e Instagram Reels
 - **Legenda**: 1 a 2 frases com gancho e uma pergunta que puxe comentários, mais 3 a 5 hashtags do nicho (#games, #hardware, #pcgamer, #curiosidades...).
+- **Instagram**: a primeira linha (o gancho) cabe em 125 caracteres, que é o que o feed mostra antes do "… mais"; as hashtags vão no fim e são **no máximo 5** (o Instagram não aceita mais desde dezembro de 2025). Sem caracteres invisíveis nem travessões longos.
 - Sem marca d'água de outras plataformas (o vídeo já tem a do canal).
+
+## Facebook (Reels e publicação na página)
+- **Legenda**: 2 a 3 frases num tom mais de conversa do que no TikTok (o público do Facebook é mais velho e partilha mais): o gancho, uma frase com o contexto e uma pergunta ou um convite a partilhar ("marca quem precisa ver isto").
+- 2 a 4 hashtags no fim (no Facebook valem pouco; mais do que isso parece spam).
 
 ## Comentário fixado
 - Uma pergunta que gera respostas ou uma informação extra (fonte, preço com data, "parte 2?"). Até 2 frases.
@@ -38,6 +44,7 @@ Responda **só com JSON válido**, sem texto antes nem depois:
   "youtube": {"descricao": "...", "tags": ["..."], "hashtags": ["#..."]},
   "tiktok": {"legenda": "...", "hashtags": ["#..."]},
   "instagram": {"legenda": "...", "hashtags": ["#..."]},
+  "facebook": {"legenda": "...", "hashtags": ["#..."]},
   "comentario_fixado": "...",
   "capa": {"texto": "...", "conceito": "..."}
 }

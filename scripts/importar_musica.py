@@ -20,7 +20,7 @@ from pathlib import Path
 import numpy as np
 
 SR = 22050
-CLIMAS = ["energetica", "tensa", "ambiente", "synthwave", "lofi"]
+CLIMAS = ["energetica", "tensa", "ambiente", "synthwave", "lofi", "cinematica", "emocional", "melancolica", "motivacional", "trap", "estetica", "comedia", "meme", "humor_negro", "gaming"]
 CATALOGO = Path("public/musicas/catalogo.json")
 
 

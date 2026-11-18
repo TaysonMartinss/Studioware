@@ -25,10 +25,15 @@ import { DegrauPodio, ALTURA_PODIO } from "./F1";
 import { Bolsa } from "./Financas";
 import { EstudioJogos } from "./Gamedev";
 import { BoutiqueLuxo, OficinaRelojoaria } from "./Relojoaria";
+import { Balada, Lounge, SOFA_LOUNGE_Z } from "./Noite";
+import { BanheiroBalada, Carnaval } from "./Carnaval";
+import { RuaSP } from "./SaoPaulo";
+import { CAMA_Z, Consultorio, Poltrona, QuartoEscuro } from "./Vicio";
+import { Brasilia, Plenario, Supermercado } from "./Politica";
 
 // interiores (fundo próprio, sem céu) e a cor de fundo de cada um
 const INTERIORES: Partial<Record<CenaLowPoly["cenario"], string>> = {
-  quarto: "#141722", laboratorio: "#dfe6ec", abrigo: "#2a2622", sala_aula: "#efe6cf", sala_estar: "#2a2420", hospital: "#dceeea", nave: "#05070d", fundo_mar: "#0b4a6e", bolsa: "#151b28", estudio_jogos: "#1b1d27", oficina_relojoaria: "#f3f3ef", boutique_luxo: "#123d2c",
+  quarto: "#141722", laboratorio: "#dfe6ec", abrigo: "#2a2622", sala_aula: "#efe6cf", sala_estar: "#2a2420", hospital: "#dceeea", nave: "#05070d", fundo_mar: "#0b4a6e", bolsa: "#151b28", estudio_jogos: "#1b1d27", oficina_relojoaria: "#f3f3ef", boutique_luxo: "#123d2c", balada: "#07060c", lounge: "#1a0d15", banheiro_balada: "#0b0d12", carnaval: "#170b2e", quarto_escuro: "#07080d", consultorio: "#e3d9c6", plenario: "#2a2218", supermercado: "#eef0ea",
 };
 import { clamp01, esfera, lerp, mat, suave } from "./util";
 import { etapaTinta } from "../components/Aquarela";
@@ -37,7 +42,7 @@ import { etapaTinta } from "../components/Aquarela";
 // para onde vão e para quem olham) e o plano de câmara; esta cena calcula tudo frame a frame. Nada é desenhado
 // à mão por vídeo. Funciona em vertical (9:16) e no vídeo longo (16:9): o enquadramento adapta-se.
 
-const SENTADO: Acao[] = ["sentar", "digitar"];
+const SENTADO: Acao[] = ["sentar", "digitar", "beber_sentado", "celular_sentado", "cabeca_nas_maos"];
 const LOOP: Acao[] = ["andar", "correr"];
 
 type Estado = { x: number; z: number; rotY: number; acao: Acao; tAcao: number; sentado: boolean };
@@ -216,7 +221,7 @@ export const LowPolyCena: React.FC<{ cena: CenaLowPoly; cor: string; semTexto?: 
       estadio: [0, 2.2, -8, 13], cidade: [0, 5, -10, 17], quarto: [0, 1.3, -1.5, 3.6], natureza: [0, 7, -35, 32], planeta: [0, 0, 0, raioPlaneta * (cena.variante === "saturno" ? 5.2 : 3.3)],
       espaco: [0, 0, 0, 10], laboratorio: [0, 1.4, -1.6, 3.4], estudio: [0, 1.2, 0, 4],
       fundo_mar: [0, 2.5, -9, 9], pre_historia: [0, 2.8, -9, 11], corrida: [0, 1.5, -5, 7], sala_aula: [0, 1.5, -1.6, 3.6],
-      sala_estar: [0, 1.2, -1.4, 3.4], hospital: [1, 1.3, -1.4, 3.6], nave: [0, 1.7, -2, 4.2], planeta_alien: [0, 3, -10, 12], abrigo: [0, 1.3, -1.4, 3.6], bolsa: [0, 2.0, -2.2, 4.6], estudio_jogos: [0, 1.6, -1.6, 3.8], oficina_relojoaria: [0, 1.6, -1.6, 3.8], boutique_luxo: [0, 1.6, -1.6, 3.8],
+      sala_estar: [0, 1.2, -1.4, 3.4], hospital: [1, 1.3, -1.4, 3.6], nave: [0, 1.7, -2, 4.2], planeta_alien: [0, 3, -10, 12], abrigo: [0, 1.3, -1.4, 3.6], bolsa: [0, 2.0, -2.2, 4.6], estudio_jogos: [0, 1.6, -1.6, 3.8], oficina_relojoaria: [0, 1.6, -1.6, 3.8], boutique_luxo: [0, 1.6, -1.6, 3.8], balada: [0, 1.6, -1.2, 4.4], lounge: [0, 1.2, -1.3, 3.5], banheiro_balada: [0, 1.4, -0.6, 3.6], carnaval: [0, 1.6, -1.0, 4.6], rua_sp: [0, 1.7, -1.4, 6], quarto_escuro: [0, 1.15, -0.9, 3.4], consultorio: [0, 1.3, -1.2, 3.6], brasilia: [0, 6, -30, 26], plenario: [0, 2.0, -2.5, 6.5], supermercado: [0, 1.5, -1.5, 4],
     };
     const [x, y, z, h] = padrao[cena.cenario] ?? padrao.estadio;
     alvo.set(x, y, z); H = h; W = planeta ? h * 0.95 : h * 0.8; inclina = planeta ? 0 : 0.16;
@@ -290,6 +295,16 @@ export const LowPolyCena: React.FC<{ cena: CenaLowPoly; cor: string; semTexto?: 
         {cena.cenario === "abrigo" && <Abrigo t={t} />}
         {cena.cenario === "oficina_relojoaria" && <OficinaRelojoaria t={t} cor={cor} />}
         {cena.cenario === "boutique_luxo" && <BoutiqueLuxo t={t} />}
+        {cena.cenario === "balada" && <Balada t={t} cor={cor} cor2={cor2Estilo} />}
+        {cena.cenario === "lounge" && <Lounge t={t} cor={cor} cor2={cor2Estilo} />}
+        {cena.cenario === "banheiro_balada" && <BanheiroBalada t={t} cor={cor} cor2={cor2Estilo} />}
+        {cena.cenario === "carnaval" && <Carnaval t={t} cor={cor} cor2={cor2Estilo} />}
+        {cena.cenario === "rua_sp" && <RuaSP hora={hora} t={t} />}
+        {cena.cenario === "quarto_escuro" && <QuartoEscuro t={t} manha={variante === "manha"} cor={cor} />}
+        {cena.cenario === "consultorio" && <Consultorio t={t} hora={hora} cor={cor2Estilo} />}
+        {cena.cenario === "brasilia" && <Brasilia hora={hora} t={t} protesto={variante === "protesto"} />}
+        {cena.cenario === "plenario" && <Plenario t={t} votacao={variante !== "sem_votacao"} />}
+        {cena.cenario === "supermercado" && <Supermercado t={t} />}
         {cena.cenario === "estudio_jogos" && <EstudioJogos t={t} cor={cor} cor2={cor2Estilo} />}
         {cena.cenario === "bolsa" && <Bolsa t={t} variante={variante} cor={cor} />}
         {cena.cenario === "planeta_alien" && <PlanetaAlien t={t} />}
@@ -301,12 +316,13 @@ export const LowPolyCena: React.FC<{ cena: CenaLowPoly; cor: string; semTexto?: 
           const expressao = p.expressao ?? EXPRESSAO_DA_ACAO[acao] ?? (p.acao ? EXPRESSAO_DA_ACAO[p.acao as Acao] : undefined) ?? "neutro";
           const visual = p.visual ?? (planeta || espaco ? "astronauta" : cena.cenario === "estadio" ? "jogador" : cena.cenario === "quarto" ? "gamer" : cena.cenario === "laboratorio" ? "cientista" : cena.cenario === "fundo_mar" ? "mergulhador" : cena.cenario === "hospital" ? "medico" : cena.cenario === "nave" ? "astronauta" : cena.cenario === "planeta_alien" ? "alienigena" : cena.cenario === "bolsa" ? "executivo" : cena.cenario === "estudio_jogos" ? "gamer" : cena.cenario === "oficina_relojoaria" ? "relojoeiro" : cena.cenario === "boutique_luxo" ? "executivo" : cena.cenario === "corrida" ? (variante === "boxes" && i > 0 ? "mecanico" : "piloto") : "pessoa");
           const corP = p.cor ?? (visual === "arbitro" ? "#f2d21b" : i % 2 ? cor2 : cor);
-          const segura = p.segura ?? (acao === "cartao" ? "cartao_amarelo" : acao === "apitar" ? "apito" : undefined);
+          const segura = p.segura ?? (acao === "cartao" ? "cartao_amarelo" : acao === "apitar" ? "apito" : acao === "rolar_celular" || acao === "celular_sentado" ? "celular" : undefined);
           return (
             <group key={i}>
               {podio && lugarPodio(p, i) > 0 && <group position={[s.x, 0, s.z]}><DegrauPodio lugar={lugarPodio(p, i)} cor={cor} /></group>}
-              <group position={[s.x, planeta || espaco ? 0.6 : podio ? ALTURA_PODIO[lugarPodio(p, i)] ?? 0 : 0, s.sentado && cena.cenario === "sala_estar" ? SOFA_Z + 0.3 : s.z]} rotation-y={s.rotY}>
-                {s.sentado && cena.cenario !== "sala_estar" && <group position-z={-0.05}><CadeiraGamer cor={corP} /></group>}
+              <group position={[s.x, planeta || espaco ? 0.6 : podio ? ALTURA_PODIO[lugarPodio(p, i)] ?? 0 : 0, s.sentado && cena.cenario === "sala_estar" ? SOFA_Z + 0.3 : s.sentado && cena.cenario === "lounge" ? SOFA_LOUNGE_Z + 0.3 : s.sentado && cena.cenario === "quarto_escuro" ? CAMA_Z + 0.3 : s.z]} rotation-y={s.rotY}>
+                {s.sentado && cena.cenario === "consultorio" && <Poltrona cor={i % 2 ? "#7a8f6a" : "#a0644a"} />}
+                {s.sentado && !["sala_estar", "lounge", "quarto_escuro", "consultorio"].includes(cena.cenario) && <group position-z={-0.05}><CadeiraGamer cor={corP} /></group>}
                 <Boneco pose={poseEm(acao, s.tAcao, i * 1.7)} expressao={expressao} visual={visual} cor={corP} pele={p.pele} cabelo={p.cabelo}
                   semente={`${p.nome ?? ""}${i}${visual}`} t={t} fala={p.fala && aFalar} segura={segura} />
               </group>
@@ -388,7 +404,7 @@ const escalaCorpos = (cena: CenaLowPoly) =>
   ((cena.corpos?.length ? cena.corpos : ["terra", "jupiter", "sol"]).filter((c) => c in CORPOS) as NomeCorpo[]);
 
 // objetos que assentam no chão (o resto flutua à altura do centro)
-const NO_CHAO: TipoObjeto[] = ["lingotes", "fundicao", "maquina_cnc", "tanque_agua", "console", "tv", "arte_3d", "nivel", "bug", "modelo", "touro", "urso", "moedas", "dinheiro", "empresa", "carro_f1", "foguetao", "vulcao", "explosao", "fogo", "fumo", "asteroide", "bola", "tiranossauro", "braquiossauro", "ovni", "vaca", "cristal", "portal"];
+const NO_CHAO: TipoObjeto[] = ["urna", "mala_dinheiro", "plataforma_petroleo", "pulpito", "lingotes", "fundicao", "maquina_cnc", "tanque_agua", "console", "tv", "arte_3d", "nivel", "bug", "modelo", "touro", "urso", "moedas", "dinheiro", "empresa", "carro_f1", "foguetao", "vulcao", "explosao", "fogo", "fumo", "asteroide", "bola", "tiranossauro", "braquiossauro", "ovni", "vaca", "cristal", "portal"];
 // desenhados a partir do chão (o centro para a câmara fica à altura de MEDIDAS.centro)
 const PRESOS_AO_CHAO: TipoObjeto[] = ["lingotes", "fundicao", "maquina_cnc", "tanque_agua", "console", "tv", "arte_3d", "nivel", "bug", "modelo", "tiranossauro", "braquiossauro", "ovni", "vaca", "cristal", "portal", "cogumelo", "missil", "bombardeiro", "radiacao", "touro", "urso", "moedas", "dinheiro", "empresa", "carro_f1"];
 const SOLIDOS: TipoObjeto[] = ["cubo", "esfera", "piramide", "cilindro", "cone", "dodecaedro", "icosaedro", "toro"];

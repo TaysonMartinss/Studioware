@@ -4,6 +4,7 @@
 // No modo externo cada pedido vira um ficheiro em out/ia-externa/<id>.json com o texto completo (instruções + dados +
 // formato da resposta). O painel mostra-o na Produção: o criador copia, cola na IA dele e cola a resposta de volta.
 // O painel grava <id>.resposta.json (já validada) ou <id>.claude (usar o Claude neste pedido) e este módulo continua.
+import { registarCusto } from "./custos.mjs";
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
@@ -32,7 +33,8 @@ export function textoDoPedido({ sistema = "", pedido, ferramentas = [] }) {
     `# Pedido\n\n${String(pedido).trim()}`,
     "# Como responder",
     [
-      "- Responda **apenas com um objeto JSON válido**, no formato que as instruções pedem: sem texto antes nem depois e sem ```.",
+      "- Responda **apenas com um objeto JSON válido**, no formato que as instruções pedem.",
+      "- Ao me devolver o resultado, coloque **todo o JSON dentro de uma única caixa de código JSON** (comece a resposta com ```json e termine com ```), sem texto antes nem depois, para eu poder copiar com o botão de copiar da caixa.",
       "- Os ficheiros do projeto citados nas instruções (guias, listas de modelos) não estão disponíveis aqui: siga as regras como estão escritas e, para nomes de modelos, use o nome mais provável (o estúdio procura o mais parecido).",
       ferramentas.some((f) => /web/i.test(f)) ? "- Pode e deve pesquisar na web para responder com informação atual." : "",
     ].filter(Boolean).join("\n"),
@@ -69,6 +71,7 @@ export function esperarExterno({ raiz = ".", rotulo, sistema, pedido, ferramenta
         if (deveParar()) { clearInterval(ver); limpar(); return falha(new Error("Parado por si")); }
         if (existsSync(`${base}.resposta.json`)) {
           const json = JSON.parse(readFileSync(`${base}.resposta.json`, "utf-8"));
+          registarCusto(raiz, { servico: "ia-externa", etapa: rotulo, custoUSD: 0 });
           clearInterval(ver); limpar(); return ok({ json });
         }
         if (existsSync(`${base}.claude`)) { clearInterval(ver); limpar(); return ok({ claude: true }); }

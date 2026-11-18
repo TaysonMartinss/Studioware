@@ -1,4 +1,6 @@
 import { useMemo } from "react";
+import { Cerebro, Smartphone } from "./Vicio";
+import { MalaDinheiro, PlataformaPetroleo, Pulpito, Urna } from "./Politica";
 import * as THREE from "three";
 import { Efeito } from "./Efeitos";
 import { Braquiossauro, Cardume, PeixeGrande, Pterossauro, Tiranossauro } from "./Animais";
@@ -18,7 +20,7 @@ import { caixa, cilindro, clamp01, cone, entre, esfera, geo, mat, rng, sai, suav
 export type TipoObjeto =
   | "foguetao" | "satelite" | "estacao" | "asteroide" | "atomo" | "molecula" | "adn" | "celula" | "vulcao"
   | "cubo" | "esfera" | "piramide" | "cilindro" | "cone" | "dodecaedro" | "icosaedro" | "toro" | "superficie" | "eixos"
-  | "explosao" | "fogo" | "fumo" | "bola" | "trofeu" | "frasco" | "tiranossauro" | "braquiossauro" | "pterossauro" | "tubarao" | "baleia" | "cardume" | "ovni" | "vaca" | "cristal" | "portal" | "cogumelo" | "bomba" | "missil" | "bombardeiro" | "radiacao" | "carro_f1" | "velas" | "seta" | "touro" | "urso" | "moedas" | "dinheiro" | "empresa" | "modelo" | "placa_mae" | "processador" | "placa_de_video" | "memoria_ram" | "ssd" | "cooler" | "fonte" | "console" | "controle" | "tv" | "codigo" | "motor_jogo" | "arte_3d" | "som" | "nivel" | "bug" | "relogio" | "mecanismo" | "engrenagens" | "escape" | "mola_real" | "rubi" | "lingotes" | "fundicao" | "maquina_cnc" | "tanque_agua";
+  | "explosao" | "fogo" | "fumo" | "bola" | "trofeu" | "frasco" | "tiranossauro" | "braquiossauro" | "pterossauro" | "tubarao" | "baleia" | "cardume" | "ovni" | "vaca" | "cristal" | "portal" | "cogumelo" | "bomba" | "missil" | "bombardeiro" | "radiacao" | "carro_f1" | "velas" | "seta" | "touro" | "urso" | "moedas" | "dinheiro" | "empresa" | "modelo" | "placa_mae" | "processador" | "placa_de_video" | "memoria_ram" | "ssd" | "cooler" | "fonte" | "console" | "controle" | "tv" | "codigo" | "motor_jogo" | "arte_3d" | "som" | "nivel" | "bug" | "relogio" | "mecanismo" | "engrenagens" | "escape" | "mola_real" | "rubi" | "lingotes" | "fundicao" | "maquina_cnc" | "tanque_agua" | "smartphone" | "cerebro" | "urna" | "mala_dinheiro" | "plataforma_petroleo" | "pulpito";
 
 export type ObjetoCena = {
   tipo: TipoObjeto; posicao: [number, number, number]; escala: number; quando: number; cor: string; cor2: string;
@@ -53,6 +55,8 @@ export const MEDIDAS: Record<TipoObjeto, { tamanho: number; centro: number }> = 
   relogio: { tamanho: 3.2, centro: 1.6 }, mecanismo: { tamanho: 1.8, centro: 1.4 }, engrenagens: { tamanho: 2.6, centro: 1.4 }, escape: { tamanho: 2.1, centro: 1.4 },
   mola_real: { tamanho: 1.7, centro: 1.4 }, rubi: { tamanho: 0.9, centro: 1.3 }, lingotes: { tamanho: 1.3, centro: 0.2 }, fundicao: { tamanho: 2.6, centro: 1 },
   maquina_cnc: { tamanho: 2.6, centro: 1.2 }, tanque_agua: { tamanho: 2.1, centro: 1 },
+  smartphone: { tamanho: 2.0, centro: 1.4 }, cerebro: { tamanho: 2.2, centro: 1.4 },
+  urna: { tamanho: 1.4, centro: 0 }, mala_dinheiro: { tamanho: 1.1, centro: 0 }, plataforma_petroleo: { tamanho: 6, centro: 0 }, pulpito: { tamanho: 1.5, centro: 0 },
 };
 
 // medidas de um objeto (o "modelo" tem as do ficheiro, em metros)
@@ -436,6 +440,14 @@ export const Objeto: React.FC<{ o: ObjetoCena; t: number }> = ({ o, t }) => {
     case "fundicao": corpo = <group position-y={-o.posicao[1] / o.escala}><Fundicao t={t} quando={o.quando} /></group>; break;
     case "maquina_cnc": corpo = <group position-y={-o.posicao[1] / o.escala}><MaquinaCnc t={t} /></group>; break;
     case "tanque_agua": corpo = <group position-y={-o.posicao[1] / o.escala}><TanqueAgua t={t} quando={o.quando} /></group>; break;
+    // vícios digitais
+    case "smartphone": corpo = <Smartphone t={t} quando={o.quando} variante={o.variante} cor={o.cor} />; break;
+    case "cerebro": corpo = <Cerebro t={t} quando={o.quando} variante={o.variante} />; break;
+    // política e economia
+    case "urna": corpo = <group position-y={-o.posicao[1] / o.escala}><Urna t={t} quando={o.quando} votar={o.variante === "votar"} /></group>; break;
+    case "mala_dinheiro": corpo = <group position-y={-o.posicao[1] / o.escala}><MalaDinheiro t={t} quando={o.quando} /></group>; break;
+    case "plataforma_petroleo": corpo = <group position-y={-o.posicao[1] / o.escala}><PlataformaPetroleo t={t} /></group>; break;
+    case "pulpito": corpo = <group position-y={-o.posicao[1] / o.escala}><Pulpito cor={o.cor} /></group>; break;
     case "modelo": corpo = o.modelo ? <group position-y={-o.posicao[1] / o.escala} rotation-y={((o.rotacao ?? 0) * Math.PI) / 180}><ModeloGlb id={o.modelo} t={t} girar={o.variante === "girar"} /></group> : null; break;
     case "radiacao": corpo = <group position-y={-o.posicao[1] / o.escala}><Radiacao t={t} /></group>; break;
     case "explosao": case "fogo": case "fumo":

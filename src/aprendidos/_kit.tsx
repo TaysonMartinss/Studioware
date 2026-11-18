@@ -41,6 +41,12 @@ export type EfeitosEstilo = {
 
 // ---------- peças prontas ----------
 
+// passeio de câmara 3D sobre um print ou vídeo (máscara retangular, Solid de fundo, câmara com nulo, keyframes 65/65,
+// motion blur e profundidade de campo). Ex.: <PasseioCamera arquivo="midia/x.jpg" pontos={[{ x: 0.3, y: 0.2, zoom: 2, ry: 10 }]} />
+// estadoPasseio(pontos, f, duracao, fps) dá a posição/escala/orientação do nulo para quem quiser montar a sua própria câmara.
+export { PasseioCamera, estadoPasseio, CURVA_65, PASSEIO_PADRAO } from "../components/PasseioCamera";
+export type { PontoPasseio } from "../components/PasseioCamera";
+
 // progresso 0→1 entre dois frames, com curva
 export const progresso = (f: number, de: number, ate: number, curva: (t: number) => number = Easing.bezier(0.65, 0, 0.35, 1)) =>
   interpolate(f, [de, ate], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: curva });

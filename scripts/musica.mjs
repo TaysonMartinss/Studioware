@@ -9,6 +9,17 @@ export const CLIMAS = {
   ambiente: "Ambiente / explicativo",
   synthwave: "Synthwave / retro",
   lofi: "Lo-fi / calma",
+  // categorias das músicas virais do TikTok (memes e trends)
+  cinematica: "Cinematográfica",
+  emocional: "Emocional",
+  melancolica: "Melancólica",
+  motivacional: "Motivacional",
+  trap: "Trap",
+  estetica: "Estética (aesthetic)",
+  comedia: "Comédia",
+  meme: "Meme",
+  humor_negro: "Humor negro",
+  gaming: "Gaming",
 };
 
 // faixas que vêm com o projeto (geradas por scripts/gerar_musicas.py)
@@ -37,7 +48,7 @@ export const listarMusicas = (raiz = ".") => {
           arquivo, clima: d.name, nome: info.titulo || base.replace(/[-_]+/g, " "),
           artista: info.artista ?? (GERADAS.has(base) ? "Estúdio (gerada)" : ""), credito: info.credito ?? "",
           origem: info.origem ?? (GERADAS.has(base) ? "Gerada pelo projeto" : "Enviada"), bpm: info.bpm, duracaoS: info.duracaoS,
-          climaSugerido: info.climaSugerido,
+          climaSugerido: info.climaSugerido, tambem: info.tambem ?? [], // outros climas onde a faixa também serve
         };
       }));
 };
@@ -56,7 +67,7 @@ export const escolherMusica = (roteiro, raiz = ".") => {
   const todas = listarMusicas(raiz);
   const clima = pedido === "auto" ? climaAutomatico(roteiro) : pedido;
   // faixas importadas (ex.: YouTube Audio Library) têm prioridade sobre as geradas
-  const doClima = todas.filter((m) => m.clima === clima);
+  const doClima = todas.filter((m) => m.clima === clima || m.tambem?.includes(clima));
   const reais = doClima.filter((m) => m.origem !== "Gerada pelo projeto");
   const lista = reais.length ? reais : doClima.length ? doClima : todas;
   if (!lista.length) return existsSync(join(raiz, "public/musica.mp3")) ? "musica.mp3" : undefined;

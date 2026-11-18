@@ -302,6 +302,18 @@ def chave_elevenlabs():
     sys.exit("Falta ELEVENLABS_API_KEY (defina no painel ou no ficheiro .env)")
 
 
+
+def registar_caracteres(n, video):
+    """Caracteres gastos na ElevenLabs: uma linha em out/custos.jsonl (menu Custos do painel)."""
+    try:
+        from datetime import datetime, timezone
+        Path("out").mkdir(exist_ok=True)
+        with open("out/custos.jsonl", "a", encoding="utf-8") as f:
+            f.write(json.dumps({"em": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"), "servico": "elevenlabs", "caracteres": n, "etapa": "Narração", "video": video}, ensure_ascii=False) + "\n")
+    except Exception:
+        pass
+
+
 def narrar_elevenlabs(texto, voz, modelo, destino, anterior="", seguinte="", tom=None):
     pedido = urllib.request.Request(
         f"https://api.elevenlabs.io/v1/text-to-speech/{voz}/with-timestamps?output_format=mp3_44100_128",
@@ -462,7 +474,9 @@ async def main(caminho, forcar=False):
 
         async def narrar_trecho(texto, destino, antes, depois):
             if motor == "elevenlabs":
-                return narrar_elevenlabs(texto, voz, roteiro.get("modelo_voz", MODELO_ELEVEN), destino, antes, depois, tom)
+                r = narrar_elevenlabs(texto, voz, roteiro.get("modelo_voz", MODELO_ELEVEN), destino, antes, depois, tom)
+                registar_caracteres(len(texto), vid)
+                return r
             return await narrar_cena(texto, voz, velocidade, destino, tom)
 
         # contexto para a entoação: o que vem antes e depois (inclui as cenas vizinhas)

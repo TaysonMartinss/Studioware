@@ -4,8 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Studioware</title>
+<link rel="icon" type="image/png" sizes="32x32" href="/public/studioware/favicon-32.png">
+<link rel="icon" type="image/png" sizes="64x64" href="/public/studioware/favicon-64.png">
+<link rel="apple-touch-icon" href="/public/studioware/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/painel.css">
 <script>try { if (localStorage.tema) document.documentElement.dataset.tema = localStorage.tema; } catch {}</script>
 </head>
@@ -14,8 +17,9 @@
 
 <header class="topo">
   <div class="marca">
-    <div class="logo"><i class="i" style="--u:url(/icones/clapperboard.svg);width:15px;height:15px"></i></div>
-    <span>Studioware</span>
+    <img class="logotipo logotipo-escuro" src="/public/studioware/logotipo-escuro.png" alt="Studioware">
+    <img class="logotipo logotipo-claro" src="/public/studioware/logotipo-claro.png" alt="Studioware">
+    <img class="logo-simbolo" src="/public/studioware/logo.png" alt="Studioware">
   </div>
   <div class="topo-acoes">
     <button class="chip-fila" id="chipFila" onclick="irPara('producao')" hidden><span class="ponto vivo"></span><span id="textoChipFila">0 em produção</span></button>
@@ -35,13 +39,17 @@
 
 <div class="app">
   <nav class="nav" aria-label="Secções">
-    <a href="#criar" data-vista="criar"><i class="i" style="--u:url(/icones/sparkles.svg)"></i><span>Criar</span></a>
+    <a href="#criar" data-vista="criar"><i class="i" style="--u:url(/icones/clapperboard.svg)"></i><span>Criar</span></a>
     <a href="#producao" data-vista="producao"><i class="i" style="--u:url(/icones/loader.svg)"></i><span data-curto="Fila">Produção</span><span class="contador" id="contaFila">0</span></a>
     <a href="#biblioteca" data-vista="biblioteca"><i class="i" style="--u:url(/icones/layout-grid.svg)"></i><span data-curto="Vídeos">Biblioteca</span><span class="contador" id="contaBib">0</span></a>
     <a href="#ideias" data-vista="ideias"><i class="i" style="--u:url(/icones/lightbulb.svg)"></i><span>Ideias</span></a>
+    <a href="#insights" data-vista="insights"><i class="i" style="--u:url(/icones/chart-line.svg)"></i><span>Insights</span></a>
+    <a href="#instagram" data-vista="instagram"><i class="i" style="--u:url(/icones/camera.svg)"></i><span>Instagram</span></a>
+    <a href="#estilos" data-vista="estilos"><i class="i" style="--u:url(/icones/palette.svg)"></i><span>Estilos</span></a>
     <div class="nav-sep"></div>
     <a href="#canais" data-vista="canais"><i class="i" style="--u:url(/icones/badge-check.svg)"></i><span>Canais</span></a>
     <a href="#automatico" data-vista="automatico"><i class="i" style="--u:url(/icones/bot.svg)"></i><span data-curto="Auto">Automático</span><span class="meta selo" id="autoSelo"></span></a>
+    <a href="#custos" data-vista="custos"><i class="i" style="--u:url(/icones/wallet.svg)"></i><span>Custos</span></a>
     <a href="#configuracoes" data-vista="configuracoes"><i class="i" style="--u:url(/icones/settings.svg)"></i><span data-curto="Ajustes">Configurações</span></a>
   </nav>
 
@@ -65,7 +73,7 @@
         <section class="superficie">
           <h2 class="titulo-superficie">Como quer começar?</h2>
           <div class="origens" id="origens" role="radiogroup" aria-label="Origem do vídeo">
-            <button type="button" role="radio" data-origem="ia"><i class="i" style="--u:url(/icones/sparkles.svg)"></i><b>Novo vídeo com IA</b><span>O Claude pesquisa, escreve e narra</span></button>
+            <button type="button" role="radio" data-origem="ia"><i class="i" style="--u:url(/icones/notebook-pen.svg)"></i><b>Novo vídeo com IA</b><span>O Claude pesquisa, escreve e narra</span></button>
             <button type="button" role="radio" data-origem="cortes"><i class="i" style="--u:url(/icones/scissors.svg)"></i><b>Cortes de vídeo longo</b><span>Podcast, live ou aula vira vários Shorts</span></button>
             <button type="button" role="radio" data-origem="clipes"><i class="i" style="--u:url(/icones/film.svg)"></i><b>Meus clipes</b><span>Legendar e tirar os silêncios</span></button>
             <button type="button" role="radio" data-origem="outraia"><i class="i" style="--u:url(/icones/clipboard-paste.svg)"></i><b>Roteiro de outra IA</b><span>ChatGPT, Gemini e outras</span></button>
@@ -108,6 +116,11 @@
               <input type="file" id="ficheirosClipe" accept="video/*" multiple>
             </label>
             <div class="erro-campo" id="erroFicheiros" hidden>Escolha o vídeo para continuar.</div>
+          </div>
+          <div class="campo" id="linkCortesBox" hidden>
+            <label class="rotulo" for="linkCortes">Ou cole o link do YouTube ou do Instagram</label>
+            <input id="linkCortes" type="url" inputmode="url" placeholder="https://www.youtube.com/watch?v=… ou https://www.instagram.com/reel/…" autocomplete="off">
+            <div class="dica">O estúdio baixa o vídeo aqui no computador (até 1080p) e já começa a procurar os momentos.</div>
           </div>
           <input type="checkbox" id="modoCortes" hidden onchange="mudarModoCortes()">
           <div id="opcoesCortes" hidden>
@@ -168,6 +181,7 @@
             <button class="btn icone" id="ouvirMusica" title="Ouvir" aria-label="Ouvir a música"><i class="i" style="--u:url(/icones/play.svg)"></i></button>
           </div>
           <div class="dica" id="dicaMusica"></div>
+          <div class="trecho" id="trechoMusica" hidden></div>
           <button class="btn fantasma peq" style="margin-top:8px" onclick="abrirBiblioteca()"><i class="i" style="--u:url(/icones/library.svg);width:14px;height:14px"></i>Biblioteca de música <span class="meta" id="contaMusicas"></span></button>
         </section>
       </div>
@@ -193,8 +207,8 @@
       <div class="rodape-passos">
         <button class="btn" id="btnVoltar" onclick="irParaPasso(passoAtual - 1)"><i class="i" style="--u:url(/icones/arrow-left.svg)"></i>Voltar</button>
         <span class="meta" id="dicaAtalho">Ctrl+Enter cria o vídeo</span>
-        <button class="btn primario" id="btnContinuar" onclick="continuarPasso()">Continuar<i class="i" style="--u:url(/icones/arrow-right.svg)"></i></button>
-        <button class="btn primario" id="criar" title="Criar (Ctrl+Enter)" onclick="criarDoAssistente()" hidden><i class="i" style="--u:url(/icones/sparkles.svg)"></i><span id="textoCriar">Criar roteiro</span></button>
+        <button class="btn primario" id="btnContinuar" onclick="continuarPasso()">Continuar</button>
+        <button class="btn primario" id="criar" title="Criar (Ctrl+Enter)" onclick="criarDoAssistente()" hidden><span id="textoCriar">Criar roteiro</span></button>
       </div>
       </div>
 
@@ -219,7 +233,10 @@
     <!-- ================= PRODUÇÃO ================= -->
     <section class="vista" id="vista-producao" data-vista="producao" hidden>
       <div class="cabeca-pagina"><div><h1>Produção</h1><p class="sub">Os vídeos a ser feitos agora, etapa a etapa. Os prontos vão para a Biblioteca.</p></div>
-        <button class="btn" id="pararTudo" onclick="pararTudo()" hidden><i class="i" style="--u:url(/icones/square.svg)"></i>Parar tudo</button></div>
+        <div class="linha">
+          <button class="btn" id="limparFalhados" onclick="limparFalhados()" hidden title="Tira da lista os vídeos que falharam ou foram parados (o roteiro e a mídia ficam)"><i class="i" style="--u:url(/icones/list-x.svg)"></i>Limpar falhados</button>
+          <button class="btn" id="pararTudo" onclick="pararTudo()" hidden><i class="i" style="--u:url(/icones/square.svg)"></i>Parar tudo</button>
+        </div></div>
       <div class="fila analises" id="pedidosIA" hidden></div>
       <div class="fila analises" id="analises" hidden></div>
       <div class="fila" id="jobs"><div class="vazio">Nada em produção.</div></div>
@@ -324,6 +341,49 @@
       <div id="autoCorpo"></div>
     </section>
 
+    <!-- ================= INSIGHTS ================= -->
+    <section class="vista" id="vista-insights" data-vista="insights" hidden>
+      <div class="cabeca-pagina">
+        <div><h1>Insights</h1><p class="sub">Os números do YouTube de cada canal e o que funciona nele: estilo, formato, duração e efeitos sonoros dos vídeos feitos no estúdio.</p></div>
+        <div class="linha insights-controlos">
+          <span class="ins-de" title="Mude de canal no topo da página">Canal <b id="insCanalNome"></b></span>
+          <select id="insDias" aria-label="Período"><option value="7">7 dias</option><option value="28" selected>28 dias</option><option value="90">90 dias</option><option value="365">1 ano</option></select>
+          <button class="btn" id="btnInsAtualizar" onclick="atualizarInsights()"><i class="i" style="--u:url(/icones/refresh-cw.svg)"></i>Atualizar números</button>
+        </div>
+      </div>
+      <div id="insightsCorpo"><div class="vazio">Carregando…</div></div>
+    </section>
+
+    <!-- ================= INSTAGRAM ================= -->
+    <section class="vista" id="vista-instagram" data-vista="instagram" hidden>
+      <div class="cabeca-pagina">
+        <div><h1>Instagram</h1><p class="sub">As contas do Instagram das suas páginas, pela API oficial da Meta: números de cada publicação, comentários e publicar Reels da biblioteca, agora ou agendados.</p></div>
+        <div class="linha">
+          <button class="btn" id="btnIgAtualizar" onclick="atualizarNumerosIg()" disabled><i class="i" style="--u:url(/icones/refresh-cw.svg)"></i>Atualizar números</button>
+          <button class="btn primario" id="btnIgPublicar" onclick="abrirPublicarIg()" disabled><i class="i" style="--u:url(/icones/send.svg)"></i>Publicar Reel</button>
+        </div>
+      </div>
+      <div id="igCorpo"><div class="vazio">Carregando…</div></div>
+    </section>
+
+    <!-- ================= ESTILOS ================= -->
+    <section class="vista" id="vista-estilos" data-vista="estilos" hidden>
+      <div class="cabeca-pagina">
+        <div><h1>Estilos de edição</h1><p class="sub">Os estilos que o estúdio usa nos vídeos. Os seus foram aprendidos com um exemplo: dá para editar, refinar com o Claude ou apagar.</p></div>
+        <div class="linha"><button class="btn primario" onclick="abrirAprender()"><i class="i" style="--u:url(/icones/graduation-cap.svg)"></i>Aprendo com seu exemplo</button></div>
+      </div>
+      <div id="estilosPagina"><div class="vazio">Carregando…</div></div>
+    </section>
+
+    <!-- ================= CUSTOS ================= -->
+    <section class="vista" id="vista-custos" data-vista="custos" hidden>
+      <div class="cabeca-pagina">
+        <div><h1>Custos</h1><p class="sub">Quanto cada vídeo e cada etapa gastou de IA e de narração. Fica só neste computador.</p></div>
+        <div class="linha"><button class="btn" onclick="abrirCustos()"><i class="i" style="--u:url(/icones/refresh-cw.svg)"></i>Atualizar</button></div>
+      </div>
+      <div id="custosCorpo"><div class="vazio">Carregando…</div></div>
+    </section>
+
     <!-- ================= CONFIGURAÇÕES ================= -->
     <section class="vista" id="vista-configuracoes" data-vista="configuracoes" hidden>
       <div class="cabeca-pagina"><div><h1>Configurações</h1><p class="sub">Chaves de API, bibliotecas e manutenção. Tudo fica só neste computador.</p></div></div>
@@ -362,6 +422,12 @@
               <p>Em console.cloud.google.com: crie um projeto, ative a "YouTube Data API v3", configure a tela de consentimento (tipo Externo, com o seu e-mail como usuário de teste) e em Credenciais → Criar credenciais → <b>ID do cliente OAuth</b> → tipo "App para computador" (a "Chave de API" não publica). Por fim, na tela de consentimento, clique em "Publicar app": em modo de teste a Google desconecta o canal após 7 dias. O aviso "app não verificado" ao conectar é normal, porque o app é seu.</p>
             </details>
           </div>
+          <div class="campo">
+            <label class="rotulo" for="metaId">Meta, para o Instagram <span id="estadoMeta" class="estado-chave"></span></label>
+            <input id="metaId" placeholder="ID da app (só números)" autocomplete="off" inputmode="numeric">
+            <input id="metaSegredo" type="password" placeholder="Chave secreta da app" autocomplete="off" style="margin-top:6px">
+            <div class="dica">Em developers.facebook.com/apps, na sua app: Definições da app &gt; Básicas. O passo a passo completo está na página Instagram.</div>
+          </div>
           <div class="linha" style="justify-content:space-between;margin-top:16px">
             <span class="meta">Ficam só no arquivo <code>.env</code> deste computador.</span>
             <button class="btn primario" onclick="guardarChave()">Salvar chaves</button>
@@ -370,6 +436,7 @@
         <div class="lista">
           <button class="superficie superficie-link" onclick="abrirBiblioteca()"><i class="i" style="--u:url(/icones/library.svg)"></i><span><b>Biblioteca de música</b><small>Importar faixas e escolher o clima de cada uma</small></span><i class="i" style="--u:url(/icones/chevron-right.svg)"></i></button>
           <button class="superficie superficie-link" onclick="abrirPrecos()"><i class="i" style="--u:url(/icones/tag.svg)"></i><span><b>Catálogo de preços</b><small>Os preços que os rankings usam, com loja e data</small></span><i class="i" style="--u:url(/icones/chevron-right.svg)"></i></button>
+          <button class="superficie superficie-link" onclick="abrirUploads()"><i class="i" style="--u:url(/icones/hard-drive-download.svg)"></i><span><b>Vídeos enviados e baixados</b><small>Os vídeos longos dos cortes e os baixados do YouTube e do Instagram: apague para liberar espaço</small></span><i class="i" style="--u:url(/icones/chevron-right.svg)"></i></button>
           <button class="superficie superficie-link" onclick="abrirLixeira()"><i class="i" style="--u:url(/icones/trash-2.svg)"></i><span><b>Lixeira</b><small>Restaurar vídeos ou liberar espaço em disco</small></span><i class="i" style="--u:url(/icones/chevron-right.svg)"></i></button>
         </div>
       </div>
@@ -378,16 +445,119 @@
 </div>
 
 <!-- ================= JANELAS (ações dentro de uma página) ================= -->
+<button id="avisoAprender" class="aviso-tarefa" hidden onclick="abrirAprender()" title="Ver o progresso"><span class="girar"></span><span><b id="avisoAprenderTitulo">Aprendendo o estilo</b><small id="avisoAprenderPasso">Começando…</small></span></button>
+<dialog id="dlgPublicacao" class="modal" style="width:min(640px, calc(100vw - 32px))">
+  <div class="modal-caixa">
+  <div class="gaveta-topo"><div style="min-width:0"><b>Dados da publicação</b><div class="meta" id="pubTitulo" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div></div>
+    <div class="linha" style="gap:6px"><button class="btn fantasma peq" onclick="dlgPublicacao.close();abrirPublicarIg(dlgPublicacao.dataset.id)" title="Publicar este vídeo no Instagram"><i class="i" style="--u:url(/icones/camera.svg)"></i>Instagram</button><button class="btn fantasma peq" onclick="copiarTudoPub()" title="Copiar todos os textos de uma vez"><i class="i" style="--u:url(/icones/copy.svg)"></i>Copiar tudo</button>
+    <button class="btn fantasma icone" onclick="dlgPublicacao.close()" title="Fechar" aria-label="Fechar"><i class="i" style="--u:url(/icones/x.svg)"></i></button></div></div>
+  <div class="gaveta-corpo" id="pubCorpo"></div>
+  </div>
+</dialog>
+<dialog id="dlgIgPublicar" class="modal" style="width:min(720px, calc(100vw - 32px))">
+  <div class="modal-caixa">
+  <div class="gaveta-topo"><b>Publicar Reel no Instagram</b>
+    <button class="btn fantasma icone" onclick="dlgIgPublicar.close()" title="Fechar" aria-label="Fechar"><i class="i" style="--u:url(/icones/x.svg)"></i></button></div>
+  <div class="gaveta-corpo ig-publicar">
+    <video id="igPubPrevia" controls preload="metadata" playsinline></video>
+    <div class="ig-pub-campos">
+      <div class="campo"><label class="rotulo" for="igPubConta">Conta</label><select id="igPubConta"></select></div>
+      <div class="campo"><label class="rotulo" for="igPubVideo">Vídeo da biblioteca</label><select id="igPubVideo" onchange="carregarLegendaIg()"></select></div>
+      <div class="campo"><label class="rotulo" for="igPubLegenda">Legenda</label>
+        <textarea id="igPubLegenda" rows="7" maxlength="2400" oninput="verificarLegendaIg()"></textarea>
+        <div class="dica" id="igPubOrigem"></div>
+        <div class="ig-janela"><span class="meta">O que o feed mostra</span><div id="igPubJanela"></div></div>
+        <div id="igPubVerif"></div>
+      </div>
+      <div class="campo"><label class="rotulo" for="igPubCapa">Capa: segundo do vídeo <span class="meta">(opcional)</span></label><input id="igPubCapa" inputmode="decimal" placeholder="ex.: 1,5"></div>
+      <div class="campo"><span class="rotulo">Quando</span>
+        <label class="linha" style="gap:6px"><input type="radio" name="igQuando" id="igPubAgora" checked onchange="mudarQuandoIg()"> Agora</label>
+        <label class="linha" style="gap:6px"><input type="radio" name="igQuando" onchange="mudarQuandoIg()"> Agendar <input type="datetime-local" id="igPubQuando"></label>
+        <div class="dica">A API do Instagram não agenda: o painel publica à hora marcada, por isso tem de estar aberto neste computador.</div>
+      </div>
+      <div class="linha" style="justify-content:flex-end"><button class="btn primario" id="btnIgPubConfirmar" onclick="publicarIg()"><i class="i" style="--u:url(/icones/send.svg)"></i>Publicar</button></div>
+    </div>
+  </div>
+  </div>
+</dialog>
+<dialog id="dlgIgComentarios" class="gaveta">
+  <div class="gaveta-topo"><b>Comentários</b>
+    <button class="btn fantasma icone" onclick="dlgIgComentarios.close()" title="Fechar" aria-label="Fechar"><i class="i" style="--u:url(/icones/x.svg)"></i></button></div>
+  <div class="gaveta-corpo" id="igComCorpo"></div>
+</dialog>
+<dialog id="dlgEditarEstilo" class="modal" style="width:min(640px, calc(100vw - 32px))">
+  <div class="modal-caixa">
+  <div class="gaveta-topo"><b id="editarEstiloTitulo">Editar estilo</b><button class="btn fantasma icone" onclick="dlgEditarEstilo.close()" title="Fechar" aria-label="Fechar"><i class="i" style="--u:url(/icones/x.svg)"></i></button></div>
+  <div class="gaveta-corpo" style="display:flex;flex-direction:column;gap:16px">
+    <div class="editar-estilo-topo">
+      <img id="editarEstiloMini" alt="Miniatura do estilo">
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:12px">
+        <div class="campo"><label class="rotulo" for="eeNome">Nome</label><input id="eeNome" maxlength="32"></div>
+        <div class="campo"><label class="rotulo" for="eeDescricao">Descrição</label><textarea id="eeDescricao" rows="3" maxlength="160"></textarea></div>
+      </div>
+    </div>
+    <div class="secao-estilo">
+      <b>Refinar com o Claude</b>
+      <span class="meta">Diga o que quer mudar e o Claude ajusta o estilo (e os efeitos em código, se o estilo os tiver). Volta a gerar a miniatura no fim.</span>
+      <textarea id="eeRefinar" rows="2" placeholder="Ex.: legendas maiores e amarelas, cortes mais rápidos, menos tremor da câmara"></textarea>
+      <label class="interruptor" id="eeEfeitosLinha"><span>Ajustar também os efeitos <small>a câmara, as transições e as animações escritas em código</small></span><input type="checkbox" id="eeEfeitos" checked></label>
+      <div class="linha" style="justify-content:flex-end"><button class="btn primario" onclick="refinarEstilo()"><i class="i" style="--u:url(/icones/sparkles.svg)"></i>Refinar</button></div>
+    </div>
+    <div class="secao-estilo">
+      <b>Ajustar à mão</b>
+      <div class="cores-estilo" id="eeCores"></div>
+      <div class="grid2" id="eeEscolhas"></div>
+      <div class="grid2">
+        <div class="campo"><label class="rotulo" for="eeShake">Tremor nos impactos <span class="meta" id="eeShakeValor"></span></label><input type="range" id="eeShake" min="0" max="1.5" step="0.1" oninput="$('#eeShakeValor').textContent=this.value"></div>
+        <div class="campo"><label class="rotulo" for="eeFlash">Clarão nos cortes <span class="meta" id="eeFlashValor"></span></label><input type="range" id="eeFlash" min="0" max="0.5" step="0.05" oninput="$('#eeFlashValor').textContent=this.value"></div>
+      </div>
+      <div class="grid2">
+        <label class="interruptor"><span>Glitch</span><input type="checkbox" id="eeGlitch"></label>
+        <label class="interruptor"><span>Brilho (glow)</span><input type="checkbox" id="eeBrilho"></label>
+      </div>
+      <div class="linha" style="justify-content:flex-end"><button class="btn" onclick="guardarEstilo()"><i class="i" style="--u:url(/icones/check.svg)"></i>Guardar alterações</button></div>
+    </div>
+  </div>
+  </div>
+</dialog>
 <dialog id="dlgAprender" class="modal" style="width:min(560px, calc(100vw - 32px))">
   <div class="modal-caixa">
   <div class="gaveta-topo"><b>Aprendo com seu exemplo</b><button class="btn fantasma icone" onclick="dlgAprender.close()" title="Fechar" aria-label="Fechar"><i class="i" style="--u:url(/icones/x.svg)"></i></button></div>
   <div class="gaveta-corpo" style="display:flex;flex-direction:column;gap:14px">
-    <div class="dica">Mostre um vídeo com o visual que quer e o estúdio cria um estilo novo com as mesmas cores, letra, fundo e ritmo. Do link usa só as imagens públicas (capa e frames); para o estilo sair mais fiel, envie também o vídeo.</div>
+    <div class="dica" id="aprenderDica">Mostre um vídeo com o visual que quer e o estúdio cria um estilo novo com as mesmas cores, letra, fundo e ritmo.</div>
     <div class="campo"><label class="rotulo" for="aprenderLink">Link do YouTube ou do Instagram</label><input id="aprenderLink" placeholder="https://www.youtube.com/shorts/… ou https://www.instagram.com/reel/…"></div>
     <div class="campo"><label class="rotulo" for="aprenderVideo">O vídeo (opcional, recomendado)</label><input type="file" id="aprenderVideo" accept="video/*"></div>
     <div class="campo"><label class="interruptor"><span>Aprender também os efeitos <small>câmara 3D, transições, motion blur, animação das letras e do fundo: o Claude escreve os efeitos em código (demora mais e gasta mais tokens; com o vídeo enviado sai muito melhor)</small></span><input type="checkbox" id="aprenderEfeitos" checked></label></div>
     <div class="campo"><label class="rotulo" for="aprenderNotas">O que mais gosta nele (opcional)</label><input id="aprenderNotas" placeholder="Ex.: as legendas amarelas e o fundo escuro com grão"></div>
-    <div class="linha" style="gap:10px"><button class="btn primario" id="btnAprender" onclick="aprenderEstilo()"><i class="i" style="--u:url(/icones/sparkles.svg)"></i>Aprender estilo</button><span class="meta" id="aprenderPasso"></span></div>
+    <div class="linha" style="gap:10px"><button class="btn primario" id="btnAprender" onclick="aprenderEstilo()"><i class="i" style="--u:url(/icones/graduation-cap.svg)"></i>Aprender estilo</button><span class="meta" id="aprenderPasso"></span></div>
+    <div id="aprenderResultado" class="aprender-resultado" hidden></div>
+  </div>
+  </div>
+</dialog>
+<dialog id="dlgConfirmarCriar" class="modal" style="width:min(520px, calc(100vw - 32px))">
+  <div class="modal-caixa">
+  <div class="gaveta-topo"><b id="confirmarTitulo">Criar este vídeo?</b><button class="btn fantasma icone" onclick="dlgConfirmarCriar.close()" title="Fechar" aria-label="Fechar"><i class="i" style="--u:url(/icones/x.svg)"></i></button></div>
+  <div class="gaveta-corpo" style="display:flex;flex-direction:column;gap:14px">
+    <div class="dica" id="confirmarDica">Confira as escolhas. Depois de começar, o vídeo entra na Produção.</div>
+<div class="aviso-canal" id="confirmarAvisoCanal" hidden></div>
+    <dl class="resumo resumo-lado" id="confirmarResumo"></dl>
+    <div class="linha" style="gap:10px;justify-content:flex-end">
+      <button class="btn" onclick="dlgConfirmarCriar.close()">Voltar e ajustar</button>
+      <button class="btn primario" id="btnConfirmarCriar" onclick="confirmarCriar()"><span id="textoConfirmar">Sim, criar</span></button>
+    </div>
+  </div>
+  </div>
+</dialog>
+<dialog id="dlgCriado" class="modal" style="width:min(460px, calc(100vw - 32px))">
+  <div class="modal-caixa">
+  <div class="gaveta-corpo" style="display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;padding:28px 24px">
+    <i class="i" style="--u:url(/icones/circle-check.svg);width:40px;height:40px;color:var(--acento)"></i>
+    <b style="font-size:18px" id="criadoTitulo">Vídeo em produção</b>
+    <div class="dica" id="criadoTexto"></div>
+    <div class="linha" style="gap:10px;margin-top:6px">
+      <button class="btn" onclick="dlgCriado.close()">Criar outro</button>
+      <button class="btn primario" onclick="dlgCriado.close(); irPara('producao')"><i class="i" style="--u:url(/icones/loader.svg)"></i>Ver na Produção</button>
+    </div>
   </div>
   </div>
 </dialog>
@@ -398,6 +568,7 @@
     <div class="campo">
       <span class="rotulo">1. Copie o prompt e cole no ChatGPT, Gemini ou outra IA (de preferência com pesquisa na web)</span>
       <div class="dica" id="outraIAResumo"></div>
+      <div class="aviso-canal" id="outraIAAvisoCanal" hidden></div>
       <div><button class="btn" onclick="copiarPromptExterno()"><i class="i" style="--u:url(/icones/copy.svg)"></i>Copiar prompt</button></div>
     </div>
     <div class="campo">
@@ -434,6 +605,16 @@
   </div>
 </dialog>
 
+<dialog id="dlgUploads" class="gaveta">
+  <div class="gaveta-caixa">
+    <div class="gaveta-topo"><b>Vídeos enviados e baixados <span class="meta" id="uploadsTotal"></span></b><button class="btn fantasma icone" onclick="dlgUploads.close()" title="Fechar" aria-label="Fechar"><i class="i" style="--u:url(/icones/x.svg)"></i></button></div>
+    <div class="gaveta-corpo">
+      <div class="dica" style="margin:0 0 12px">Ficam em <code>A:\Studioware\public\uploads</code>. Os Shorts que já foram cortados não precisam deles; os marcados "em uso" ainda vão ser cortados. Apagar não passa pela lixeira.</div>
+      <div id="uploadsCorpo"></div>
+    </div>
+    <div class="gaveta-rodape"><span class="meta" id="uploadsSelecao"></span><button class="btn perigo" id="btnApagarUploads" onclick="apagarUploads()" disabled><i class="i" style="--u:url(/icones/trash-2.svg)"></i>Apagar selecionados</button></div>
+  </div>
+</dialog>
 <dialog id="dlgLixeira" class="gaveta">
   <div class="gaveta-caixa">
     <div class="gaveta-topo"><b>Lixeira <span class="meta" id="lixoTotal"></span></b><button class="btn fantasma icone" onclick="dlgLixeira.close()" title="Fechar" aria-label="Fechar"><i class="i" style="--u:url(/icones/x.svg)"></i></button></div>
@@ -454,7 +635,7 @@
 
 <dialog id="dlgEditor" class="gaveta">
   <div class="gaveta-caixa">
-    <div class="gaveta-topo"><b id="edTitulo">Roteiro</b><button class="btn fantasma icone" onclick="dlgEditor.close()" title="Fechar" aria-label="Fechar"><i class="i" style="--u:url(/icones/x.svg)"></i></button></div>
+    <div class="gaveta-topo"><b id="edTitulo">Roteiro</b><span class="linha" style="gap:6px"><button class="btn peq" onclick="abrirEdicao(roteiroAberto.id)" title="Timeline, player ao vivo e edição com o rato"><i class="i" style="--u:url(/icones/film.svg)"></i>Editor com timeline</button><button class="btn fantasma icone" onclick="dlgEditor.close()" title="Fechar" aria-label="Fechar"><i class="i" style="--u:url(/icones/x.svg)"></i></button></span></div>
     <div class="gaveta-corpo" id="edCorpo"></div>
     <div class="gaveta-rodape">
       <button class="btn" onclick="guardarRoteiro(false)">Salvar</button>
@@ -463,6 +644,62 @@
   </div>
 </dialog>
 
+<!-- editor manual: player ao vivo, timeline e inspetor (server/edicao.js) -->
+<dialog id="dlgEdicao" class="edicao" aria-label="Editor manual">
+  <div class="ed-topo">
+    <button class="btn fantasma icone" onclick="fecharEdicao()" title="Voltar (Esc)" aria-label="Voltar"><i class="i" style="--u:url(/icones/arrow-left.svg)"></i></button>
+    <div class="ed-titulo"><b id="edicaoTitulo">Editor</b><span class="meta" id="edicaoEstado">Tudo salvo</span></div>
+    <div class="linha ed-acoes">
+      <button class="btn fantasma icone" id="edBtnDesfazer" onclick="desfazerEd()" title="Desfazer (Ctrl+Z)" aria-label="Desfazer"><i class="i" style="--u:url(/icones/undo-2.svg)"></i></button>
+      <button class="btn fantasma icone" id="edBtnRefazer" onclick="refazerEd()" title="Refazer (Ctrl+Y)" aria-label="Refazer"><i class="i" style="--u:url(/icones/redo-2.svg)"></i></button>
+      <button class="btn" onclick="salvarEdicao()" title="Ctrl+S">Salvar</button>
+      <button class="btn primario" onclick="salvarEdicao(true)"><i class="i" style="--u:url(/icones/play.svg)"></i>Salvar e renderizar</button>
+    </div>
+  </div>
+  <div class="ed-meio">
+    <div class="ed-palco">
+      <div class="ed-player" id="edicaoPlayer"></div>
+      <div class="ed-controles">
+        <button class="btn fantasma icone" onclick="ED.player?.irPara(0)" title="Início (Home)" aria-label="Início"><i class="i" style="--u:url(/icones/skip-back.svg)"></i></button>
+        <button class="btn primario icone ed-tocar" id="edBtnTocar" onclick="ED.player?.alternar(event)" title="Tocar ou pausar (espaço)" aria-label="Tocar ou pausar"><i class="i" style="--u:url(/icones/play.svg)"></i></button>
+        <button class="btn fantasma icone" onclick="ED.player?.irPara(ED.total - 1)" title="Fim (End)" aria-label="Fim"><i class="i" style="--u:url(/icones/skip-forward.svg)"></i></button>
+        <span class="ed-tempo"><b id="edTempoAtual">0:00,0</b> / <span id="edTempoTotal">0:00,0</span></span>
+      </div>
+      <div class="aviso ed-aviso" id="edicaoAviso" hidden></div>
+    </div>
+    <aside class="ed-lado">
+      <div class="ed-abas" id="edicaoAbas" role="tablist">
+        <button type="button" role="tab" data-aba="cena" onclick="mudarAba('cena')">Selecionado</button>
+        <button type="button" role="tab" data-aba="video" onclick="mudarAba('video')">Vídeo, música e capa</button>
+      </div>
+      <div class="ed-inspetor" id="edicaoInspetor" data-aba="cena"></div>
+    </aside>
+    <div class="ed-redim-lado" id="edRedimLado" role="separator" tabindex="0" aria-orientation="vertical" aria-label="Largura do inspetor" title="Arraste para mudar a largura do inspetor · duplo clique repõe · ← → afinam"></div>
+  </div>
+  <div class="ed-tl-caixa">
+    <div class="ed-redim-tl" id="edRedimTl" role="separator" tabindex="0" aria-orientation="horizontal" aria-label="Altura da timeline" title="Arraste para mudar a altura da timeline · duplo clique repõe · ↑ ↓ afinam"></div>
+    <div class="ed-tl-barra">
+      <button class="btn fantasma peq" onclick="dividirSelecao()" title="Dividir o apoio na cabeça de leitura (S)"><i class="i" style="--u:url(/icones/scissors.svg)"></i>Dividir</button>
+      <button class="btn fantasma peq" onclick="duplicarSelecao()" title="Duplicar (D)"><i class="i" style="--u:url(/icones/copy.svg)"></i>Duplicar</button>
+      <button class="btn fantasma peq" onclick="apagarSelecao()" title="Apagar (Delete)"><i class="i" style="--u:url(/icones/trash-2.svg)"></i>Apagar</button>
+      <button class="btn fantasma peq" onclick="escolherSomPara()" title="Pôr um efeito sonoro na cabeça de leitura (ou duplo clique na faixa Sons)"><i class="i" style="--u:url(/icones/audio-lines.svg)"></i>Som</button>
+      <label class="lp-check" title="Ao arrastar, cola ao início e ao fim das palavras e à cabeça de leitura"><input type="checkbox" checked onchange="ED.encaixe = this.checked">Encaixar</label>
+      <span class="meta ed-dica">Arraste a régua para percorrer · roda rola · Ctrl e a roda aproximam · ↑ ↓ saltam de cena · botão do meio arrasta a vista</span>
+      <span class="linha" style="gap:4px;margin-left:auto">
+        <button class="btn fantasma icone peq" onclick="zoomTimeline(0.8)" title="Afastar (−, ou Ctrl e a roda)" aria-label="Afastar"><i class="i" style="--u:url(/icones/zoom-out.svg)"></i></button>
+        <input type="range" class="ed-zoom" id="edZoom" min="0" max="1000" step="1" aria-label="Zoom da timeline" title="Zoom da timeline" oninput="zoomPara(this.value)">
+        <button class="btn fantasma icone peq" onclick="zoomTimeline(1.25)" title="Aproximar (+, ou Ctrl e a roda)" aria-label="Aproximar"><i class="i" style="--u:url(/icones/zoom-in.svg)"></i></button>
+        <button class="btn fantasma peq" onclick="ajustarTimeline()" title="Ver o vídeo todo (Shift+Z)">Ajustar</button>
+      </span>
+    </div>
+    <div class="ed-tl">
+      <div class="ed-tl-nomes"><span class="regua"></span><span class="cenas">Cenas</span><span>Apoios</span><span>Legendas</span><span>Sons</span><span>Voz</span><span>Música</span></div>
+      <div class="ed-tl-rolar" id="edTlRolar"><div class="ed-tl-faixas" id="edTlFaixas"></div></div>
+    </div>
+  </div>
+</dialog>
 <script src="/painel.js"></script>
+<script src="/edicao.js"></script>
+<script src="/instagram.js"></script>
 </body>
 </html>

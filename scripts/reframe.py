@@ -139,6 +139,12 @@ def detetar_webcam(registos, w, h):
         segmentos.append({"de": int(t["de"]), "cam": [int(x), int(y), int(cw), int(ch)]})
     if not any("cam" in sg for sg in segmentos) or not mov_fora or np.mean(mov_fora) < 2.5:
         return None
+    # rosto que não é uma webcam: a cara impressa num disco ou num manual filmado à mão, uma estátua ou um desenho
+    # dentro do jogo. Numa webcam sobreposta o jogo à volta mexe-se mais do que a pessoa dentro da moldura; quando
+    # a "webcam" mexe tanto ou mais do que o resto, é a imagem toda a mexer (câmara na mão) e o rosto faz parte da cena.
+    if np.mean(mov_dentro) >= 0.8 * np.mean(mov_fora):
+        print(f"sem webcam: o rosto mexe tanto como o resto da imagem (dentro {np.mean(mov_dentro):.1f} / fora {np.mean(mov_fora):.1f})")
+        return None
     segmentos[0]["de"] = 0
     # a webcam tem sempre a mesma proporção: trechos fora dela (zoom a meio, borda falsa) são acertados à mediana
     asp = float(np.median([c["cam"][2] / c["cam"][3] for c in segmentos if "cam" in c]))

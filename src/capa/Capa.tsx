@@ -4,6 +4,7 @@ import { FONTES } from "../components/motion";
 import { RecortePapel } from "../components/ui";
 import { ESTILOS, EstiloCtx, useEstilo } from "../estilos";
 import { Midia } from "../types";
+import { CapaEditorial } from "./CapaEditorial";
 
 // Capa (thumbnail) de um vídeo, gerada como imagem parada: 9:16 para Shorts/Reels/TikTok, 16:9 para o YouTube.
 // Três layouts para comparar (teste A/B): impacto (foto em ecrã inteiro), dividido (foto + bloco de texto) e objeto (o
@@ -92,6 +93,8 @@ const Foto: React.FC<{ midia?: Midia; filtro?: string; style?: React.CSSProperti
 
 const Capa: React.FC<CapaProps> = ({ texto, destaque, layout, formato, fundo, objeto, cor: corPedida }) => {
   const e = useEstilo();
+  // Editorial: a capa usa os fundos, a tipografia e o objeto do próprio estilo; com cenas low poly, o frame 3D é o fundo
+  if (e.tema === "editorial") return <CapaEditorial texto={texto} destaque={destaque} layout={layout} formato={formato} objeto={objeto} fundo={fundo} />;
   const { width: L, height: A } = useVideoConfig();
   const cor = corPedida ?? e.cor;
   const deitado = formato === "horizontal";

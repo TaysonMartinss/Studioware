@@ -5,6 +5,7 @@ import { renderMedia, selectComposition } from "@remotion/renderer";
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { basename, resolve } from "node:path";
+import { freemem } from "node:os";
 import { escolherMusica } from "./musica.mjs";
 import { ALVO_LUFS, masterizar } from "./masterizar.mjs";
 
@@ -24,6 +25,28 @@ mkdirSync("out", { recursive: true });
 
 // WebGL (cenas 3D) no Windows precisa do ANGLE; a API Node não lê o remotion.config.ts
 const CHROMIUM = { gl: "angle" };
+
+// Quando um render falha, o Remotion cancela e tenta parar o ffmpeg; no Windows, se ele já saiu, o kill dá EBADF
+// num ChildProcess sem ouvinte de erro e o Node morre ali, escondendo o erro verdadeiro. Esse kill é inofensivo:
+// ignora-se, e o renderMedia rejeita a seguir com a causa real.
+// O mesmo para o "write EOF/EPIPE" de escrever num ffmpeg que já fechou (quando o Chrome falha a meio de um frame).
+process.on("uncaughtException", (e) => {
+  if (e?.code === "EBADF" && e?.syscall === "kill") return console.log("(o Remotion tentou parar um processo que já tinha saído: ignorado)");
+  if ((e?.code === "EOF" || e?.code === "EPIPE") && e?.syscall === "write") return console.log("(o codificador já tinha fechado: ignorado)");
+  console.error(e);
+  process.exit(1);
+});
+
+// mensagens da página do render (WebGL, three.js…): cada texto diferente aparece uma vez, as repetições só contam
+const mensagensVistas = new Map();
+const aoLogDoNavegador = ({ type, text }) => {
+  if (type !== "error" && type !== "warning") return;
+  const chave = `${type}: ${String(text).slice(0, 300)}`;
+  const n = (mensagensVistas.get(chave) ?? 0) + 1;
+  mensagensVistas.set(chave, n);
+  if (n === 1) console.log(`[navegador] ${chave}`);
+};
+const resumoDoNavegador = () => [...mensagensVistas].filter(([, n]) => n > 1).map(([k, n]) => `[navegador] ${n}× ${k.slice(0, 160)}`);
 
 // No Windows não se pode substituir um ficheiro aberto (vídeo antigo a tocar no painel ou num leitor,
 // antivírus a analisá-lo). Renderiza-se à parte e troca-se no fim, com novas tentativas.
@@ -102,17 +125,34 @@ for (const id of ids) {
   if (longo) escreverCapitulos(id, manifest);
   const composition = await selectComposition({ serveUrl, id: longo ? "VideoLongo" : "Video", inputProps, chromiumOptions: CHROMIUM });
   let ultimo = -1;
-  await renderMedia({
+  const renderizar = (concurrency) => renderMedia({
     composition, serveUrl, inputProps, codec: "h264", outputLocation: `out/.render/${id}.mp4`, chromiumOptions: CHROMIUM,
     // Os b-rolls ficam em cache de frames; sem limite a cache chega a ~5 GB e, num vídeo longo, a memória acaba
     // a meio e o codificador morre (EPIPE). Limita-se a cache e, no 16:9 (frames maiores), as páginas em paralelo.
-    offthreadVideoCacheSizeInBytes: 1536 * 2 ** 20,
-    ...(longo && { concurrency: 5 }),
+    offthreadVideoCacheSizeInBytes: Math.round(Math.min(1536, Math.max(256, (freemem() / 2 ** 20) * 0.25))) * 2 ** 20, // até 1,5 GB, menos com pouca RAM livre
+    ...(concurrency && { concurrency }),
+    onBrowserLog: aoLogDoNavegador,
     onProgress: ({ progress }) => {
       const p = Math.floor(progress * 100);
       if (p >= ultimo + 5) console.log(`[progresso] ${(ultimo = p)}`);
     },
   });
+  // Cada página do render (uma aba do Chrome) gasta ~0,6 GB com cenas 3D; com pouca RAM livre (um jogo ou o
+  // navegador abertos) o Chrome fica sem memória e o render morre. As páginas em paralelo seguem a RAM livre
+  // agora; se mesmo assim falhar, tenta-se uma vez com 2 (mais lento, mas acaba).
+  const livreGB = freemem() / 2 ** 30, porRam = Math.max(2, Math.floor((livreGB - 0.8) / 0.6));
+  const paginas = Math.min(longo ? 5 : 8, porRam);
+  console.log(`RAM livre: ${livreGB.toFixed(1)} GB → ${paginas} páginas em paralelo${paginas <= 3 ? " (feche jogos ou o navegador para renderizar mais depressa)" : ""}`);
+  try {
+    await renderizar(paginas);
+  } catch (e) {
+    console.log(`✘ O render falhou: ${e?.message ?? e}`);
+    resumoDoNavegador().forEach((l) => console.log(l));
+    if (paginas <= 2) throw e;
+    console.log("↻ A tentar outra vez com 2 páginas em paralelo…");
+    ultimo = -1;
+    await renderizar(2);
+  }
   // volume final no padrão das plataformas (-14 LUFS); se falhar, o vídeo segue como saiu do render
   console.log("[etapa] masterizar");
   const m = masterizar(`out/.render/${id}.mp4`);

@@ -41,5 +41,7 @@ export const Musica: React.FC<{ manifest: Manifest }> = ({ manifest }) => {
   }, [manifest.cenas, durationInFrames]);
 
   if (!manifest.musica) return null;
-  return <Html5Audio src={staticFile(manifest.musica)} loop volume={(f) => (curva[f] ?? 0) * ganho} />;
+  // o trecho escolhido no painel: a faixa começa nesse segundo (e repete a partir dele se o vídeo for mais longo)
+  const inicio = Math.max(0, Math.round((manifest.musicaInicio ?? 0) * FPS));
+  return <Html5Audio src={staticFile(manifest.musica)} loop trimBefore={inicio || undefined} volume={(f) => (curva[f] ?? 0) * ganho} />;
 };

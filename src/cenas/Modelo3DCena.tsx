@@ -19,14 +19,17 @@ const sair = Easing.out(Easing.cubic);
 export const Glb: React.FC<{ url: string; t: number; aoMedir: (caixa: Vector3) => void }> = ({ url, t, aoMedir }) => {
   const { scene } = useGLTF(url);
   const { objeto, escala, pecas } = useMemo(() => {
-    // orienta o modelo com a face maior virada para a câmara: o eixo mais fino passa a ser a profundidade
-    // (muitos modelos vêm "deitados", e de frente só se via a lateral)
+    // o modelo fica na posição em que foi feito (em pé, como os outros: um avião visto de lado, não de cima).
+    // Só os objetos quase planos (telemóvel, moeda, cartão) que vêm deitados rodam para mostrar a face à câmara;
+    // de outra forma só se via a borda fina
     const o = new Group();
     o.add(scene.clone(true));
     const bruto = new Box3().setFromObject(o).getSize(new Vector3());
-    const fino = Math.min(bruto.x, bruto.y, bruto.z);
-    if (fino === bruto.y) o.rotation.x = Math.PI / 2;
-    else if (fino === bruto.x) o.rotation.y = Math.PI / 2;
+    const [fino, medio] = [bruto.x, bruto.y, bruto.z].sort((a, b) => a - b);
+    if (fino < medio * 0.15) {
+      if (fino === bruto.y) o.rotation.x = Math.PI / 2;
+      else if (fino === bruto.x) o.rotation.y = Math.PI / 2;
+    }
     o.updateMatrixWorld(true);
     const caixa = new Box3().setFromObject(o);
     const tamanho = caixa.getSize(new Vector3());

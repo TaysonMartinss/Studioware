@@ -2,6 +2,8 @@ import { AbsoluteFill, Easing, Sequence, interpolate, random, useVideoConfig } f
 import { Sfx } from "../components/Sfx";
 import { Decoracoes } from "./Decoracoes";
 import { usePaleta } from "./DadoEditorial";
+import { FundoNoir, PlanoFundo3D } from "../components/FundosNoir";
+import { ObjetoEditorial } from "./ObjetoEditorial";
 import { FundoVice } from "../components/Vice";
 import { DesfoqueMovimento } from "../aprendidos/_kit";
 import { Conteudo } from "../components/MidiaReal";
@@ -32,11 +34,38 @@ const blocos = (ws: Palavra[]) => {
 
 const limpar = (t: string) => t.replace(/[.,;:!?…"]+$/g, "");
 
+// quebra a frase em linhas de tamanho parecido (em vez de encher a primeira e deixar uma palavra sozinha na última):
+// o número de linhas sai do que cabe na largura, e cada linha fica perto da média
+const partirLinhas = (ws: Palavra[], maxChars: number): Palavra[][] => {
+  const comp = (l: Palavra[]) => l.reduce((t, p) => t + limpar(p.texto).length, 0) + Math.max(0, l.length - 1);
+  const total = comp(ws);
+  if (total <= maxChars) return [ws];
+  const alvo = total / Math.ceil(total / maxChars);
+  const linhas: Palavra[][] = [[]];
+  for (const p of ws) {
+    const atual = linhas[linhas.length - 1];
+    if (atual.length && (comp(atual) + 1 + limpar(p.texto).length > maxChars || comp(atual) >= alvo)) linhas.push([p]);
+    else atual.push(p);
+  }
+  return linhas;
+};
+// tamanho da letra e linhas de uma frase que tem de caber em `largura` px e em no máximo `maxLinhas`
+const medirFrase = (ws: Palavra[], largura: number, maior: number, maxLinhas: number, larguraLetra = 0.47) => {
+  const longa = Math.max(5, ...ws.map((p) => limpar(p.texto).length));
+  let tam = Math.min(maior, largura / (longa * larguraLetra));
+  let linhas = partirLinhas(ws, Math.floor(largura / (tam * larguraLetra)));
+  for (let k = 0; k < 8 && linhas.length > maxLinhas; k++) {
+    tam *= 0.88;
+    linhas = partirLinhas(ws, Math.floor(largura / (tam * larguraLetra)));
+  }
+  return { tam, linhas };
+};
+
 export const Tipografia: React.FC<{ cena: CenaTipografia; cor: string; destaques?: Set<string> }> = ({ cena, destaques }) => {
   const f = useFrame();
   const { fps, width: L, height: A } = useVideoConfig();
   // paleta editorial fixa (papel, tinta e vermelho), também quando entra num vídeo de outro estilo (cortes)
-  const P = usePaleta();
+  const P = usePaleta((cena.palavras ?? [])[0]?.texto ?? "x", cena.fundo);
   const e = { ...useEstilo(), fundo: P.vice ? "#1a0a2e" : P.fundo, corTexto: P.tinta };
   const cor = P.destaque;
   const ms = (f / fps) * 1000;
@@ -102,7 +131,7 @@ export const Tipografia: React.FC<{ cena: CenaTipografia; cor: string; destaques
 
   return (
     <DesfoqueMovimento vx={vx} vy={vy} forca={0.4}>
-    <AbsoluteFill style={{ perspective: 1400, perspectiveOrigin: "50% 45%", overflow: "hidden" }}>
+    <AbsoluteFill style={{ perspective: 1400, perspectiveOrigin: "50% 45%", overflow: "hidden", background: P.noir ? "#03060f" : e.fundo }}>
       {/* sound design: woosh em cada frase nova (a primeira já tem o da cena) e um toque quando a palavra-chave entra */}
       {lista.map((b, i) => {
         const ini = Math.round((b[0].inicioMs / 1000) * fps);
@@ -122,32 +151,43 @@ export const Tipografia: React.FC<{ cena: CenaTipografia; cor: string; destaques
           filter: "blur(1.2px)", // profundidade de campo: o fundo fica ligeiramente desfocado
         }} />
         {/* no Vice, o céu ao pôr do sol com o sol e as palmeiras como plano do fundo */}
-        {P.vice && <div style={{ position: "absolute", inset: 0, transform: "translateZ(-380px) scale(1.3)" }}><FundoVice /></div>}
+        {P.vice && <PlanoFundo3D><FundoVice /></PlanoFundo3D>}
+        {P.noir && <PlanoFundo3D><FundoNoir variante={P.fundoNoir} /></PlanoFundo3D>}
         {/* elementos decorativos (formas, setas, códigos de barras, textos) a várias profundidades, com desfoque */}
         {!dividido && <Decoracoes bloco={indice} inicio={iniBloco} f={f} fps={fps} L={L} A={A} tinta={e.corTexto} cor={cor} evitar={[topoTexto - 40, topoTexto + 520]} />}
         {dividido ? (
           <>
             {/* arcos cinzentos grossos e textos verticais nas margens (variante do print) */}
             <svg width={L} height={A} style={{ position: "absolute", inset: 0, transform: "translateZ(-200px)", overflow: "visible" }}>
-              <circle cx={L * 1.02} cy={A * 0.16} r={L * 0.5} fill="none" stroke={P.vice ? "#ffffff22" : "#d9d7d1"} strokeWidth={72} />
-              <circle cx={-L * 0.05} cy={A * 0.98} r={L * 0.48} fill="none" stroke={P.vice ? "#ffffff22" : "#d9d7d1"} strokeWidth={72} />
+              <circle cx={L * 1.02} cy={A * 0.16} r={L * 0.5} fill="none" stroke={P.vice ? "#ffffff22" : P.noir ? "#ffffff2e" : "#d9d7d1"} strokeWidth={72} />
+              <circle cx={-L * 0.05} cy={A * 0.98} r={L * 0.48} fill="none" stroke={P.vice ? "#ffffff22" : P.noir ? "#ffffff2e" : "#d9d7d1"} strokeWidth={72} />
             </svg>
             <div style={{ position: "absolute", left: 34, top: A * 0.5, transform: "translateZ(60px) rotate(-90deg)", transformOrigin: "0 0", fontFamily: FONTES.mono, fontSize: 20, letterSpacing: "0.3em", color: P.tinta, opacity: 0.6, whiteSpace: "nowrap" }}>{`${etiqueta} • EDIÇÃO •`}</div>
             <div style={{ position: "absolute", right: 34, top: A * 0.62, transform: "translateZ(60px) rotate(90deg)", transformOrigin: "100% 0", fontFamily: FONTES.mono, fontSize: 20, letterSpacing: "0.3em", color: P.tinta, opacity: 0.6, whiteSpace: "nowrap" }}>{`• ${etiqueta} • VOL. 01`}</div>
             {/* objeto grande ao centro, à frente */}
             <div style={{ position: "absolute", left: L * 0.06, width: L * 0.88, top: A * 0.3, height: A * 0.38, transform: `translateZ(180px) translateY(${flutua}px) rotate(${Math.sin(f / 40) * 3}deg)`, filter: "drop-shadow(0 40px 40px #0000004d)" }}>
-              <Conteudo midia={cena.objeto!} estilo={{ width: "100%", height: "100%", objectFit: "contain", background: "none" }} />
+              <ObjetoEditorial midia={cena.objeto!} tamanho={Math.round(A * 0.3)} cor={P.destaque} />
             </div>
             {/* a frase no topo, à direita, em serifa itálica */}
-            <div style={{ position: "absolute", right: 80, width: L * 0.72, top: A * 0.11, textAlign: "right", color: P.tinta, transformStyle: "preserve-3d", opacity: Math.min(1, sBloco * 1.5) }}>
-              {antes.length > 0 && <Linha ws={antes} estilo={{ justifyContent: "flex-end", fontFamily: FONTES.serif, fontStyle: "italic", fontSize: 84, lineHeight: 1.02, letterSpacing: "-0.01em", textShadow: P.vice ? P.sombra : undefined, ...z(60) }} />}
+            {/* margem larga e letra que encolhe com a palavra mais comprida: com a perspetiva e o movimento da câmara a frase
+                fica sempre dentro da tela */}
+            <div style={{ position: "absolute", right: 120, width: L * 0.64, top: A * 0.13, textAlign: "right", color: P.tinta, transformStyle: "preserve-3d", opacity: Math.min(1, sBloco * 1.5) }}>
+              {/* frase longa: quebrada em até 3 linhas equilibradas (a letra encolhe se precisar de mais) */}
+              {antes.length > 0 && (() => {
+                const { tam, linhas } = medirFrase(antes, L * 0.64, 80, 3);
+                return linhas.map((l, n) => <Linha key={n} ws={l} estilo={{ justifyContent: "flex-end", fontFamily: FONTES.serif, fontStyle: "italic", fontSize: tam, lineHeight: 1.02, letterSpacing: "-0.01em", textShadow: P.sombraTexto, ...z(30) }} />);
+              })()}
             </div>
             {/* a palavra-chave em baixo, à esquerda, pesada e em itálico, com o resto pequeno por baixo à direita */}
             <div style={{ position: "absolute", left: 60, right: 80, top: A * 0.7, color: P.tinta, transformStyle: "preserve-3d" }}>
-              <div style={{ fontFamily: FONTES.inter, fontWeight: 900, fontStyle: "italic", fontSize: tamanhoChave * 0.84, lineHeight: 1, letterSpacing: "-0.05em", textAlign: "left", paddingLeft: 12, opacity: visivel(chave) ? 1 : 0, transform: `translateZ(30px) scale(${0.8 + 0.2 * entra(chave)})`, transformOrigin: "0% 50%", ...(P.vice ? { fontFamily: FONTES.anton, fontWeight: 400, textTransform: "uppercase", letterSpacing: "0.01em", color: P.destaque, textShadow: P.sombra } : {}) }}>
+              <div style={{ fontFamily: FONTES.inter, fontWeight: 900, fontStyle: "italic", fontSize: tamanhoChave * 0.84, lineHeight: 1, letterSpacing: "-0.05em", textShadow: P.sombraTexto, textAlign: "left", paddingLeft: 12, opacity: visivel(chave) ? 1 : 0, transform: `translateZ(30px) scale(${0.8 + 0.2 * entra(chave)})`, transformOrigin: "0% 50%", ...(P.vice ? { fontFamily: FONTES.anton, fontWeight: 400, textTransform: "uppercase", letterSpacing: "0.01em", color: P.destaque, textShadow: P.sombra } : {}) }}>
                 {palavraChave}
               </div>
-              {depois.length > 0 && <Linha ws={depois} estilo={{ justifyContent: "flex-end", fontFamily: FONTES.serif, fontStyle: "italic", fontSize: 50, lineHeight: 1.1, marginTop: 6, opacity: 0.85, ...z(-40) }} />}
+              {/* o resto da frase por baixo da palavra-chave: até 2 linhas equilibradas */}
+              {depois.length > 0 && (() => {
+                const { tam, linhas } = medirFrase(depois, L * 0.7, 50, 2);
+                return <div style={{ marginTop: 6 }}>{linhas.map((l, n) => <Linha key={n} ws={l} estilo={{ justifyContent: "flex-end", fontFamily: FONTES.serif, fontStyle: "italic", fontSize: tam, lineHeight: 1.1, opacity: 0.85, ...z(-40) }} />)}</div>;
+              })()}
             </div>
           </>
         ) : (
@@ -155,14 +195,14 @@ export const Tipografia: React.FC<{ cena: CenaTipografia; cor: string; destaques
         {/* camada do objeto: à frente do texto */}
         {temObjeto && (
           <div style={{ position: "absolute", left: L * 0.14, width: L * 0.72, top: topoObjeto, height: A * 0.42, transform: `translateZ(180px) translateY(${flutua}px) rotate(${Math.sin(f / 40) * 3}deg)`, filter: "drop-shadow(0 40px 40px #0000004d)" }}>
-            <Conteudo midia={cena.objeto!} estilo={{ width: "100%", height: "100%", objectFit: "contain", background: "none" }} />
+            <ObjetoEditorial midia={cena.objeto!} tamanho={Math.round(A * 0.3)} cor={P.destaque} />
           </div>
         )}
         {/* camadas do texto: cada linha à sua profundidade (paralaxe quando a câmara roda) */}
         <div style={{ position: "absolute", left: 60, right: 60, top: topoTexto, textAlign: "center", color: e.corTexto, transformStyle: "preserve-3d", transform: `scale(${0.96 + 0.04 * sBloco})` }}>
           <div style={{ fontFamily: FONTES.mono, fontSize: 26, letterSpacing: "0.2em", opacity: 0.55 * Math.min(1, sBloco * 1.5), marginBottom: 18, ...z(110) }}>{etiqueta} ——</div>
-          {antes.length > 0 && <Linha ws={antes} estilo={{ fontFamily: FONTES.serif, fontStyle: "italic", fontSize: 76, lineHeight: 1.05, letterSpacing: "-0.01em", textShadow: P.vice ? P.sombra : undefined, ...z(60) }} />}
-          <div style={{ fontFamily: FONTES.inter, fontWeight: 900, fontSize: tamanhoChave, lineHeight: 1, letterSpacing: "-0.05em", margin: "6px 0", opacity: visivel(chave) ? 1 : 0, transform: `translateZ(0px) scale(${0.8 + 0.2 * entra(chave)})`, ...(P.vice ? { fontFamily: FONTES.anton, fontWeight: 400, fontStyle: "italic", textTransform: "uppercase", letterSpacing: "0.01em", color: P.destaque, textShadow: P.sombra } : {}) }}>
+          {antes.length > 0 && <Linha ws={antes} estilo={{ fontFamily: FONTES.serif, fontStyle: "italic", fontSize: 76, lineHeight: 1.05, letterSpacing: "-0.01em", textShadow: P.sombraTexto, ...z(60) }} />}
+          <div style={{ fontFamily: FONTES.inter, fontWeight: 900, fontSize: tamanhoChave, lineHeight: 1, letterSpacing: "-0.05em", textShadow: P.sombraTexto, margin: "6px 0", opacity: visivel(chave) ? 1 : 0, transform: `translateZ(0px) scale(${0.8 + 0.2 * entra(chave)})`, ...(P.vice ? { fontFamily: FONTES.anton, fontWeight: 400, fontStyle: "italic", textTransform: "uppercase", letterSpacing: "0.01em", color: P.destaque, textShadow: P.sombra } : {}) }}>
             {palavraChave}
           </div>
           {/* sublinhado à mão na cor de destaque, logo por baixo da palavra-chave, quando ela já foi dita */}

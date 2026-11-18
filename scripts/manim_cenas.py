@@ -24,6 +24,24 @@ if MIKTEX.exists() and str(MIKTEX) not in AMBIENTE.get("PATH", ""):
     AMBIENTE["PATH"] = str(MIKTEX) + os.pathsep + AMBIENTE.get("PATH", "")
 
 
+
+def registar_custo_claude(ev, etapa, video=None):
+    """Uma linha em out/custos.jsonl (menu Custos do painel), como em scripts/custos.mjs."""
+    try:
+        from datetime import datetime, timezone
+        u = ev.get("usage") or {}
+        linha = {"em": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"), "servico": "claude", "custoUSD": float(ev.get("total_cost_usd") or 0),
+                 "tokens": {"entrada": u.get("input_tokens", 0), "saida": u.get("output_tokens", 0), "cacheLeitura": u.get("cache_read_input_tokens", 0), "cacheEscrita": u.get("cache_creation_input_tokens", 0)},
+                 "etapa": etapa, "video": video or VIDEO_ATUAL}
+        Path("out").mkdir(exist_ok=True)
+        with open("out/custos.jsonl", "a", encoding="utf-8") as f:
+            f.write(json.dumps(linha, ensure_ascii=False) + "\n")
+    except Exception:
+        pass
+
+
+VIDEO_ATUAL = None
+
 def renderizar(fonte, trabalho, i, resolucao):
     return subprocess.run(
         [sys.executable, "-m", "manim", "render", str(fonte), "Cena", "-q", "h", "--fps", "30",
@@ -42,11 +60,16 @@ def corrigir_com_claude(codigo, erro):
         f"Erro:\n{erro[-2500:]}\n\nCódigo:\n```python\n{codigo}\n```"
     )
     try:
-        r = subprocess.run(["claude", "-p", "--append-system-prompt", GUIA.read_text(encoding="utf-8")], input=pedido,
+        r = subprocess.run(["claude", "-p", "--output-format", "json", "--append-system-prompt", GUIA.read_text(encoding="utf-8")], input=pedido,
                            capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=240)
     except Exception:
         return None
-    m = re.search(r"```(?:python)?\n(.*?)```", r.stdout or "", re.S)
+    try:
+        ev = json.loads(r.stdout or "{}")
+    except ValueError:
+        ev = {"result": r.stdout or ""}
+    registar_custo_claude(ev, "Corrigir cena Manim")
+    m = re.search(r"```(?:python)?\n(.*?)```", str(ev.get("result") or ""), re.S)
     novo = (m.group(1) if m else "").strip()
     novo = "\n".join(l for l in novo.splitlines() if not re.match(r"\s*(from manim import|import |config\.background_color)", l))
     return novo if "class Cena" in novo else None
@@ -57,6 +80,8 @@ def main():
     forcar = "--forcar" in sys.argv
     roteiro = json.loads(caminho.read_text(encoding="utf-8"))
     vid = roteiro["id"]
+    global VIDEO_ATUAL
+    VIDEO_ATUAL = vid
     pasta = Path("public/videos") / vid
     pasta.mkdir(parents=True, exist_ok=True)
     trabalho = Path("out/manim") / vid

@@ -40,17 +40,28 @@ como um editor de reels. Durante o apoio a pessoa **não aparece** (sem câmara 
    `{"tipo": "editorial", "inicio": 8.2, "fim": 13.0, "chave": "perguntando" (a palavra da frase a pôr em grande), "layout": "centro" | "dividido", "objeto": {...}}`
    - `objeto`: algo que remete à frase. Primeiro procure um **modelo 3D realista do Poly Haven** já no projeto
      `{"fonte": "polyhaven", "modelo": "<id>"}` (lista por categoria em `.claude/skills/novo-video/modelos-polyhaven.md`:
-     objetos, comida, ferramentas, eletrónica, mobília, natureza…); se não houver, um modelo realista do Sketchfab
+     objetos, comida, ferramentas, eletrónica, mobília, natureza…); para corpo e saúde, um modelo de **anatomia**
+     `{"fonte": "anatomia", "modelo": "<id>"}` (coracao, cerebro, torso_orgaos, esqueleto, corpo, musculos, estomago, rim,
+     olho, dna, globulos, comprimido, seringa, figado, figado_cirrose, pancreas, garrafa_gin, garrafa_gin_rosa,
+     garrafas_lowpoly, copo_drink, copo_alto); para ideias e objetos simples, um **emoji 3D** `{"fonte": "emoji", "consulta":
+     "light bulb"}` (brain, light bulb, kitchen knife, fire, money bag, trophy…); nos cortes de CS, a **skin** falada
+     `{"fonte": "cs2", "consulta": "AK-47 | Redline"}`; se não houver, um modelo realista do Sketchfab
      `{"fonte": "sketchfab", "consulta": "human brain"}`
      (termo em inglês, um objeto só: brain, heart, hourglass, smartphone, coin, trophy, clock, key, lightbulb…), ou um modelo
      **Kenney** já no projeto `{"fonte": "kenney", "modelo": "pack/nome"}` (lista em `.claude/skills/novo-video/modelos-lowpoly.md`),
-     ou uma imagem de um objeto isolado `{"fonte": "pixabay", "consulta": "hourglass isolated"}`.
+     ou uma imagem de um objeto isolado `{"fonte": "pixabay", "consulta": "hourglass isolated"}`, ou, **só se não houver
+     nenhum modelo 3D nem imagem que sirva**, um **ícone** `{"fonte": "icone", "consulta": "user"}` (nome de lucide.dev/icons),
+     desenhado sólido com luz de um lado em grão (último recurso, nunca no lugar de um 3D que exista).
    - `layout`: `dividido` = frase no topo à direita, objeto grande ao centro, palavra-chave em baixo à esquerda (bom para
      objetos marcantes); `centro` = texto centrado com o objeto acima ou abaixo. Alterne.
 2. **`dado`** (quando a pessoa cita um número): o número conta no ecrã em formato editorial, com o que significa e,
    se ela compara valores, um gráfico de barras.
    `{"tipo": "dado", "inicio": 20.0, "fim": 23.0, "valor": 475, "prefixo": "", "sufixo": " milhões", "rotulo": "de views em 24 horas", "barras": [{"rotulo": "2019", "valor": 120}, {"rotulo": "2024", "valor": 475}]}`
    (`barras` só quando há mesmo uma comparação; a última fica a vermelho).
+   **`calendario`** (quando a pessoa fala de tempo a passar entre duas datas ou anos: "de 2010 a 2023", "em março
+   inteiro", "dois anos depois"): folhas de calendário a cair, com o tempo que passou a contar. Pelo menos 2,5 s.
+   `{"tipo": "calendario", "inicio": 12.0, "fim": 15.5, "de": "2010", "ate": "2023", "rotulo": "13 anos depois"}`
+   (datas: "2010" passa anos, "03/2020" meses, "01/03/2020" dias; `rotulo` opcional e curto).
 3. **`midia`** (vídeo em ecrã inteiro que ilustra o que se diz neste momento): uma cena real.
    `{"tipo": "midia", "inicio": 4.2, "fim": 8.0, "midia": {"fonte": "pixabay" | "pexels", "consulta": "termos em inglês concretos", "tipo": "video" | "imagem"}}`
    (`"wikimedia"` para pessoas famosas, lugares e objetos históricos; `"steam"` para um jogo de PC). Prefira `video`.
@@ -58,7 +69,12 @@ como um editor de reels. Durante o apoio a pessoa **não aparece** (sem câmara 
    cima (quase sempre um número). `{"tipo": "faixa", "inicio": 6.0, "fim": 10.0, "titulo": "475M VIEWS", "midia": {...}}`.
 5. **`palavras`**: cartaz de 1 a 4 palavras gigantes (vermelho e branco) para emoções ou ideias abstratas ditas com força.
    `{"tipo": "palavras", "inicio": 14.0, "fim": 16.5, "palavras": ["ANSIEDADE", "MEDO"], "fundo": "escuro" | "papel"}`. No máximo 2.
-6. **`lowpoly`**: cena 3D low poly animada, para situações encenadas que não existem em vídeo de stock.
+6. **`print`** (a prova: notícia, tweet, documento, tabela, ecrã de jogo ou app): a imagem num plano 3D percorrida por uma
+   câmara de detalhe em detalhe (curva suave 65/65, motion blur e desfoque fora do foco). Use quando a pessoa cita uma
+   notícia, um anúncio, uma publicação ou um número de uma página.
+   `{"tipo": "print", "inicio": 11.0, "fim": 15.5, "midia": {"fonte": "wikimedia" | "steam" | "pixabay", "consulta": "...", "tipo": "imagem"}, "pontos": [{"x": 0.3, "y": 0.25, "zoom": 2, "ry": 10}, {"x": 0.6, "y": 0.7, "zoom": 2.2, "ry": -8}]}`
+   (`pontos` opcional: x e y de 0 a 1 na imagem, `zoom` 1,6 a 2,5, `rx`/`ry`/`rz` inclinação em graus; sem eles, percurso automático).
+7. **`lowpoly`**: cena 3D low poly animada, para situações encenadas que não existem em vídeo de stock.
    `{"tipo": "lowpoly", "inicio": 23.0, "fim": 27.0, "cena": {"cenario": "espaco", "variante": "sistema_solar"}}` (campos abaixo).
 
 ## Resposta
@@ -76,5 +92,8 @@ Responde **só com JSON**, sem texto à volta:
   ]
 }
 ```
+
+Pode juntar `"sons": [{"nome": "<id do catálogo>", "em": 12.3}]` (sons de efeito populares, no máximo 2; o catálogo com
+quando usar e onde marcar cada um está no fim deste guia); sem momento que peça, não ponha nenhum.
 
 Em `cena` (lowpoly) não escrevas `tipo` nem `fala`: são preenchidos. Sem `titulo` (a legenda já mostra a fala).

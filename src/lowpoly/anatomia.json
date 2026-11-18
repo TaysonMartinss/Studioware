@@ -1,0 +1,293 @@
+{
+ "coracao": {
+  "arquivo": "modelos3d/sketchfab-adb2c91ec8194b24b7ba431aa573a906.glb",
+  "nome": "Coração humano",
+  "tags": [
+   "coração",
+   "heart",
+   "cardíaco",
+   "coração anatómico",
+   "sangue",
+   "cardio"
+  ],
+  "credito": "Modelo 3D: Human heart, realistic anatomical model por TinkerLane Studio (Sketchfab, CC Attribution)",
+  "fonte": "https://sketchfab.com/3d-models/human-heart-realistic-anatomical-model-adb2c91ec8194b24b7ba431aa573a906"
+ },
+ "cerebro": {
+  "arquivo": "modelos3d/sketchfab-735ca31a3b22433281e6fa9606792faa.glb",
+  "nome": "Cérebro",
+  "tags": [
+   "cérebro",
+   "brain",
+   "mente",
+   "neurónios",
+   "memória",
+   "cabeça"
+  ],
+  "credito": "Modelo 3D: Brain por maheshshinde777 (Sketchfab, CC Attribution)",
+  "fonte": "https://sketchfab.com/3d-models/brain-735ca31a3b22433281e6fa9606792faa"
+ },
+ "torso_orgaos": {
+  "arquivo": "modelos3d/sketchfab-558d4428da7c4aea9373f62be6f9a98f.glb",
+  "nome": "Torso com órgãos",
+  "tags": [
+   "órgãos",
+   "pulmões",
+   "lungs",
+   "torso",
+   "anatomia",
+   "estômago",
+   "coração",
+   "corpo por dentro"
+  ],
+  "credito": "Modelo 3D: A fully  anatomy, stomach, lungs, heart. por Joe_Bou_Khalil (Sketchfab, CC Attribution)",
+  "fonte": "https://sketchfab.com/3d-models/a-fully-anatomy-stomach-lungs-heart-558d4428da7c4aea9373f62be6f9a98f"
+ },
+ "esqueleto": {
+  "arquivo": "modelos3d/sketchfab-9210377c7a514cf6b48a31b9d3991ff3.glb",
+  "nome": "Esqueleto",
+  "tags": [
+   "esqueleto",
+   "skeleton",
+   "ossos",
+   "bones",
+   "osso",
+   "coluna"
+  ],
+  "credito": "Modelo 3D: Skeleton animated por danielmclogan (Sketchfab, CC Attribution)",
+  "fonte": "https://sketchfab.com/3d-models/skeleton-animated-9210377c7a514cf6b48a31b9d3991ff3"
+ },
+ "corpo": {
+  "arquivo": "modelos3d/sketchfab-15a422001834483c9750ce6117d59cc1.glb",
+  "nome": "Corpo humano",
+  "tags": [
+   "corpo",
+   "body",
+   "humano",
+   "homem",
+   "postura",
+   "silhueta"
+  ],
+  "credito": "Modelo 3D: Male Body por Alexander Antipov (Sketchfab, CC Attribution)",
+  "fonte": "https://sketchfab.com/3d-models/male-body-15a422001834483c9750ce6117d59cc1"
+ },
+ "estomago": {
+  "arquivo": "modelos3d/sketchfab-29b78b9373c943a8bb6c5c2cf4592967.glb",
+  "nome": "Estômago",
+  "tags": [
+   "estômago",
+   "stomach",
+   "digestão",
+   "intestino",
+   "barriga",
+   "gastrite"
+  ],
+  "credito": "Modelo 3D: Stomach por SAIKIRAN PANDHINA (Sketchfab, CC Attribution)",
+  "fonte": "https://sketchfab.com/3d-models/stomach-29b78b9373c943a8bb6c5c2cf4592967"
+ },
+ "rim": {
+  "arquivo": "modelos3d/sketchfab-2417146cf20a49b5960c79d554d20650.glb",
+  "nome": "Rim",
+  "tags": [
+   "rim",
+   "rins",
+   "kidney",
+   "urina",
+   "renal"
+  ],
+  "credito": "Modelo 3D: Human kidney (Lowpoly example 9k) por Peter Linejung (Sketchfab, CC Attribution)",
+  "fonte": "https://sketchfab.com/3d-models/human-kidney-lowpoly-example-9k-2417146cf20a49b5960c79d554d20650"
+ },
+ "dna": {
+  "arquivo": "modelos3d/sketchfab-e3f82ab0c50a490bbace8d5ccc4698b8.glb",
+  "nome": "DNA",
+  "tags": [
+   "dna",
+   "genética",
+   "gene",
+   "hélice",
+   "hereditário"
+  ],
+  "credito": "Modelo 3D: DNA Ribbon Molecular Model por S.Duce (Sketchfab, CC Attribution)",
+  "fonte": "https://sketchfab.com/3d-models/dna-ribbon-molecular-model-e3f82ab0c50a490bbace8d5ccc4698b8"
+ },
+ "olho": {
+  "arquivo": "modelos3d/sketchfab-281784b8e6ff4713991cdee224f07b09.glb",
+  "nome": "Olho",
+  "tags": [
+   "olho",
+   "eye",
+   "visão",
+   "globo ocular",
+   "vista"
+  ],
+  "credito": "Modelo 3D: Anatomical Eye ball por assetfactory (Sketchfab, Free Standard)",
+  "fonte": "https://sketchfab.com/3d-models/anatomical-eye-ball-281784b8e6ff4713991cdee224f07b09"
+ },
+ "musculos": {
+  "arquivo": "modelos3d/sketchfab-244061a0323b4d2e9c60d9aba374c937.glb",
+  "nome": "Corpo com músculos",
+  "tags": [
+   "músculo",
+   "músculos",
+   "muscle",
+   "academia",
+   "treino",
+   "hipertrofia"
+  ],
+  "credito": "Modelo 3D: Male base mesh with muscle detail por C.J..Goldman (Sketchfab, CC Attribution)",
+  "fonte": "https://sketchfab.com/3d-models/male-base-mesh-with-muscle-detail-244061a0323b4d2e9c60d9aba374c937"
+ },
+ "globulos": {
+  "arquivo": "modelos3d/sketchfab-657f7b34ab2e43878c4f366e3e940ebd.glb",
+  "nome": "Glóbulos vermelhos",
+  "tags": [
+   "glóbulos",
+   "sangue",
+   "hemácias",
+   "blood",
+   "anemia",
+   "ferro"
+  ],
+  "credito": "Modelo 3D: Red Blood Cells (Erythrocytes) por _Bonehead14 (Sketchfab, CC Attribution)",
+  "fonte": "https://sketchfab.com/3d-models/red-blood-cells-erythrocytes-657f7b34ab2e43878c4f366e3e940ebd"
+ },
+ "comprimido": {
+  "arquivo": "modelos3d/sketchfab-4892b8f61b0c4b27a65b0dfd489d6af5.glb",
+  "nome": "Comprimido",
+  "tags": [
+   "comprimido",
+   "remédio",
+   "pill",
+   "cápsula",
+   "medicamento",
+   "suplemento"
+  ],
+  "credito": "Modelo 3D: CC0 - Pill por plaggy (Sketchfab, CC Attribution)",
+  "fonte": "https://sketchfab.com/3d-models/cc0-pill-4892b8f61b0c4b27a65b0dfd489d6af5"
+ },
+ "seringa": {
+  "arquivo": "modelos3d/sketchfab-1de7893db91c4cf8822ff10ee999cd67.glb",
+  "nome": "Seringa",
+  "tags": [
+   "seringa",
+   "vacina",
+   "injeção",
+   "syringe",
+   "agulha"
+  ],
+  "credito": "Modelo 3D: Re-animator Syringe por Lashley (Sketchfab, CC Attribution)",
+  "fonte": "https://sketchfab.com/3d-models/re-animator-syringe-1de7893db91c4cf8822ff10ee999cd67"
+ },
+ "figado": {
+  "arquivo": "modelos3d/sketchfab-ffa6a425ecb04b229542a66d8df21e90.glb",
+  "nome": "Fígado",
+  "tags": [
+   "fígado",
+   "liver",
+   "hepático",
+   "álcool",
+   "metabolismo",
+   "desintoxicar"
+  ],
+  "credito": "Modelo 3D: Human Liver por Muhammad.Airil (Sketchfab, CC Attribution)",
+  "fonte": "https://sketchfab.com/3d-models/human-liver-ffa6a425ecb04b229542a66d8df21e90"
+ },
+ "figado_cirrose": {
+  "arquivo": "modelos3d/sketchfab-365058448acc40cbb235301c7d723d09.glb",
+  "nome": "Fígado com cirrose",
+  "tags": [
+   "cirrose",
+   "fígado doente",
+   "fígado gordo",
+   "cirrhosis",
+   "álcool",
+   "hepatite"
+  ],
+  "credito": "Modelo 3D: Cirrhosis from Hep C liver por ScienceLifeNY (Sketchfab, CC Attribution)",
+  "fonte": "https://sketchfab.com/3d-models/cirrhosis-from-hep-c-liver-365058448acc40cbb235301c7d723d09"
+ },
+ "pancreas": {
+  "arquivo": "modelos3d/sketchfab-f7b30e11b5df445fbdfe0e262e777c85.glb",
+  "nome": "Pâncreas",
+  "tags": [
+   "pâncreas",
+   "pancreas",
+   "pancreatite",
+   "insulina",
+   "diabetes",
+   "álcool"
+  ],
+  "credito": "Modelo 3D: Human Pancreas Cross section por arloopa (Sketchfab, CC Attribution)",
+  "fonte": "https://sketchfab.com/3d-models/human-pancreas-cross-section-f7b30e11b5df445fbdfe0e262e777c85"
+ },
+ "garrafa_gin": {
+  "arquivo": "modelos3d/sketchfab-a4bc1a56710346bc856fdf7d73e9be4b.glb",
+  "nome": "Garrafa de gin",
+  "tags": [
+   "gin",
+   "garrafa",
+   "bottle",
+   "bebida",
+   "álcool",
+   "destilado"
+  ],
+  "credito": "Modelo 3D: GinGer Gin por theapic (Sketchfab, CC Attribution)",
+  "fonte": "https://sketchfab.com/3d-models/ginger-gin-a4bc1a56710346bc856fdf7d73e9be4b"
+ },
+ "garrafa_gin_rosa": {
+  "arquivo": "modelos3d/sketchfab-c7ace0b0d679475f912df43fc6f7158f.glb",
+  "nome": "Garrafa de gin rosa",
+  "tags": [
+   "gin rosa",
+   "garrafa",
+   "bebida",
+   "álcool",
+   "barato"
+  ],
+  "credito": "Modelo 3D: Rose Gin Bottle por Reeeeeece (Sketchfab, CC Attribution)",
+  "fonte": "https://sketchfab.com/3d-models/rose-gin-bottle-c7ace0b0d679475f912df43fc6f7158f"
+ },
+ "copo_drink": {
+  "arquivo": "modelos3d/sketchfab-7669b27d4e634e7b9cd114d50c33af97.glb",
+  "nome": "Copo de drink com gelo",
+  "tags": [
+   "copo",
+   "drink",
+   "gin tônica",
+   "gelo",
+   "palhinha",
+   "bebida"
+  ],
+  "credito": "Modelo 3D: Glass of Tea por Tiago Lopes (Sketchfab, CC Attribution)",
+  "fonte": "https://sketchfab.com/3d-models/glass-of-tea-7669b27d4e634e7b9cd114d50c33af97"
+ },
+ "copo_alto": {
+  "arquivo": "modelos3d/sketchfab-f978e6f36d5040a89053029bbad94b62.glb",
+  "nome": "Copo alto",
+  "tags": [
+   "copo",
+   "copo alto",
+   "dose",
+   "gelo",
+   "bebida",
+   "glass"
+  ],
+  "credito": "Modelo 3D: Tall Glass por DavideFon (Sketchfab, CC Attribution)",
+  "fonte": "https://sketchfab.com/3d-models/tall-glass-f978e6f36d5040a89053029bbad94b62"
+ },
+ "garrafas_lowpoly": {
+  "arquivo": "modelos3d/sketchfab-99999f032f624e8cb05651f041dbf8eb.glb",
+  "nome": "Garrafas low poly",
+  "tags": [
+   "garrafas",
+   "bebida",
+   "álcool",
+   "low poly",
+   "bar",
+   "destilado"
+  ],
+  "credito": "Modelo 3D: Whiskey and Wine Low-Poly Bottles por Helyeouka (Sketchfab, CC Attribution)",
+  "fonte": "https://sketchfab.com/3d-models/whiskey-and-wine-low-poly-bottles-99999f032f624e8cb05651f041dbf8eb"
+ }
+}

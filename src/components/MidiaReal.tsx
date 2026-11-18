@@ -15,6 +15,10 @@ export const Conteudo: React.FC<{ midia: Midia; estilo: React.CSSProperties }> =
     return <Objeto3D arquivo={midia.arquivo!} style={resto} />;
   }
   const src = staticFile(midia.arquivo!);
+  // objeto isolado com fundo transparente (emoji 3D, skin do CS2): cabe inteiro, com margem e sombra, em vez de
+  // ser cortado como uma foto
+  if (midia.formato !== "video" && (midia.fonte === "emoji" || midia.fonte === "cs2"))
+    return <Img src={src} style={{ ...estilo, objectFit: "contain", padding: "7%", boxSizing: "border-box", filter: [estilo.filter, "drop-shadow(0 26px 30px #0007)"].filter(Boolean).join(" ") }} />;
   if (midia.formato !== "video") return <Img src={src} style={estilo} />;
   const inicio = Math.round((midia.inicioS ?? 0) * fps);
   const video = <OffthreadVideo src={src} muted trimBefore={inicio} style={estilo} />;

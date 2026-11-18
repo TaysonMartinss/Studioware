@@ -102,10 +102,10 @@ export const criarAutomatico = ({ raiz, canais, gerarIdeias, criarJob, correrJob
       for (const [id, c] of Object.entries(cfg.canais)) {
         if (!c.ativo || !canais()[id]) continue;
         const nome = canais()[id].nome;
-        estado.passo = `🔎 ${nome}: a pesquisar os assuntos do momento…`;
+        estado.passo = `${nome}: pesquisando os assuntos do momento…`;
         let ideias = [];
         try {
-          const r = await gerarIdeias({ set passo(v) { estado.passo = `🔎 ${nome}: ${v}`; } }, { canal: id, quantidade: 8, foco: FOCO });
+          const r = await gerarIdeias({ set passo(v) { estado.passo = `${nome}: ${v}`; } }, { canal: id, quantidade: 8, foco: FOCO });
           ideias = r.ideias.filter((i) => FORMATOS_AUTO.includes(i.formato)).slice(0, c.quantidade);
         } catch (e) {
           registar({ data: new Date().toISOString(), canal: id, estado: `falhou a pesquisa de ideias: ${e.message}`, motivo });
@@ -113,7 +113,7 @@ export const criarAutomatico = ({ raiz, canais, gerarIdeias, criarJob, correrJob
         }
         const horarios = [...c.horarios].sort();
         for (const [k, ideia] of ideias.entries()) {
-          estado.passo = `✍ ${nome}: roteiro ${k + 1} de ${ideias.length} — ${ideia.titulo}`;
+          estado.passo = `${nome}: roteiro ${k + 1} de ${ideias.length}, ${ideia.titulo}`;
           const job = criarJob({
             tema: ideia.tema || ideia.titulo, formato: ideia.formato, estilo: c.estilo, narracao: c.narracao, voz: c.voz,
             canal: id, lowpoly: c.lowpoly, revisar: false, editorChefe: true, revisaoVisual: true, auto: true,

@@ -2,11 +2,15 @@
 .env
 .env.*
 dados/youtube-tokens.json
+dados/instagram-contas.json
+dados/instagram-agenda.json
+dados/instagram/
 .claude/settings.local.json
 
 # ---------- dependências e ambientes instalados ----------
 node_modules/
 .venv-voz/
+.venv-rea/
 .whisper/
 __pycache__/
 *.pyc
@@ -25,6 +29,8 @@ public/marca/rascunho-*.png
 public/modelos3d/
 # amostras de voz para clonar: são vozes de pessoas reais
 public/vozes/
+# sons de efeito populares (memes: sino do Undertaker, Minecraft, rizz): áudios de terceiros, ficam só neste computador
+public/sfx/memes/
 # fontes com licença própria (ex.: Keep Calm, paga para uso comercial)
 public/fontes/
 # logos de redes sociais do criador (não fazem parte do produto)
@@ -53,3 +59,9 @@ public/gameplay/
 
 # estado do modo automático desta máquina (histórico, última execução)
 dados/automatico.json
+
+# números do YouTube de cada canal (menu Insights): privados
+dados/insights/
+
+# player do editor manual, compilado de src/ (node scripts/build_editor.mjs)
+server/editor/

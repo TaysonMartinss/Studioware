@@ -5,7 +5,7 @@
     "origem": "YouTube Audio Library",
     "credito": "",
     "bpm": 117,
-    "duracaoS": 210.0,
+    "duracaoS": 210,
     "climaSugerido": "energetica"
   },
   "musicas/energetica/habanera-from-carmen-georges-bizet-golden-cut-reborn.mp3": {
@@ -70,5 +70,329 @@
     "bpm": 103,
     "duracaoS": 114.2,
     "climaSugerido": "energetica"
+  },
+  "musicas/tensa/emotional-orchestral-score-for-film-trailers-free-to-use-scott-buckley-the-long-dark-audio-library.mp3": {
+    "titulo": "Emotional Orchestral Score for Film & Trailers 🎬 (Free to Use)  Scott Buckley",
+    "artista": "The Long Dark - Audio Library",
+    "origem": "YouTube Audio Library",
+    "credito": "",
+    "bpm": 129,
+    "duracaoS": 439.5,
+    "climaSugerido": "energetica"
+  },
+  "musicas/energetica/justice-flower-in-a-hurricane-ft-tame-impala-sza-king-gizzard-the-lizard-wizard-from-gtavi-5dpwbwvmcbq.mp3": {
+    "titulo": "Justice",
+    "artista": "Flower In A Hurricane (ft Tame Impala, SZA, King Gizzard & the Lizard Wizard) [from GTAVI] [5dPwBWvmcbQ]",
+    "origem": "YouTube Audio Library",
+    "credito": "",
+    "bpm": 83,
+    "duracaoS": 225.0,
+    "climaSugerido": "energetica"
+  },
+  "musicas/estetica/trndsttr-black-coast-x-seanopry.mp3": {
+    "titulo": "TRNDSTTR",
+    "artista": "Black Coast x Seanopry",
+    "origem": "TikTok viral (direitos de terceiros)",
+    "credito": "",
+    "bpm": 129,
+    "duracaoS": 183.4,
+    "climaSugerido": "energetica"
+  },
+  "musicas/meme/can-you-feel-my-heart-x-we-are-number-one.mp3": {
+    "titulo": "Can You Feel My Heart x We Are Number One",
+    "artista": "",
+    "origem": "TikTok viral (direitos de terceiros)",
+    "credito": "",
+    "bpm": 161,
+    "duracaoS": 14.6,
+    "climaSugerido": "energetica"
+  },
+  "musicas/humor_negro/charlie-s-inferno-trap-remix.mp3": {
+    "titulo": "Charlie's Inferno (Trap Remix)",
+    "artista": "",
+    "origem": "TikTok viral (direitos de terceiros)",
+    "credito": "",
+    "bpm": 108,
+    "duracaoS": 88.6,
+    "climaSugerido": "energetica"
+  },
+  "musicas/cinematica/echo-sax-end-caleb-arredondo.mp3": {
+    "titulo": "Echo Sax End",
+    "artista": "Caleb Arredondo",
+    "origem": "TikTok viral (direitos de terceiros)",
+    "credito": "",
+    "bpm": 112,
+    "duracaoS": 77.9,
+    "climaSugerido": "tensa"
+  },
+  "musicas/meme/feels-meme.mp3": {
+    "titulo": "Feels (meme)",
+    "artista": "",
+    "origem": "TikTok viral (direitos de terceiros)",
+    "credito": "",
+    "bpm": 112,
+    "duracaoS": 22.4,
+    "climaSugerido": "energetica"
+  },
+  "musicas/energetica/clutterfunk-golden-egg.mp3": {
+    "titulo": "Clutterfunk",
+    "artista": "Golden Egg",
+    "origem": "TikTok viral (direitos de terceiros)",
+    "credito": "",
+    "bpm": 70,
+    "duracaoS": 29.3,
+    "climaSugerido": "energetica",
+    "tambem": [
+      "gaming"
+    ]
+  },
+  "musicas/melancolica/heaven-knows-i-m-miserable-now-trap-remix.mp3": {
+    "titulo": "Heaven Knows I'm Miserable Now (Trap Remix)",
+    "artista": "",
+    "origem": "TikTok viral (direitos de terceiros)",
+    "credito": "",
+    "bpm": 152,
+    "duracaoS": 69.6,
+    "climaSugerido": "ambiente"
+  },
+  "musicas/comedia/hello-i-m-your-neighbor.mp3": {
+    "titulo": "Hello I'm Your Neighbor",
+    "artista": "",
+    "origem": "TikTok viral (direitos de terceiros)",
+    "credito": "",
+    "bpm": 108,
+    "duracaoS": 19.8,
+    "climaSugerido": "ambiente"
+  },
+  "musicas/comedia/hip-shop-deltarune-toby-fox.mp3": {
+    "titulo": "Hip Shop (DELTARUNE)",
+    "artista": "Toby Fox",
+    "origem": "TikTok viral (direitos de terceiros)",
+    "credito": "",
+    "bpm": 129,
+    "duracaoS": 44.0,
+    "climaSugerido": "energetica",
+    "tambem": [
+      "gaming"
+    ]
+  },
+  "musicas/motivacional/believer-x-bruno-mars-imagine-dragons.mp3": {
+    "titulo": "Believer x Bruno Mars",
+    "artista": "Imagine Dragons",
+    "origem": "TikTok viral (direitos de terceiros)",
+    "credito": "",
+    "bpm": 108,
+    "duracaoS": 227.1,
+    "climaSugerido": "energetica"
+  },
+  "musicas/emocional/childhood-kairi-the-maid.mp3": {
+    "titulo": "Childhood",
+    "artista": "Kairi The Maid",
+    "origem": "TikTok viral (direitos de terceiros)",
+    "credito": "",
+    "bpm": 89,
+    "duracaoS": 360.1,
+    "climaSugerido": "energetica"
+  },
+  "musicas/trap/trenches-lil-flash.mp3": {
+    "titulo": "Trenches",
+    "artista": "LiL Flash",
+    "origem": "TikTok viral (direitos de terceiros)",
+    "credito": "",
+    "bpm": 103,
+    "duracaoS": 124.6,
+    "climaSugerido": "energetica"
+  },
+  "musicas/ambiente/never-mag-lo.mp3": {
+    "titulo": "Never",
+    "artista": "Mag.Lo",
+    "origem": "TikTok viral (direitos de terceiros)",
+    "credito": "",
+    "bpm": 112,
+    "duracaoS": 385.6,
+    "climaSugerido": "energetica"
+  },
+  "musicas/emocional/mother-sea-one-piece.mp3": {
+    "titulo": "Mother Sea",
+    "artista": "One Piece",
+    "origem": "TikTok viral (direitos de terceiros)",
+    "credito": "",
+    "bpm": 152,
+    "duracaoS": 88.0,
+    "climaSugerido": "energetica"
+  },
+  "musicas/energetica/palmtree-panic-p-mix.mp3": {
+    "titulo": "Palmtree Panic (P Mix)",
+    "artista": "",
+    "origem": "TikTok viral (direitos de terceiros)",
+    "credito": "",
+    "bpm": 99,
+    "duracaoS": 14.4,
+    "climaSugerido": "energetica"
+  },
+  "musicas/gaming/clutterblox-potion-roblox.mp3": {
+    "titulo": "Clutterblox Potion",
+    "artista": "ROBLOX",
+    "origem": "TikTok viral (direitos de terceiros)",
+    "credito": "",
+    "bpm": 70,
+    "duracaoS": 101.0,
+    "climaSugerido": "energetica"
+  },
+  "musicas/trap/funky-ehh-hood-trap-real-wayne.mp3": {
+    "titulo": "Funky Ehh (Hood Trap)",
+    "artista": "Real Wayne",
+    "origem": "TikTok viral (direitos de terceiros)",
+    "credito": "",
+    "bpm": 129,
+    "duracaoS": 60.7,
+    "climaSugerido": "energetica",
+    "tambem": [
+      "meme"
+    ]
+  },
+  "musicas/humor_negro/the-man-behind-the-slaughter-loop.mp3": {
+    "titulo": "The Man Behind The Slaughter (loop)",
+    "artista": "",
+    "origem": "TikTok viral (direitos de terceiros)",
+    "credito": "",
+    "bpm": 96,
+    "duracaoS": 200.1,
+    "climaSugerido": "energetica"
+  },
+  "musicas/energetica/strike-xoolglocks-krash.mp3": {
+    "titulo": "Strike",
+    "artista": "Xoolglocks Krash",
+    "origem": "TikTok viral (direitos de terceiros)",
+    "credito": "",
+    "bpm": 161,
+    "duracaoS": 36.3,
+    "climaSugerido": "ambiente"
+  },
+  "musicas/comedia/ymca-x-the-cigarette-duet-mashup.mp3": {
+    "titulo": "YMCA x The Cigarette Duet (Mashup)",
+    "artista": "",
+    "origem": "TikTok viral (direitos de terceiros)",
+    "credito": "",
+    "bpm": 152,
+    "duracaoS": 197.7,
+    "climaSugerido": "energetica"
+  },
+  "musicas/energetica/lady-hear-me-tonight-modjo.mp3": {
+    "titulo": "Lady (Hear Me Tonight)",
+    "artista": "Modjo",
+    "origem": "TikTok viral (direitos de terceiros)",
+    "credito": "",
+    "bpm": 63,
+    "duracaoS": 307.2,
+    "climaSugerido": "energetica",
+    "tambem": [
+      "estetica"
+    ]
+  },
+  "musicas/estetica/stereo-hearts-gym-class-heroes-ft-adam-levine.mp3": {
+    "titulo": "Stereo Hearts",
+    "artista": "Gym Class Heroes ft. Adam Levine",
+    "origem": "TikTok viral (direitos de terceiros)",
+    "credito": "",
+    "bpm": 89,
+    "duracaoS": 211.0,
+    "climaSugerido": "energetica",
+    "tambem": [
+      "emocional"
+    ]
+  },
+  "musicas/cinematica/cornfield-chase-interstellar-hans-zimmer.mp3": {
+    "titulo": "Cornfield Chase (Interstellar)",
+    "artista": "Hans Zimmer",
+    "origem": "TikTok viral (direitos de terceiros)",
+    "credito": "",
+    "bpm": 96,
+    "duracaoS": 127.9,
+    "climaSugerido": "tensa",
+    "tambem": [
+      "emocional"
+    ]
+  },
+  "musicas/comedia/stayin-alive-bee-gees.mp3": {
+    "titulo": "Stayin' Alive",
+    "artista": "Bee Gees",
+    "origem": "TikTok viral (direitos de terceiros)",
+    "credito": "",
+    "bpm": 103,
+    "duracaoS": 249.0,
+    "climaSugerido": "energetica",
+    "tambem": [
+      "energetica"
+    ]
+  },
+  "musicas/comedia/piano-man-billy-joel.mp3": {
+    "titulo": "Piano Man",
+    "artista": "Billy Joel",
+    "origem": "TikTok viral (direitos de terceiros)",
+    "credito": "",
+    "bpm": 89,
+    "duracaoS": 339.2,
+    "climaSugerido": "energetica"
+  },
+  "musicas/estetica/what-you-won-t-do-for-love-bobby-caldwell.mp3": {
+    "titulo": "What You Won't Do for Love",
+    "artista": "Bobby Caldwell",
+    "origem": "TikTok viral (direitos de terceiros)",
+    "credito": "",
+    "bpm": 83,
+    "duracaoS": 287.1,
+    "climaSugerido": "energetica"
+  },
+  "musicas/energetica/safe-and-sound-capital-cities.mp3": {
+    "titulo": "Safe And Sound",
+    "artista": "Capital Cities",
+    "origem": "TikTok viral (direitos de terceiros)",
+    "credito": "",
+    "bpm": 117,
+    "duracaoS": 192.8,
+    "climaSugerido": "energetica"
+  },
+  "musicas/cinematica/oppenheimer-theme-ludwig-goransson.mp3": {
+    "titulo": "Oppenheimer Theme",
+    "artista": "Ludwig Göransson",
+    "origem": "TikTok viral (direitos de terceiros)",
+    "credito": "",
+    "bpm": 112,
+    "duracaoS": 221.0,
+    "climaSugerido": "energetica",
+    "tambem": [
+      "tensa"
+    ]
+  },
+  "musicas/comedia/two-mandolins-stronghold-robert-euvino.mp3": {
+    "titulo": "Two Mandolins (Stronghold)",
+    "artista": "Robert Euvino",
+    "origem": "TikTok viral (direitos de terceiros)",
+    "credito": "",
+    "bpm": 76,
+    "duracaoS": 153.1,
+    "climaSugerido": "lofi"
+  },
+  "musicas/motivacional/gonna-fly-now-rocky-bill-conti.mp3": {
+    "titulo": "Gonna Fly Now (Rocky)",
+    "artista": "Bill Conti",
+    "origem": "TikTok viral (direitos de terceiros)",
+    "credito": "",
+    "bpm": 96,
+    "duracaoS": 173.2,
+    "climaSugerido": "energetica"
+  },
+  "musicas/melancolica/mrs-magic-strawberry-guy.mp3": {
+    "titulo": "Mrs Magic",
+    "artista": "Strawberry Guy",
+    "origem": "TikTok viral (direitos de terceiros)",
+    "credito": "",
+    "bpm": 89,
+    "duracaoS": 209.9,
+    "climaSugerido": "energetica",
+    "tambem": [
+      "emocional"
+    ]
   }
 }

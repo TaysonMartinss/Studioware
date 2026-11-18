@@ -4,13 +4,15 @@
 import { spawn, spawnSync } from "node:child_process";
 import { copyFileSync, cpSync, createReadStream, createWriteStream, existsSync, mkdirSync, readFileSync, readdirSync, renameSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { pipeline } from "node:stream/promises";
-import { CLIMAS, POR_ESTILO, POR_FORMATO, gravarCatalogo, lerCatalogo, listarMusicas } from "../scripts/musica.mjs";
+import { CLIMAS, POR_ESTILO, POR_FORMATO, escolherMusica, gravarCatalogo, lerCatalogo, listarMusicas } from "../scripts/musica.mjs";
 import { createServer } from "node:http";
 import { basename, join, resolve } from "node:path";
 import { criarYouTube } from "./youtube.mjs";
+import { criarInstagram } from "./instagram.mjs";
 import { criarCortes } from "./cortes.mjs";
 import { esperarExterno, modoIA, pedidosPendentes, tirarJSON as tirarJSONExterno } from "../scripts/ia.mjs";
 import { criarAutomatico } from "./automatico.mjs";
+import { lerCustos, registarClaude } from "../scripts/custos.mjs";
 
 const RAIZ = resolve(import.meta.dirname, "..");
 const PORTA = Number(process.env.PORTA) || 4321;
@@ -247,7 +249,7 @@ const rodarAgente = (t, sistema, prompt) => new Promise((ok, falha) => {
   p.on("error", (e) => falha(new Error(`Não consegui iniciar o Claude Code: ${e.message}`)));
   p.on("close", (code) => {
     let r = "";
-    try { r = String(JSON.parse(out).result ?? ""); } catch { /* sem resumo */ }
+    try { const ev = JSON.parse(out); r = String(ev.result ?? ""); registarClaude(RAIZ, ev, { etapa: "Aprender estilo" }); } catch { /* sem resumo */ }
     return code === 0 ? ok(r) : falha(erroClaude(r, "O Claude terminou com erro"));
   });
 });
@@ -261,7 +263,7 @@ const renderOk = (id) => new Promise((ok) => {
   m.on("close", (code) => ok(code === 0));
   m.on("error", () => ok(false));
 });
-async function aprenderEfeitos(t, id, novo, guia, imagens) {
+async function aprenderEfeitos(t, id, novo, guia, imagens, analise) {
   const arquivo = join(PASTA_MODULOS, `${id}.tsx`);
   const sistema = readFileSync(join(RAIZ, ".claude/skills/novo-video/aprender-efeitos.md"), "utf-8");
   const prompt = [
@@ -270,20 +272,21 @@ async function aprenderEfeitos(t, id, novo, guia, imagens) {
     ...imagens.map((f) => `- ${f}`),
     `Direção de arte já escolhida: ${JSON.stringify(novo)}`,
     guia ? `Guia do roteirista para este estilo: ${guia}` : "",
+    analise ? `Análise medida do vídeo (lê com Read): ${analise}. Usa-a para acertar o ritmo dos cortes (duração dos planos), a entrada e saída das letras, as cores e o contorno do texto e a posição das legendas.` : "",
     "Lê primeiro src/aprendidos/_kit.tsx e src/aprendidos/_exemplo.tsx.",
   ].filter(Boolean).join("\n");
-  t.passo = "🎬 O Claude está a recriar os efeitos (câmara, transições, motion blur, legendas)…";
+  t.passo = "O Claude está recriando os efeitos (câmara, transições, motion blur, legendas)…";
   let resumo = await rodarAgente(t, sistema, prompt);
   if (!existsSync(arquivo)) return { efeitos: false, motivo: "o Claude não escreveu o módulo de efeitos" };
   regenerarRegistoEfeitos();
-  t.passo = "🔍 A verificar o código dos efeitos…";
+  t.passo = "Verificando o código dos efeitos…";
   let erros = errosDoModulo(id);
   if (erros) {
-    t.passo = "🛠 A corrigir o código dos efeitos…";
+    t.passo = "Corrigindo o código dos efeitos…";
     resumo = await rodarAgente(t, sistema, `Corrige src/aprendidos/${id}.tsx: o TypeScript deu estes erros (mantém os efeitos):\n${erros.slice(0, 3000)}`);
     erros = errosDoModulo(id);
   }
-  t.passo = "🖼 A testar os efeitos num render…";
+  t.passo = "Testando os efeitos em um render…";
   if (!erros && await renderOk(id)) return { efeitos: true, resumo };
   // não ficou válido: o estilo fica só com a direção de arte (o ficheiro sai do registo)
   rmSync(arquivo, { force: true });
@@ -292,21 +295,244 @@ async function aprenderEfeitos(t, id, novo, guia, imagens) {
   return { efeitos: false, motivo: erros ? "o código dos efeitos não compilou" : "o render de teste falhou" };
 }
 
+
+// ---------- gerir os estilos aprendidos (menu Estilos) ----------
+// Os de fábrica só se leem; os aprendidos editam-se à mão, refinam-se com o Claude ou vão para a lixeira.
+// os campos de um estilo, validados contra as listas do motor; o que faltar fica como estava (base)
+function camposEstilo(e, base) {
+  return {
+    cor: hex(e.cor, base.cor), cor2: hex(e.cor2, base.cor2), fundo: hex(e.fundo, base.fundo), corTexto: hex(e.corTexto, base.corTexto),
+    sombra: typeof e.sombra === "string" ? e.sombra.slice(0, 60) : base.sombra, superficie: hex(e.superficie, base.superficie),
+    tema: de(OPCOES_ESTILO.tema, e.tema, base.tema ?? "solido"), overlay: de(OPCOES_ESTILO.overlay, e.overlay === undefined ? base.overlay ?? null : e.overlay, null),
+    transicao: de(OPCOES_ESTILO.transicao, e.transicao, base.transicao ?? "corte"), legenda: de(OPCOES_ESTILO.legenda, e.legenda, base.legenda ?? "padrao"),
+    titulo: de(OPCOES_ESTILO.fonte, e.titulo, base.titulo ?? "anton"), corpo: de(OPCOES_ESTILO.fonte, e.corpo, base.corpo ?? "inter"),
+    glitch: typeof e.glitch === "boolean" ? e.glitch : base.glitch === true, shake: entre(e.shake, 0, 1.5, base.shake ?? 0.4), flash: entre(e.flash, 0, 0.5, base.flash ?? 0),
+    passo: entre(e.passo, 1, 3, base.passo ?? 1), raio: entre(e.raio, 0, 30, base.raio ?? 10), brilho: typeof e.brilho === "boolean" ? e.brilho : base.brilho === true,
+    ...(typeof e.tracking === "string" ? { tracking: e.tracking.slice(0, 12) } : base.tracking ? { tracking: base.tracking } : {}),
+    ...(e.pixel && typeof e.pixel === "object" ? { pixel: { tamanho: entre(e.pixel.tamanho, 4, 16, 10), niveis: entre(e.pixel.niveis, 4, 12, 8) } } : base.pixel ? { pixel: base.pixel } : {}),
+  };
+}
+const gravarEstilos = (todos) => writeFileSync(join(RAIZ, "src/estilos.json"), JSON.stringify(todos, null, 2) + "\n");
+const GUIA_EXTERNO = join(RAIZ, ".claude/skills/novo-video/formatos-externo.md");
+// a secção "## estilo: <id>" do guia do roteirista (até à secção seguinte)
+const secaoGuia = (txt, id) => txt.match(new RegExp(`## estilo: ${id}\\r?\\n[\\s\\S]*?(?=\\r?\\n## |$)`))?.[0] ?? null;
+function trocarGuia(id, guia) {
+  const txt = readFileSync(GUIA_EXTERNO, "utf-8"), atual = secaoGuia(txt, id);
+  const nova = guia ? `## estilo: ${id}\n${String(guia).trim()}\n` : "";
+  if (atual) writeFileSync(GUIA_EXTERNO, txt.replace(atual + (guia ? "" : "\n"), nova));
+  else if (guia) writeFileSync(GUIA_EXTERNO, txt.replace("## estilo: editorial", `${nova}\n## estilo: editorial`));
+}
+function estiloAprendido(id) {
+  const e = estilos()[id];
+  if (!e) throw new Error("Este estilo não existe");
+  if (!e.aprendido) throw new Error("Os estilos de fábrica não se alteram aqui: crie um a partir de um exemplo e refine-o");
+  return e;
+}
+// edição à mão: grava e refaz a miniatura (que é também o teste de que o estilo renderiza)
+async function editarEstilo(t, id, d) {
+  const atual = estiloAprendido(id), todos = estilos();
+  todos[id] = {
+    ...atual, ...camposEstilo(d.estilo ?? {}, atual),
+    nome: String(d.nome ?? atual.nome).trim().slice(0, 32) || atual.nome, descricao: String(d.descricao ?? atual.descricao).slice(0, 160),
+    aprendido: { ...atual.aprendido, editado: new Date().toISOString() },
+  };
+  gravarEstilos(todos);
+  t.passo = "Gerando a miniatura do estilo…";
+  await renderOk(id);
+  return { id, nome: todos[id].nome };
+}
+// refinar com o Claude: muda o que o criador pedir (direção de arte e, se houver, o módulo de efeitos)
+async function refinarEstilo(t, id, d) {
+  const atual = estiloAprendido(id), pedidoCriador = String(d.pedido ?? "").trim().slice(0, 800);
+  if (!pedidoCriador) throw new Error("Diga o que quer mudar no estilo");
+  const ref = join(RAIZ, "out/estilos-ref", id), analise = join(ref, "analise.json"), storyboard = join(ref, "storyboard.jpg");
+  const miniatura = join(RAIZ, "server/miniaturas", `${id}.jpg`);
+  const { aprendido, nome, descricao, ...campos } = atual;
+  const pedido = [
+    "Estás a REFINAR um estilo que já existe, não a criar outro: muda só o que o criador pede e mantém o resto igual.",
+    "Responde no mesmo formato JSON de sempre, com o estilo completo (todos os campos, os mudados e os que ficam).",
+    `Estilo atual: ${JSON.stringify({ nome, descricao, estilo: campos })}`,
+    `O que o criador quer mudar: ${pedidoCriador}`,
+    existsSync(miniatura) ? `Como o estilo está agora (frame de exemplo): ${miniatura}` : "",
+    existsSync(analise) ? `Análise medida do vídeo de referência (lê com Read): ${analise}` : "",
+    existsSync(storyboard) ? `Storyboard do vídeo de referência: ${storyboard}` : "",
+    aprendido.link ? `Link do exemplo original: ${aprendido.link}` : "",
+  ].filter(Boolean).join("\n");
+  t.passo = "O Claude está refinando o estilo…";
+  const r = await claudeJSONPeloClaude(t, join(RAIZ, ".claude/skills/novo-video/aprender-estilo.md"), pedido, ["Read"]);
+  if (t.cancelado) throw new Error("Parado");
+  const todos = estilos();
+  const novo = {
+    ...atual, ...camposEstilo(r.estilo ?? {}, atual),
+    nome: String(r.nome ?? nome).slice(0, 32) || nome, descricao: String(r.descricao ?? descricao).slice(0, 160),
+    aprendido: { ...aprendido, refinado: new Date().toISOString(), ...(r.observado ? { observado: String(r.observado).slice(0, 300) } : {}) },
+  };
+  gravarEstilos({ ...todos, [id]: novo });
+  if (r.guia) trocarGuia(id, r.guia);
+  // os efeitos em código: o Claude ajusta o módulo; se deixar de compilar ou de renderizar, volta o anterior
+  const modulo = join(PASTA_MODULOS, `${id}.tsx`);
+  let efeitos = existsSync(modulo) ? "mantidos" : "sem";
+  const antes = existsSync(modulo) ? readFileSync(modulo, "utf-8") : null;
+  if (antes !== null && d.efeitos !== false) {
+    const sistema = readFileSync(join(RAIZ, ".claude/skills/novo-video/aprender-efeitos.md"), "utf-8");
+    t.passo = "O Claude está ajustando os efeitos…";
+    await rodarAgente(t, sistema, [
+      `Refina src/aprendidos/${id}.tsx (os efeitos do estilo "${id}"), sem o reescrever do zero: muda só o que o criador pede e mantém o resto.`,
+      `O que o criador quer mudar: ${pedidoCriador}`,
+      `Direção de arte do estilo: ${JSON.stringify(novo)}`,
+      existsSync(analise) ? `Análise medida do vídeo de referência (lê com Read): ${analise}` : "",
+      "Lê primeiro src/aprendidos/_kit.tsx.",
+    ].filter(Boolean).join("\n"));
+    t.passo = "Verificando o código dos efeitos…";
+    let erros = errosDoModulo(id);
+    if (erros) {
+      t.passo = "Corrigindo o código dos efeitos…";
+      await rodarAgente(t, sistema, `Corrige src/aprendidos/${id}.tsx: o TypeScript deu estes erros (mantém os efeitos):\n${erros.slice(0, 3000)}`);
+      erros = errosDoModulo(id);
+    }
+    efeitos = "ajustados";
+    if (erros) { writeFileSync(modulo, antes); efeitos = "mantidos (o ajuste não compilou)"; }
+  }
+  t.passo = "Gerando a miniatura do estilo…";
+  if (!(await renderOk(id)) && efeitos === "ajustados") {
+    // o ajuste compilou mas não renderiza: volta o módulo anterior
+    writeFileSync(modulo, antes);
+    efeitos = "mantidos (o ajuste falhou no render)";
+    await renderOk(id);
+  }
+  return { id, nome: novo.nome, descricao: novo.descricao, observado: novo.aprendido.observado, efeitos };
+}
+// apagar: tudo o que é do estilo vai para lixeira/estilos/<id>-<data>/ (dá para o repor à mão)
+function apagarEstilo(id) {
+  const atual = estiloAprendido(id), todos = estilos();
+  const destino = join(LIXEIRA, "estilos", `${id}-${Date.now().toString(36)}`);
+  mkdirSync(destino, { recursive: true });
+  const txt = readFileSync(GUIA_EXTERNO, "utf-8"), guia = secaoGuia(txt, id);
+  writeFileSync(join(destino, "estilo.json"), JSON.stringify({ [id]: atual, guia }, null, 2));
+  const mover = (de, para) => { if (existsSync(de)) { cpSync(de, join(destino, para), { recursive: true }); rmSync(de, { recursive: true, force: true }); } };
+  mover(join(PASTA_MODULOS, `${id}.tsx`), `${id}.tsx`);
+  mover(join(RAIZ, "server/miniaturas", `${id}.jpg`), "miniatura.jpg");
+  mover(join(RAIZ, "out/estilos-ref", id), "analise");
+  delete todos[id];
+  gravarEstilos(todos);
+  if (guia) trocarGuia(id, null);
+  regenerarRegistoEfeitos();
+  return { ok: true, lixeira: destino };
+}
+
+// ---------- análise da referência com o rea-video (github.com/JuneYaooo/rea-video, Apache-2.0) ----------
+// Corre neste computador, sem API: corta o vídeo em planos, mede o texto na tela (cor, contorno, tamanho, posição,
+// entrada e saída), os efeitos sonoros (e a que momento visual estão presos), a música (BPM), a câmara e a luz.
+// Vive num Python à parte (.venv-rea) e precisa de um ffmpeg completo (o do Remotion não tem os filtros fps/tile/ass).
+const REA_EXE = join(RAIZ, ".venv-rea/Scripts/rea-video.exe");
+let ffmpegCompleto;
+function pastaFfmpegCompleto() {
+  if (ffmpegCompleto !== undefined) return ffmpegCompleto;
+  const env = process.env.FFMPEG_DIR || lerEnv().FFMPEG_DIR;
+  if (env && existsSync(join(env, "ffmpeg.exe"))) return (ffmpegCompleto = env);
+  // o winget instala em %LOCALAPPDATA%\Microsoft\WinGet\Packages\Gyan.FFmpeg_…\ffmpeg-<versão>-full_build\bin
+  const pacotes = join(process.env.LOCALAPPDATA ?? "", "Microsoft/WinGet/Packages");
+  try {
+    for (const p of readdirSync(pacotes).filter((x) => /^Gyan\.FFmpeg/i.test(x)))
+      for (const v of readdirSync(join(pacotes, p)))
+        if (existsSync(join(pacotes, p, v, "bin/ffmpeg.exe"))) return (ffmpegCompleto = join(pacotes, p, v, "bin"));
+  } catch { /* sem winget */ }
+  const r = spawnSync("where", ["ffmpeg"], { encoding: "utf-8" });
+  const achado = (r.stdout ?? "").split(/\r?\n/).find((l) => l.trim() && !l.includes("compositor-win32"));
+  return (ffmpegCompleto = achado ? achado.trim().replace(/[\\/]ffmpeg\.exe$/i, "") : null);
+}
+const reaDisponivel = () => existsSync(REA_EXE) && Boolean(pastaFfmpegCompleto());
+
+// analisa até 60 s do vídeo (public/<arquivo>) e devolve { resumo, storyboard, relatorio } ou null se não der
+function analisarReferencia(t, arquivo, pasta) {
+  if (!reaDisponivel()) return Promise.resolve(null);
+  const ff = pastaFfmpegCompleto(), ref = join(pasta, "referencia.mp4"), saida = join(pasta, "analise");
+  spawnSync(join(ff, "ffmpeg.exe"), ["-y", "-loglevel", "error", "-i", join(RAIZ, "public", arquivo), "-t", "60", "-c", "copy", ref]);
+  if (!existsSync(ref)) return Promise.resolve(null);
+  return new Promise((ok) => {
+    t.passo = "Analisando o vídeo plano a plano (rea-video)…";
+    const p = guardarProcesso(t, spawn(REA_EXE, ["decompose", ref, "-o", saida], {
+      cwd: RAIZ, stdio: ["ignore", "pipe", "pipe"],
+      env: { ...process.env, PATH: `${ff};${process.env.PATH}`, PYTHONIOENCODING: "utf-8", REA_VIDEO_HOME: join(RAIZ, "out/rea-video"), REA_VIDEO_MODELS: join(RAIZ, "out/rea-video/modelos") },
+    }));
+    let planos = 0;
+    const ler = (d) => {
+      for (const l of String(d).split(/\r?\n/)) {
+        if (/downloading/i.test(l)) t.passo = "Baixando os modelos de análise (só na primeira vez)…";
+        else if (/shot_\d+ /.test(l)) t.passo = `Analisando o plano ${++planos}…`;
+        else if (/packaging layer/i.test(l)) t.passo = "Lendo os textos, as legendas e os stickers…";
+        else if (/stems|separat/i.test(l)) t.passo = "Separando a voz, a música e os efeitos…";
+      }
+    };
+    p.stdout.on("data", ler); p.stderr.on("data", ler);
+    p.on("error", () => ok(null));
+    p.on("close", (code) => {
+      const bd = join(saida, "breakdown.json");
+      if (code !== 0 || !existsSync(bd)) return ok(null);
+      try {
+        const resumo = resumirAnalise(JSON.parse(readFileSync(bd, "utf-8")));
+        writeFileSync(join(pasta, "analise.json"), JSON.stringify(resumo, null, 1));
+        ok({ resumo, arquivoResumo: join(pasta, "analise.json"), storyboard: existsSync(join(saida, "storyboard.jpg")) ? join(saida, "storyboard.jpg") : null, relatorio: join(saida, "report.html") });
+      } catch { ok(null); }
+    });
+  });
+}
+// o que importa para recriar o estilo, num JSON pequeno para o Claude (o breakdown inteiro tem centenas de KB)
+function resumirAnalise(b) {
+  const n = (v, c = 2) => (Number.isFinite(Number(v)) ? Math.round(Number(v) * 10 ** c) / 10 ** c : undefined);
+  const planos = (b.shots ?? []).map((s) => ({
+    de: n(s.start), ate: n(s.end), duracao: n(s.duration), entrada: typeof s.transition_in === "string" ? s.transition_in : s.transition_in?.kind,
+    camara: s.aspects?.camera?.result?.support_zh ?? s.aspects?.camera?.measured?.motion, enquadramento: s.aspects?.framing?.result?.shot_size,
+    luz: s.aspects?.lighting?.result?.quality, cor: { saturacao: n(s.features?.saturation), luma: n(s.features?.luma), contraste: n(s.features?.contrast) },
+    movimentos: (s.motion?.events ?? []).slice(0, 5).map((e) => ({ tipo: e.kind, suavizacao: e.easing, desliza: e.slide, escala: e.scale, cor: e.colour, texto: (e.text ?? []).join(" ") || undefined })),
+  }));
+  const durs = planos.map((p) => p.duracao).filter(Boolean).sort((a, c) => a - c);
+  const pk = b.packaging ?? {};
+  const textos = (pk.text_cues ?? []).filter((c) => (c.conf ?? 1) > 0.8).map((c) => ({
+    de: n(c.t0), ate: n(c.t1), texto: c.text, tipo: c.kind, faixa: c.band, caixa: (c.bbox_median ?? c.bbox)?.map((v) => n(v, 3)), alturaLinha: n(c.line_h, 3),
+    angulo: c.angle, entrada: c.anim_in?.kind, saida: c.anim_out?.kind, estilo: c.style, descricao: c.style_zh, decor: c.decor,
+  }));
+  const musica = b.audio?.music ?? {}, voz = b.audio?.voice ?? {};
+  return {
+    nota: "Medido pelo rea-video nos primeiros 60 s (sem modelo de visão: ignore se diz que a imagem é 'IA'; importa o ritmo, o texto, a cor e o som).",
+    duracao: n(b.source?.duration ?? b.audio?.duration),
+    ritmo: { planos: planos.length, duracaoMedia: n(durs.reduce((t, d) => t + d, 0) / Math.max(1, durs.length)), duracaoMediana: durs[Math.floor(durs.length / 2)] },
+    planos,
+    textos: textos.slice(0, 60),
+    contagemTextos: pk.counts,
+    efeitosSonoros: (pk.sfx_anchored ?? []).map((s) => ({ t: n(s.t), tipo: s.type, preso_a: s.anchor })),
+    musica: { presente: musica.present, bpm: musica.tempo_bpm, partilha: n(musica.ratio) },
+    voz: { presente: voz.present, partilha: n(voz.ratio), estilo: voz.style, genero: voz.gender_hint },
+    resumo: b.summary?.verdict ?? b.summary,
+  };
+}
+
 async function aprenderEstilo(t, d) {
   const pasta = join(PASTA_APRENDIDOS, Date.now().toString(36));
   mkdirSync(pasta, { recursive: true });
-  t.passo = "🔎 A recolher imagens do exemplo…";
+  t.passo = "Coletando imagens do exemplo…";
+  let arquivo = typeof d.arquivo === "string" && /^uploads\/[\w.-]+$/.test(d.arquivo) ? d.arquivo : null;
+  // só o link: baixa o vídeo (YouTube ou Instagram) para o analisar a sério; se não der, ficam as imagens públicas
+  if (!arquivo && d.link && lerLink(d.link)) {
+    try { arquivo = (await baixarLink(t, String(d.link).trim())).arquivo; } catch { /* segue com as imagens do link */ }
+  }
   const imagens = [
-    ...(d.link ? await imagensDoLink(String(d.link).trim(), pasta) : []),
-    ...(typeof d.arquivo === "string" && /^uploads\/[\w.-]+$/.test(d.arquivo) ? framesDoVideo(d.arquivo, pasta) : []),
+    ...(d.link && !arquivo ? await imagensDoLink(String(d.link).trim(), pasta) : []),
+    ...(arquivo ? framesDoVideo(arquivo, pasta) : []),
   ];
+  // a análise medida (cortes, texto, cor, som); sem rea-video instalado, o Claude estuda só as imagens
+  const analise = arquivo ? await analisarReferencia(t, arquivo, pasta) : null;
+  if (t.cancelado) throw new Error("Parado");
+  if (analise?.storyboard) imagens.unshift(analise.storyboard);
+  t.analise = analise;
   if (!imagens.length) throw new Error("Não consegui imagens deste exemplo. O Instagram às vezes pede sessão: envie também o vídeo (o estilo sai mais fiel).");
-  t.passo = `👁 O Claude está a estudar o estilo (${imagens.length} imagens)…`;
+  t.passo = `O Claude está estudando o estilo (${imagens.length} imagens)…`;
   const todos = estilos();
   const pedido = [
     "Imagens do vídeo de referência (lê cada uma com Read):",
     ...imagens.map((f) => `- ${f}`),
     d.link ? `Link do exemplo: ${d.link}` : "",
+    analise ? `Análise medida do vídeo (planos, texto na tela com cores e animações, efeitos sonoros, música): ${analise.arquivoResumo} (lê com Read; o storyboard é a primeira imagem)` : "",
     d.notas ? `O que o criador quer deste estilo: ${String(d.notas).slice(0, 400)}` : "",
     `Estilos que já existem (o novo tem de ser diferente): ${Object.values(todos).map((e) => e.nome).join(", ")}`,
   ].filter(Boolean).join("\n");
@@ -323,7 +549,10 @@ async function aprenderEstilo(t, d) {
     glitch: e.glitch === true, shake: entre(e.shake, 0, 1.5, 0.4), flash: entre(e.flash, 0, 0.5, 0), passo: entre(e.passo, 1, 3, 1),
     raio: entre(e.raio, 0, 30, 10), brilho: e.brilho === true, ...(typeof e.tracking === "string" ? { tracking: e.tracking.slice(0, 12) } : {}),
     ...(e.pixel && typeof e.pixel === "object" ? { pixel: { tamanho: entre(e.pixel.tamanho, 4, 16, 10), niveis: entre(e.pixel.niveis, 4, 12, 8) } } : {}),
-    aprendido: { link: d.link || null, em: new Date().toISOString(), observado: String(r.observado ?? "").slice(0, 300) },
+    aprendido: {
+      link: d.link || null, em: new Date().toISOString(), observado: String(r.observado ?? "").slice(0, 300),
+      ...(analise ? { analise: { planos: analise.resumo.ritmo.planos, duracaoMediaPlano: analise.resumo.ritmo.duracaoMedia, bpm: analise.resumo.musica.bpm, textos: analise.resumo.textos.length, efeitosSonoros: analise.resumo.efeitosSonoros.length } } : {}),
+    },
   };
   let id = `meu-${slug(novo.nome) || "estilo"}`.slice(0, 32);
   for (let k = 2; todos[id]; k++) id = `${id.replace(/-\d+$/, "")}-${k}`;
@@ -337,14 +566,22 @@ async function aprenderEstilo(t, d) {
   // nível 2 (opcional): os efeitos em código; sem ele (ou se falhar) fica só a direção de arte
   let efeitos = { efeitos: false };
   if (d.efeitos !== false) {
-    try { efeitos = await aprenderEfeitos(t, id, novo, r.guia, imagens); }
+    try { efeitos = await aprenderEfeitos(t, id, novo, r.guia, imagens, analise?.arquivoResumo); }
     catch (e) { if (t.cancelado) throw e; efeitos = { efeitos: false, motivo: e.message }; }
   }
   if (!efeitos.efeitos) {
-    t.passo = "🖼 A gerar a miniatura do estilo…";
+    t.passo = "Gerando a miniatura do estilo…";
     await renderOk(id);
   }
-  return { id, nome: novo.nome, descricao: novo.descricao, observado: novo.aprendido.observado, ...efeitos };
+  // o relatório da análise fica com o estilo (o painel mostra o storyboard e abre o relatório completo)
+  if (analise) {
+    const destino = join(RAIZ, "out/estilos-ref", id);
+    mkdirSync(destino, { recursive: true });
+    if (analise.storyboard) copyFileSync(analise.storyboard, join(destino, "storyboard.jpg"));
+    if (existsSync(analise.relatorio)) copyFileSync(analise.relatorio, join(destino, "relatorio.html"));
+    copyFileSync(analise.arquivoResumo, join(destino, "analise.json"));
+  }
+  return { id, nome: novo.nome, descricao: novo.descricao, observado: novo.aprendido.observado, analise: analise ? { ...novo.aprendido.analise, storyboard: analise.storyboard ? `/out/estilos-ref/${id}/storyboard.jpg` : null, relatorio: `/out/estilos-ref/${id}/relatorio.html` } : null, ...efeitos };
 }
 
 // ---------- parar operações ----------
@@ -362,6 +599,93 @@ const matarArvore = (p) => {
   else try { process.kill(-p.pid, "SIGKILL"); } catch { p.kill("SIGKILL"); }
 };
 class Parado extends Error { constructor() { super("Parado por si"); } }
+
+
+
+// vídeos em public/uploads: os enviados pelo painel e os baixados do YouTube (yt-<id>.mp4, com o título num .json ao lado).
+// "Em uso" = um Short da biblioteca ainda não recortou o seu trecho dele (depois de transcrito, o Short usa o próprio
+// trecho em public/videos/<id>/ e o vídeo original já não faz falta).
+function listarUploads() {
+  const pasta = join(RAIZ, "public/uploads");
+  if (!existsSync(pasta)) return [];
+  const precisam = new Set();
+  if (existsSync(join(RAIZ, "roteiros"))) for (const f of readdirSync(join(RAIZ, "roteiros")).filter((x) => x.endsWith(".json"))) {
+    try { for (const c of JSON.parse(readFileSync(join(RAIZ, "roteiros", f), "utf-8")).cenas ?? []) if (c.bruto && !c.palavras?.length) precisam.add(c.bruto); } catch { /* roteiro ilegível */ }
+  }
+  return readdirSync(pasta).filter((f) => /\.(mp4|mov|webm|mkv)$/i.test(f)).map((f) => {
+    const st = statSync(join(pasta, f));
+    const arquivo = `uploads/${f}`;
+    let info = {};
+    try { info = JSON.parse(readFileSync(join(pasta, f.replace(/\.\w+$/, ".json")), "utf-8")); } catch { /* sem título guardado */ }
+    const yt = f.match(/^yt-([\w-]+)\./)?.[1], ig = f.match(/^ig-([\w-]+)\./)?.[1];
+    return {
+      arquivo, nome: info.titulo || f.replace(/-[a-z0-9]{8}\.\w+$/, "").replace(/\.\w+$/, "").replace(/-/g, " "),
+      origem: yt ? "YouTube" : ig ? "Instagram" : "Enviado",
+      link: info.link || (yt ? `https://www.youtube.com/watch?v=${yt}` : ig ? `https://www.instagram.com/reel/${ig}/` : undefined),
+      tamanhoMB: Math.round(st.size / 2 ** 20), criado: st.mtimeMs, emUso: precisam.has(arquivo),
+    };
+  }).sort((a, b) => b.criado - a.criado);
+}
+
+// ---------- vídeo do YouTube por link (para os cortes) ----------
+// O yt-dlp corre neste computador (sem API paga nem site de terceiros): descarrega o vídeo até 1080p para
+// public/uploads/yt-<id>.mp4, juntando imagem e som com o ffmpeg do Remotion. Se já foi descarregado, reaproveita.
+const LINK_YOUTUBE = /^https?:\/\/(?:www\.|m\.)?(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|live\/)|youtu\.be\/)([\w-]{6,20})/;
+// Instagram: reels, posts com vídeo e IGTV públicos (os privados ou com restrição de idade pedem sessão iniciada)
+const LINK_INSTAGRAM = /^https?:\/\/(?:www\.)?instagram\.com\/(?:[\w.]+\/)?(?:reels?|p|tv)\/([\w-]{5,40})/;
+// de um link colado: o site, o id e o endereço limpo (sem parâmetros de partilha)
+function lerLink(link) {
+  const yt = String(link).match(LINK_YOUTUBE)?.[1];
+  if (yt) return { site: "YouTube", prefixo: "yt", id: yt, url: `https://www.youtube.com/watch?v=${yt}` };
+  const ig = String(link).match(LINK_INSTAGRAM)?.[1];
+  if (ig) return { site: "Instagram", prefixo: "ig", id: ig, url: `https://www.instagram.com/reel/${ig}/` };
+  return null;
+}
+function baixarLink(t, link) {
+  const alvo = lerLink(link);
+  if (!alvo) return Promise.reject(new Error("Cole um link de vídeo do YouTube (youtube.com/watch, youtu.be, shorts) ou do Instagram (reel ou post)"));
+  const id = alvo.id;
+  const pasta = join(RAIZ, "public/uploads");
+  mkdirSync(pasta, { recursive: true });
+  const arquivo = `uploads/${alvo.prefixo}-${id}.mp4`;
+  return new Promise((ok, falha) => {
+    t.passo = "Lendo o link…";
+    let titulo = "", erro = "";
+    const p = guardarProcesso(t, spawn("python", ["-m", "yt_dlp", alvo.url,
+      "-f", "bv*[height<=1080][ext=mp4]+ba[ext=m4a]/b[height<=1080][ext=mp4]/bv*[height<=1080]+ba/b",
+      "--merge-output-format", "mp4", "--no-playlist", "--no-overwrites", "--newline", "--progress",
+      // o YouTube exige resolver um desafio em JavaScript para dar todas as qualidades: usa o próprio Node do painel
+      "--js-runtimes", `node:${process.execPath}`,
+      ...(existsSync(join(BINARIOS, "ffmpeg.exe")) ? ["--ffmpeg-location", BINARIOS] : []),
+      "--print", "before_dl:TITULO %(title)s", "-o", join(pasta, `${alvo.prefixo}-${id}.%(ext)s`),
+    ], { cwd: RAIZ, stdio: ["ignore", "pipe", "pipe"], env: { ...process.env, PYTHONIOENCODING: "utf-8" } }));
+    let parte = 0;
+    p.stdout.on("data", (d) => {
+      for (const l of String(d).split(/\r?\n/)) {
+        if (l.startsWith("TITULO ")) titulo = l.slice(7).trim();
+        if (l.includes("Destination:")) parte++;
+        const pc = l.match(/\[download\]\s+([\d.]+)%/);
+        if (pc) t.passo = `Baixando ${parte > 1 ? "o som" : "o vídeo"}: ${Math.round(Number(pc[1]))}%`;
+        if (l.startsWith("[Merger]")) t.passo = "Juntando imagem e som…";
+      }
+    });
+    p.stderr.on("data", (d) => (erro += d));
+    p.on("error", (e) => falha(new Error(`Não consegui iniciar o yt-dlp: ${e.message} (instale com: python -m pip install --user yt-dlp)`)));
+    p.on("close", (code) => {
+      if (t.cancelado) return falha(new Error("Parado"));
+      if (code !== 0 || !existsSync(join(RAIZ, "public", arquivo))) {
+        const msg = erro.split(/\r?\n/).filter((l) => l.startsWith("ERROR")).pop() ?? erro.trim().split(/\r?\n/).pop() ?? "";
+        const login = /login|log in|sign in|rate-limit|private/i.test(msg);
+        return falha(new Error(alvo.site === "Instagram" && login
+          ? "O Instagram pediu sessão iniciada para este vídeo (privado, com restrição ou limite de pedidos). Baixe-o pelo telemóvel e envie o ficheiro."
+          : `O ${alvo.site} não deixou baixar este vídeo. ${msg.replace(/^ERROR:\s*/, "").slice(0, 200)}`.trim()));
+      }
+      // o título fica ao lado do vídeo, para a lista de vídeos baixados
+      try { writeFileSync(join(pasta, `${alvo.prefixo}-${id}.json`), JSON.stringify({ titulo, link: alvo.url, baixadoEm: Date.now() })); } catch { /* só o nome */ }
+      ok({ arquivo, nome: titulo || `${alvo.site} ${id}` });
+    });
+  });
+}
 
 // ---------- jobs ----------
 const jobs = new Map();
@@ -381,12 +705,12 @@ const slug = (t) =>
   t.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").split("-").slice(0, 6).join("-");
 
 const DESCREVER_FERRAMENTA = {
-  WebSearch: (i) => `🔎 Pesquisando: ${i.query}`,
-  WebFetch: (i) => `🌐 Lendo: ${i.url}`,
-  Write: (i) => `✍️ Escrevendo ${i.file_path?.split(/[\\/]/).pop()}`,
-  Edit: (i) => `✏️ Ajustando ${i.file_path?.split(/[\\/]/).pop()}`,
-  Read: (i) => `📖 Lendo ${i.file_path?.split(/[\\/]/).pop()}`,
-  Skill: () => "📘 Carregando a skill novo-video",
+  WebSearch: (i) => `Pesquisando: ${i.query}`,
+  WebFetch: (i) => `Lendo: ${i.url}`,
+  Write: (i) => `Escrevendo ${i.file_path?.split(/[\\/]/).pop()}`,
+  Edit: (i) => `Ajustando ${i.file_path?.split(/[\\/]/).pop()}`,
+  Read: (i) => `Lendo ${i.file_path?.split(/[\\/]/).pop()}`,
+  Skill: () => "Carregando a skill novo-video",
 };
 
 const DURACOES = { curto: "30 a 45 segundos", medio: "45 a 60 segundos", longo: "60 a 90 segundos", video_longo: "5 a 10 minutos" };
@@ -394,7 +718,7 @@ const DURACOES = { curto: "30 a 45 segundos", medio: "45 a 60 segundos", longo: 
 const duracaoDe = (d) => (d.formato === "longo" ? "video_longo" : ["curto", "medio", "longo"].includes(d.duracao) ? d.duracao : "medio");
 
 // Corre o Claude Code em modo headless com o system prompt do roteirista e mostra no log o que ele está a fazer
-function rodarClaude(job, prompt) {
+function rodarClaude(job, prompt, etapa = "Roteiro") {
   return new Promise((ok, falha) => {
     // lido a cada chamada, para refletir edições ao ficheiro
     const roteirista = readFileSync(join(RAIZ, ".claude/skills/novo-video/roteirista.md"), "utf-8");
@@ -412,11 +736,11 @@ function rodarClaude(job, prompt) {
         try { ev = JSON.parse(l); } catch { continue; }
         if (ev.type === "assistant") {
           for (const c of ev.message?.content ?? []) {
-            if (c.type === "tool_use") registar(job, (DESCREVER_FERRAMENTA[c.name] ?? (() => `🔧 ${c.name}`))(c.input ?? {}));
+            if (c.type === "tool_use") registar(job, (DESCREVER_FERRAMENTA[c.name] ?? (() => `${c.name}`))(c.input ?? {}));
           }
-        } else if (ev.type === "result" && ev.result) {
-          registar(job, `📝 ${ev.result}`);
-          ultimo = ev.result;
+        } else if (ev.type === "result") {
+          registarClaude(RAIZ, ev, { etapa, video: job.videoId });
+          if (ev.result) { registar(job, `${ev.result}`); ultimo = ev.result; }
         }
       }
     });
@@ -437,7 +761,7 @@ function criarJobNovo(d, videoId = `${slug(d.tema) || "video"}-${Date.now().toSt
   return novoJob({
     tipo: "novo", videoId, formato: FORMATOS[d.formato] ? d.formato : "ranking", tema: d.tema.trim(), estilo: d.estilo ?? "neon", narracao: d.narracao ?? "edge",
     voz: d.voz, produtos: Math.min(5, Math.max(3, Number(d.produtos) || 3)), pais: d.pais ?? "Brasil (R$)",
-    observacoes: d.observacoes ?? "", revisar: d.revisar !== false, musica: d.musica ?? "auto", lowpoly: Boolean(d.lowpoly) && d.formato !== "animado",
+    observacoes: d.observacoes ?? "", revisar: d.revisar !== false, musica: d.musica ?? "auto", ...(Number(d.musicaInicio) > 0 ? { musicaInicio: Math.round(Number(d.musicaInicio) * 10) / 10 } : {}), lowpoly: Boolean(d.lowpoly) && d.formato !== "animado",
     duracao: duracaoDe(d), editorChefe: d.editorChefe !== false, revisaoVisual: d.revisaoVisual !== false, canal: canalDe(d.canal), auto: Boolean(d.auto),
   });
 }
@@ -447,6 +771,7 @@ function aplicarEscolhas(job) {
   const r = JSON.parse(readFileSync(caminhoRoteiro(job.videoId), "utf-8"));
   Object.assign(r, {
     id: job.videoId, formato: job.formato, estilo: job.estilo, narracao: job.narracao, voz: job.voz, musica: job.musica ?? "auto",
+    musicaInicio: job.musicaInicio,
     canal: job.canal ?? r.canal ?? canalPadrao(), duracao_alvo: job.duracao, mercado: String(job.pais).startsWith("Portugal") ? "Portugal" : "Brasil",
   });
   delete r.cor;
@@ -464,7 +789,7 @@ async function validar(job) {
 // segunda leitura: corrige o que o validador apanhou e aprofunda as cenas rasas
 async function editorChefe(job, problemas) {
   job.estado = "editor";
-  registar(job, "🧐 Editor-chefe revisando profundidade, precisão e preços…");
+  registar(job, "Editor-chefe revisando profundidade, precisão e preços…");
   const prompt = [
     `És o editor-chefe do canal. Revise o roteiro em roteiros/${job.videoId}.json (lê também dados/precos.json).`,
     problemas.length ? `O validador automático encontrou estes problemas, que TÊM de ficar resolvidos:\n- ${problemas.join("\n- ")}` : "O validador não encontrou erros.",
@@ -482,7 +807,7 @@ async function editorChefe(job, problemas) {
     const atual = readFileSync(caminhoRoteiro(job.videoId), "utf-8");
     const pedido = prompt.replace(/Grava o arquivo\.\nNo fim responde numa linha com o que mudaste\./, "Devolve o roteiro COMPLETO já corrigido, no mesmo formato JSON.") +
       `\n\nO roteiro atual:\n${atual}`;
-    registar(job, "🧑‍💻 À espera do editor-chefe da IA externa (Produção)");
+    registar(job, "À espera do editor-chefe da IA externa (Produção)");
     const r = await esperarExterno({ raiz: RAIZ, rotulo: `Editor-chefe: ${job.tema}`, pedido, ferramentas: ["WebSearch"], deveParar: () => Boolean(job.cancelado) });
     if (r.json) {
       const corrigido = lerRoteiroExterno(JSON.stringify(r.json));
@@ -490,7 +815,7 @@ async function editorChefe(job, problemas) {
       return;
     }
   }
-  await rodarClaude(job, prompt);
+  await rodarClaude(job, prompt, "Editor-chefe");
 }
 
 // ---------- skill youtube (claude-youtube, MIT): ideias, pacote de publicação, variantes de gancho ----------
@@ -512,7 +837,7 @@ async function claudeJSON(tarefa, guia, pedido, ferramentas = []) {
   if (modoIA(RAIZ) === "externa") {
     const nome = guia.split(/[\\/]/).pop();
     if (nome === "revisao-visual.md") throw new Error("a revisão visual só funciona com o Claude (precisa de ver os frames)");
-    if (tarefa && typeof tarefa === "object") tarefa.passo = "🧑‍💻 À espera da IA externa: copie o pedido na Produção e cole a resposta";
+    if (tarefa && typeof tarefa === "object") tarefa.passo = "À espera da IA externa: copie o pedido na Produção e cole a resposta";
     const sistema = readFileSync(/[\\/]/.test(guia) ? guia : join(GUIAS, guia), "utf-8");
     const r = await esperarExterno({ raiz: RAIZ, rotulo: ROTULO_GUIA[nome] ?? nome.replace(/\.md$/, ""), sistema, pedido, ferramentas, deveParar: () => Boolean(tarefa?.cancelado) });
     if (r.json) return r.json;
@@ -535,8 +860,12 @@ function claudeJSONPeloClaude(tarefa, guia, pedido, ferramentas = []) {
         let ev;
         try { ev = JSON.parse(l); } catch { continue; }
         if (ev.type === "assistant") {
-          for (const c of ev.message?.content ?? []) if (c.type === "tool_use") tarefa.passo = (DESCREVER_FERRAMENTA[c.name] ?? (() => `🔧 ${c.name}`))(c.input ?? {});
-        } else if (ev.type === "result") resultado = ev.result;
+          for (const c of ev.message?.content ?? []) if (c.type === "tool_use") tarefa.passo = (DESCREVER_FERRAMENTA[c.name] ?? (() => `${c.name}`))(c.input ?? {});
+        } else if (ev.type === "result") {
+          resultado = ev.result;
+          const nome = guia.split(/[\\/]/).pop();
+          registarClaude(RAIZ, ev, { etapa: ROTULO_GUIA[nome] ?? (nome === "revisao-visual.md" ? "Revisão visual" : nome.replace(/\.md$/, "")), video: tarefa?.videoId });
+        }
       }
     });
     p.stderr.on("data", () => {});
@@ -550,7 +879,7 @@ function claudeJSONPeloClaude(tarefa, guia, pedido, ferramentas = []) {
 }
 
 function novaTarefa(tipo, trabalho) {
-  const t = { id: `t${Date.now().toString(36)}${Math.random().toString(36).slice(2, 5)}`, tipo, estado: "a correr", passo: "🤖 Pensando…", criado: Date.now() };
+  const t = { id: `t${Date.now().toString(36)}${Math.random().toString(36).slice(2, 5)}`, tipo, estado: "a correr", passo: "Pensando…", criado: Date.now() };
   tarefas.set(t.id, t);
   for (const [k, v] of tarefas) if (Date.now() - v.criado > 3 * 3600e3) tarefas.delete(k);
   trabalho(t).then((r) => { if (!t.cancelado) Object.assign(t, { estado: "pronto", resultado: r }); }, (e) => { if (!t.cancelado) Object.assign(t, { estado: "erro", erro: e.message }); });
@@ -582,6 +911,7 @@ function gerarIdeias(t, d) {
     FORMATOS[d.formato] ? `Use só o formato: ${d.formato}` : "",
     `Mercado: ${String(d.pais ?? "Brasil").startsWith("Portugal") ? "Portugal (PT-PT, euros)" : "Brasil (PT-BR, reais)"}.`,
     `Vídeos que o canal já fez (não repetir):\n- ${feitos.slice(0, 120).join("\n- ") || "(nenhum)"}`,
+    (() => { const dg = lerInsights(id)?.diagnostico; return dg ? `O que os números do canal no YouTube dizem (siga o que funciona):\n- ${[...(dg.funciona ?? []), ...(dg.acoes ?? []).map((a) => a.titulo)].slice(0, 8).join("\n- ")}` : ""; })(),
     "Pesquise na web o que está acontecendo agora antes de sugerir. Responda só com o JSON.",
   ].filter(Boolean).join("\n\n");
   return claudeJSON(t, "ideias.md", pedido, ["WebSearch", "WebFetch"]).then((r) => {
@@ -592,19 +922,132 @@ function gerarIdeias(t, d) {
   });
 }
 
+// ---------- Insights: as estatísticas do YouTube de cada canal, cruzadas com o que o estúdio fez ----------
+// Os números vêm da API oficial (server/youtube.mjs) e ficam guardados em dados/insights/<canal>.json; o
+// cruzamento liga cada vídeo do YouTube ao vídeo do estúdio (pelo id do envio automático ou pelo título).
+const ficheiroInsights = (canal) => join(RAIZ, "dados/insights", `${canal}.json`);
+const lerInsights = (canal) => { try { return JSON.parse(readFileSync(ficheiroInsights(canal), "utf-8")); } catch { return null; } };
+const semAcento = (s) => String(s ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
+// emojis 3D (Fluent Emoji, MIT) que a galeria do Objeto mostra: [nome em inglês, nome em PT, tem tom de pele]
+const EMOJIS_GALERIA = [
+  ["brain", "Cérebro"], ["light bulb", "Lâmpada acesa"], ["kitchen knife", "Faca"], ["dagger", "Punhal"], ["anatomical heart", "Coração"], ["lungs", "Pulmões"],
+  ["bone", "Osso"], ["tooth", "Dente"], ["pill", "Comprimido"], ["syringe", "Seringa"], ["dna", "DNA"], ["microbe", "Micróbio / vírus"], ["drop of blood", "Gota de sangue"],
+  ["stethoscope", "Estetoscópio"], ["eye", "Olho"], ["flexed biceps", "Músculo", true], ["hospital", "Hospital"], ["thermometer", "Termómetro"],
+  ["skull", "Caveira"], ["fire", "Fogo"], ["money bag", "Saco de dinheiro"], ["trophy", "Troféu"], ["rocket", "Foguetão"], ["warning", "Alerta"], ["alarm clock", "Despertador"],
+  ["hourglass done", "Ampulheta"], ["red apple", "Maçã"], ["droplet", "Gota de água"], ["zzz", "Sono"], ["bed", "Cama"], ["video game", "Comando de jogo"], ["joystick", "Joystick"],
+  ["desktop computer", "Computador"], ["laptop", "Portátil"], ["mobile phone", "Telemóvel"], ["battery", "Bateria"], ["electric plug", "Ficha elétrica"], ["gear", "Engrenagem"],
+  ["magnifying glass tilted left", "Lupa"], ["chart increasing", "Gráfico a subir"], ["chart decreasing", "Gráfico a descer"], ["gem stone", "Diamante"], ["crown", "Coroa"],
+  ["bomb", "Bomba"], ["high voltage", "Raio"], ["star", "Estrela"], ["thinking face", "Cara a pensar"], ["exploding head", "Cabeça a explodir"], ["face screaming in fear", "Cara de medo"],
+  ["smiling face with sunglasses", "Cara de óculos"], ["hundred points", "100"], ["check mark button", "Certo"], ["cross mark", "Errado"], ["robot", "Robô"], ["alien", "Alien"],
+  ["cocktail glass", "Drink / gin tônica"], ["tumbler glass", "Copo de dose"], ["cup with straw", "Copo com palhinha"], ["wine glass", "Taça de vinho"],
+  ["bottle with popping cork", "Garrafa a estourar"], ["clinking glasses", "Brinde"], ["clinking beer mugs", "Brinde de cerveja"], ["ice", "Gelo"], ["lemon", "Limão"],
+  ["woozy face", "Cara bêbada"], ["face with spiral eyes", "Tonto / ressaca"], ["nauseated face", "Enjoo"], ["face vomiting", "Vomitar"], ["hot face", "Cara a ferver"],
+  ["sleeping face", "A dormir"], ["sweat droplets", "Suor"], ["broken heart", "Coração partido"], ["ambulance", "Ambulância"], ["prohibited", "Proibido"],
+  ["calendar", "Calendário"], ["money with wings", "Dinheiro a voar"],
+  ["ghost", "Fantasma"], ["globe showing americas", "Planeta Terra"], ["hot beverage", "Bebida quente"], ["cigarette", "Cigarro"], ["beer mug", "Cerveja"],
+];
+const normalizarTitulo = (s) => String(s ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/#\S+/g, "").replace(/[^a-z0-9]+/g, " ").trim();
+// o que o estúdio sabe de cada vídeo que fez para este canal
+function videosDoEstudio(canal) {
+  const pasta = join(RAIZ, "roteiros");
+  if (!existsSync(pasta)) return [];
+  let auto = [];
+  try { auto = JSON.parse(readFileSync(join(RAIZ, "dados/automatico.json"), "utf-8")).historico ?? []; } catch { /* sem modo automático */ }
+  return readdirSync(pasta).filter((f) => f.endsWith(".json")).map((f) => {
+    const id = f.slice(0, -5);
+    let r, pub = null;
+    try { r = JSON.parse(readFileSync(join(pasta, f), "utf-8")); } catch { return null; }
+    if ((r.canal ?? canalPadrao()) !== canal) return null;
+    try { pub = JSON.parse(readFileSync(ficheiroPublicacao(id), "utf-8")); } catch { /* sem publicação */ }
+    const cenas = r.cenas ?? [];
+    const sons = cenas.reduce((n, c) => n + (c.sons?.length ?? 0) + (c.som ? 1 : 0), 0);
+    const duracao = Math.round(cenas.reduce((s, c) => s + (c.duracaoMs ?? 0), 0) / 1000) || null;
+    const musica = typeof r.musica === "string" ? r.musica.split("/").slice(-2, -1)[0] ?? null : null;
+    return {
+      id, estilo: r.estilo ?? "neon", formato: r.formato ?? "livre", duracao, sfx: sons > 0, sons, musica,
+      gancho: String(cenas[0]?.fala ?? cenas[0]?.texto_tela ?? "").slice(0, 140),
+      titulos: [r.titulo, ...(pub?.titulos ?? []).map((t) => t?.texto ?? t)].filter(Boolean).map(normalizarTitulo),
+      youtubeId: auto.find((a) => a.videoId === id && a.youtubeId)?.youtubeId ?? null,
+    };
+  }).filter(Boolean);
+}
+const NOMES_FORMATO = { livre: "Livre", quiz: "Quiz", ranking: "Ranking", storytelling: "Storytelling", curiosidades: "Curiosidades", explicativo: "Explicativo", ese: "E se?", animado: "E se? animado", clipe: "Clipe", longo: "Vídeo longo" };
+const faixaDuracao = (s) => (!s ? null : s <= 30 ? "até 30 s" : s <= 45 ? "31 a 45 s" : s <= 60 ? "46 a 60 s" : s <= 90 ? "61 a 90 s" : s <= 180 ? "1,5 a 3 min" : "mais de 3 min");
+// junta os números do YouTube aos vídeos do estúdio e calcula as médias por estilo, formato, duração e efeitos sonoros
+function cruzarInsights(dados) {
+  const estudio = videosDoEstudio(dados.canal), nomesEstilo = estilos();
+  const ligados = [];
+  for (const v of dados.videos ?? []) {
+    const t = normalizarTitulo(v.titulo);
+    const e = estudio.find((x) => x.youtubeId === v.id) ?? estudio.find((x) => x.titulos.some((y) => y && (y === t || (y.length > 12 && (t.startsWith(y) || y.startsWith(t))))));
+    v.estudio = e ? { id: e.id, estilo: e.estilo, estiloNome: nomesEstilo[e.estilo]?.nome ?? e.estilo, formato: e.formato, duracao: e.duracao, sfx: e.sfx, sons: e.sons, musica: e.musica, gancho: e.gancho } : null;
+    if (e && v.periodo.views > 0) ligados.push(v);
+  }
+  const media = (l, f) => { const xs = l.map(f).filter((x) => Number.isFinite(x)); return xs.length ? Math.round((xs.reduce((a, b) => a + b, 0) / xs.length) * 10) / 10 : null; };
+  const grupo = (titulo, chave) => {
+    const g = {};
+    for (const v of ligados) { const k = chave(v); if (k != null) (g[k] ??= []).push(v); }
+    return { titulo, grupos: Object.entries(g).map(([nome, l]) => ({
+      nome, n: l.length, views: media(l, (v) => v.periodo.views), percentagem: media(l, (v) => v.periodo.percentagemMedia),
+      duracaoVista: media(l, (v) => v.periodo.duracaoMedia), ctr: media(l, (v) => v.periodo.ctr), inscritos: media(l, (v) => v.periodo.inscritos),
+    })).sort((a, b) => (b.percentagem ?? 0) - (a.percentagem ?? 0)) };
+  };
+  dados.cruzamento = {
+    ligados: ligados.length, doEstudio: (dados.videos ?? []).filter((v) => v.estudio).length,
+    eixos: [
+      grupo("Estilo", (v) => v.estudio.estiloNome),
+      grupo("Formato", (v) => NOMES_FORMATO[v.estudio.formato] ?? v.estudio.formato),
+      grupo("Duração", (v) => faixaDuracao(v.estudio.duracao ?? v.duracao)),
+      grupo("Efeitos sonoros", (v) => (v.estudio.sfx ? "com SFX" : "sem SFX")),
+      grupo("Tipo", (v) => (v.short ? "Short" : "Vídeo longo")),
+    ].filter((e) => e.grupos.length),
+  };
+  return dados;
+}
+async function atualizarInsights(t, canal, dias) {
+  t.passo = "Buscando os números no YouTube…";
+  const dados = await youtube.insights(canal, dias);
+  const antigo = lerInsights(canal);
+  if (antigo?.diagnostico) dados.diagnostico = antigo.diagnostico; // o diagnóstico fica até se pedir outro
+  mkdirSync(join(RAIZ, "dados/insights"), { recursive: true });
+  writeFileSync(ficheiroInsights(canal), JSON.stringify(dados, null, 1));
+  return cruzarInsights(dados);
+}
+async function diagnosticarCanal(t, canal) {
+  const dados = lerInsights(canal);
+  if (!dados) throw new Error("Atualize os números primeiro");
+  cruzarInsights(dados);
+  // o Claude lê um ficheiro mais pequeno: sem miniaturas nem o diagnóstico antigo
+  const { diagnostico, ...resto } = dados;
+  const paraLer = join(RAIZ, "dados/insights", `${canal}.analise.json`);
+  writeFileSync(paraLer, JSON.stringify({ ...resto, videos: resto.videos.map(({ miniatura, ...v }) => v) }, null, 1));
+  const c = canais()[canal];
+  t.passo = "O Claude está analisando o canal…";
+  const r = await claudeJSON(t, "insights.md", [
+    `Canal do estúdio: ${c?.nome ?? canal} (${c?.arroba ?? ""}), nicho: ${c?.nicho ?? "não indicado"}.`,
+    `Números do YouTube nos últimos ${dados.dias} dias e o cruzamento com o estúdio (lê com Read): ${paraLer}`,
+    "Responde só com o JSON.",
+  ].join("\n\n"), ["Read"]);
+  dados.diagnostico = { ...r, em: new Date().toISOString(), dias: dados.dias };
+  writeFileSync(ficheiroInsights(canal), JSON.stringify(dados, null, 1));
+  return dados.diagnostico;
+}
+
 const ficheiroPublicacao = (id) => join(RAIZ, "out", `${id}.publicacao.json`);
 function gerarPublicacao(t, id) {
   const r = JSON.parse(readFileSync(caminhoRoteiro(id), "utf-8"));
   const desc = join(RAIZ, "out", `${id}.descricao.txt`);
   const capitulos = existsSync(desc) ? readFileSync(desc, "utf-8").split("\n").filter((l) => /^\d+:\d\d/.test(l.trim())) : [];
   const pedido = [
-    `Faça o pacote de publicação deste vídeo (${r.formato === "longo" ? "vídeo longo 16:9 do YouTube" : "vertical: YouTube Shorts, TikTok e Reels"}).`,
+    `Faça o pacote de publicação deste vídeo (${r.formato === "longo" ? "vídeo longo 16:9 do YouTube" : "vertical: YouTube Shorts, TikTok, Reels e Facebook"}). Os títulos vão todos em CAIXA ALTA.`,
     capitulos.length ? `Capítulos (use exatamente estes, na descrição do YouTube):\n${capitulos.join("\n")}` : r.formato === "longo" ? "Ainda não há capítulos com tempos (o vídeo não foi renderizado): deixe a linha \"[capítulos]\" no lugar onde eles entram." : "",
     `Roteiro:\n${JSON.stringify(resumoRoteiro(r), null, 1)}`,
     "Responda só com o JSON.",
   ].filter(Boolean).join("\n\n");
   return claudeJSON(t, "publicacao.md", pedido).then((p) => {
-    const salvo = { ...p, geradoEm: new Date().toISOString() };
+    // títulos sempre em caixa alta, mesmo que a IA se esqueça
+    const titulos = Array.isArray(p.titulos) ? p.titulos.map((x) => (x && typeof x.texto === "string" ? { ...x, texto: x.texto.toLocaleUpperCase("pt-BR") } : x)) : p.titulos;
+    const salvo = { ...p, titulos, geradoEm: new Date().toISOString() };
     mkdirSync(join(RAIZ, "out"), { recursive: true });
     writeFileSync(ficheiroPublicacao(id), JSON.stringify(salvo, null, 2));
     return salvo;
@@ -630,7 +1073,7 @@ function gerarGanchos(t, id) {
 const ficheiroRevisao = (id) => join(RAIZ, "out/revisao", `${id}.json`);
 function revisaoVisual(id, aoPasso = () => {}) {
   return new Promise((ok, falha) => {
-    aoPasso("🖼 Capturando frames de cada cena…");
+    aoPasso("Capturando frames de cada cena…");
     const p = spawn("python", ["scripts/folha_contacto.py", id], { cwd: RAIZ, stdio: ["ignore", "pipe", "pipe"], env: { ...process.env, PYTHONIOENCODING: "utf-8" } });
     let saida = "", erro = "";
     p.stdout.on("data", (d) => (saida += d));
@@ -643,7 +1086,7 @@ function revisaoVisual(id, aoPasso = () => {}) {
       ok(folha);
     });
   }).then(async (folha) => {
-    aoPasso("👁 O Claude está vendo os frames…");
+    aoPasso("O Claude está vendo os frames…");
     const pedido = [
       `Revê este vídeo (${folha.quadros.length} quadros em ${folha.folhas.length} folhas de contato). Lê cada folha com Read:`,
       ...folha.folhas.map((f) => `- ${join(RAIZ, f)}`),
@@ -660,10 +1103,10 @@ function revisaoVisual(id, aoPasso = () => {}) {
 // IA externa: o pedido completo do "Roteiro de outra IA" fica na Produção; a resposta (o roteiro em JSON) é validada
 // como no import e o vídeo segue. "Usar o Claude neste" volta ao caminho normal.
 async function escreverRoteiroExterno(job, promptClaude) {
-  registar(job, "🧑‍💻 À espera do roteiro da IA externa (copie o pedido na Produção e cole a resposta)");
+  registar(job, "À espera do roteiro da IA externa (copie o pedido na Produção e cole a resposta)");
   const r = await esperarExterno({ raiz: RAIZ, rotulo: `Roteiro: ${job.tema}`, pedido: promptExterno(job), ferramentas: ["WebSearch"], deveParar: () => Boolean(job.cancelado) });
   if (r.claude) {
-    registar(job, "🤖 Claude pesquisando e escrevendo o roteiro…");
+    registar(job, "Claude pesquisando e escrevendo o roteiro…");
     await rodarClaude(job, promptClaude);
     if (!existsSync(caminhoRoteiro(job.videoId))) throw new Error("O Claude não gravou o roteiro");
   } else {
@@ -671,7 +1114,7 @@ async function escreverRoteiroExterno(job, promptClaude) {
     writeFileSync(caminhoRoteiro(job.videoId), JSON.stringify({ id: job.videoId, ...roteiro }, null, 2));
   }
   aplicarEscolhas(job);
-  registar(job, "✅ Primeira versão do roteiro pronta");
+  registar(job, "Primeira versão do roteiro pronta");
 }
 
 function escreverRoteiro(job) {
@@ -710,11 +1153,11 @@ ${guiaDe("formato: animado")}` : "",
 
   job.estado = "roteiro";
   if (modoIA(RAIZ) === "externa") return escreverRoteiroExterno(job, prompt);
-  registar(job, "🤖 Claude pesquisando e escrevendo o roteiro…");
+  registar(job, "Claude pesquisando e escrevendo o roteiro…");
   return rodarClaude(job, prompt).then(() => {
     if (!existsSync(caminhoRoteiro(job.videoId))) throw new Error("O Claude não gravou o roteiro");
     aplicarEscolhas(job);
-    registar(job, "✅ Primeira versão do roteiro pronta");
+    registar(job, "Primeira versão do roteiro pronta");
   });
 }
 
@@ -725,7 +1168,11 @@ function produzir(job) {
     job.estado = "narracao";
     const p = guardarProcesso(job, spawn(process.execPath, ["scripts/produzir.mjs", `roteiros/${job.videoId}.json`], { cwd: RAIZ, stdio: ["ignore", "pipe", "pipe"], env: envClaude() }));
     const ler = (d) => {
-      for (const l of String(d).split(/\r?\n/).filter(Boolean)) {
+      for (const bruto of String(d).split(/\r?\n/).filter(Boolean)) {
+        // sem as cores do terminal; as linhas "Tab N, node_modules/…" do Remotion (o texto vai no [navegador] do
+        // produzir.mjs) enchiam o log de 300 linhas e empurravam para fora o erro que interessa
+        const l = bruto.replace(/\x1b\[\d+(;\d+)*m/g, "").trimEnd();
+        if (!l.trim() || /^\s*Tab \d+, node_modules\//.test(l)) continue;
         const etapa = l.match(/^\[etapa\] (\w+)/);
         const prog = l.match(/^\[progresso\] (\d+)/);
         if (etapa) job.estado = etapa[1] === "preparar" ? "render" : etapa[1];
@@ -742,15 +1189,15 @@ function produzir(job) {
       } else if (code === 0) {
         job.estado = "pronto";
         job.progresso = 100;
-        registar(job, "🎬 Vídeo pronto!");
+        registar(job, "Vídeo pronto");
         if (job.revisaoVisual !== false) {
           revisaoVisual(job.videoId, (passo) => (job.passoRevisao = passo))
-            .then((r) => { job.passoRevisao = null; registar(job, `👁 Revisão visual: nota ${r.nota ?? "?"}/10, ${r.problemas.length} ${r.problemas.length === 1 ? "problema" : "problemas"}${r.problemas.length ? " (ver no editor)" : ""}`); job.aoTerminar?.(job, r); })
-            .catch((e) => { job.passoRevisao = null; registar(job, `⚠ Revisão visual não feita: ${e.message}`); job.aoTerminar?.(job, null); });
+            .then((r) => { job.passoRevisao = null; registar(job, `Revisão visual: nota ${r.nota ?? "?"}/10, ${r.problemas.length} ${r.problemas.length === 1 ? "problema" : "problemas"}${r.problemas.length ? " (ver no editor)" : ""}`); job.aoTerminar?.(job, r); })
+            .catch((e) => { job.passoRevisao = null; registar(job, `Revisão visual não feita: ${e.message}`); job.aoTerminar?.(job, null); });
         } else job.aoTerminar?.(job, null);
       } else {
         job.estado = "erro";
-        registar(job, "❌ Falhou a produção (ver log acima)");
+        registar(job, "Falhou a produção (ver log acima)");
         job.aoTerminar?.(job, null);
       }
       ok();
@@ -772,7 +1219,7 @@ const correrScript = (job, args) => new Promise((ok, falha) => {
 // descarrega imagens/b-rolls e renderiza cenas Manim, para a revisão já as mostrar
 async function prepararMidia(job) {
   job.estado = "midia";
-  registar(job, "🖼 Procurando imagens e b-rolls…");
+  registar(job, "Procurando imagens e b-rolls…");
   await correrScript(job, ["scripts/buscar_midia.py", `roteiros/${job.videoId}.json`]);
   await correrScript(job, ["scripts/manim_cenas.py", `roteiros/${job.videoId}.json`]);
 }
@@ -783,28 +1230,28 @@ async function correrJob(job) {
       if (!job.importado) await escreverRoteiro(job);
       else aplicarEscolhas(job);
       let q = await validar(job);
-      registar(job, `🔍 Validador: ${q.erros.length} erros, ${q.avisos.length} avisos`);
+      registar(job, `Validador: ${q.erros.length} erros, ${q.avisos.length} avisos`);
       if (!job.importado && job.editorChefe !== false && (q.erros.length || q.avisos.length)) {
         await editorChefe(job, [...q.erros, ...q.avisos]);
         aplicarEscolhas(job);
         q = await validar(job);
-        registar(job, `🔍 Depois do editor: ${q.erros.length} erros, ${q.avisos.length} avisos`);
+        registar(job, `Depois do editor: ${q.erros.length} erros, ${q.avisos.length} avisos`);
       }
-      q.erros.forEach((e) => registar(job, `⚠ ${e}`));
+      q.erros.forEach((e) => registar(job, `Erro: ${e}`));
       await prepararMidia(job);
       // com erros por resolver, o vídeo nunca segue sozinho para render
       if (q.erros.length) job.revisar = true;
     }
     if (job.revisar && job.tipo === "novo") {
       job.estado = "aguardando revisao";
-      registar(job, "👀 Revise o roteiro (preços, fatos, avisos) e clique em Produzir");
+      registar(job, "Revise o roteiro (preços, fatos, avisos) e clique em Produzir");
       return;
     }
     produzir(job);
   } catch (e) {
     if (job.cancelado) return; // o estado "parado" já foi posto por pararJob
     job.estado = "erro";
-    registar(job, `❌ ${e.message}`);
+    registar(job, `Erro: ${e.message}`);
   }
 }
 
@@ -871,6 +1318,7 @@ function promptExterno(d) {
     formato === "longo" ? "- É um vídeo longo: o JSON vai ter 45 a 90 cenas. Escreva-o inteiro, sem resumir nem cortar cenas. Se a resposta for cortada a meio, eu escrevo \"continue\" e você continua exatamente do ponto onde parou, sem repetir nada." : null,
     "",
     "Faça a pesquisa, escreva, revise (seção 6) e responda só com o JSON.",
+    "Ao me devolver o resultado, coloque **todo o JSON dentro de uma única caixa de código JSON** (comece a resposta com ```json e termine com ```), sem texto antes nem depois, para eu poder copiar com o botão de copiar da caixa.",
   ].filter((l) => l !== null).join("\n")
     // a outra IA não conhece a skill: as referências apontam para as secções deste mesmo texto
     .replace("campos descritos na skill", "campos descritos abaixo").replace(/ da skill/g, "").replace(/\(estrutura da secção [^)]*\)/g, "(estrutura na seção do formato, acima)");
@@ -884,7 +1332,7 @@ function lerRoteiroExterno(texto) {
   let r;
   try { r = JSON.parse(t.slice(ini, fim + 1)); } catch (e) { throw new Error(`O JSON tem um erro (${e.message}). Peça à IA para corrigir e responder só com o JSON.`); }
   if (!Array.isArray(r.cenas) || !r.cenas.length) throw new Error("O roteiro não tem cenas");
-  const tipos = new Set(["dado", "tipografia", "faixa", "palavras", "gancho", "quiz", "lowpoly", "pincel", "produto", "fato", "grafico", "linha_tempo", "manim", "numero", "comparacao", "modelo3d", "capitulo", "cta"]);
+  const tipos = new Set(["dado", "calendario", "tipografia", "print", "faixa", "palavras", "gancho", "quiz", "lowpoly", "pincel", "produto", "fato", "grafico", "linha_tempo", "manim", "numero", "comparacao", "modelo3d", "capitulo", "cta"]);
   const maus = r.cenas.map((c, i) => (tipos.has(c?.tipo) ? null : `cena ${i + 1} (${c?.tipo ?? "sem tipo"})`)).filter(Boolean);
   if (maus.length) throw new Error(`Tipos de cena desconhecidos: ${maus.join(", ")}`);
   r.cenas.forEach((c) => { if (typeof c.fala !== "string") c.fala = ""; });
@@ -903,17 +1351,37 @@ const corpo = (req) => new Promise((ok, falha) => {
   req.on("end", () => { try { ok(d ? JSON.parse(d) : {}); } catch (e) { falha(e); } });
 });
 
-const enviarVideo = (req, res, ficheiro) => {
+// ficheiros que o painel está a enviar ao browser. O .pipe() não fecha o ficheiro quando o browser desiste a meio
+// (uma prévia de vídeo carrega só o início e cancela), e no Windows um ficheiro aberto impede mover a pasta
+// (EPERM ao mandar para a lixeira). Por isso: fecha-se quando a ligação fecha, e libertar() fecha os de uma pasta.
+const abertos = new Set();
+function enviarFicheiro(ficheiro, res, opcoes) {
+  const s = createReadStream(ficheiro, opcoes);
+  const item = { f: resolve(ficheiro), s, res };
+  abertos.add(item);
+  const fechar = () => { abertos.delete(item); s.destroy(); };
+  s.on("close", () => abertos.delete(item));
+  res.on("close", fechar);
+  s.on("error", () => { fechar(); if (!res.headersSent) res.writeHead(500); res.end(); });
+  return s.pipe(res);
+}
+function libertar(pasta) {
+  const base = resolve(pasta);
+  for (const item of [...abertos]) if (item.f === base || item.f.startsWith(base + "\\") || item.f.startsWith(base + "/")) { item.s.destroy(); item.res.destroy(); abertos.delete(item); }
+}
+
+// envia com suporte a Range (o browser precisa dele para saltar para o meio de um vídeo ou de uma música)
+const enviarVideo = (req, res, ficheiro, tipo = "video/mp4") => {
   const tamanho = statSync(ficheiro).size;
   const range = req.headers.range?.match(/bytes=(\d*)-(\d*)/);
   if (!range) {
-    res.writeHead(200, { "Content-Type": "video/mp4", "Content-Length": tamanho, "Accept-Ranges": "bytes" });
-    return createReadStream(ficheiro).pipe(res);
+    res.writeHead(200, { "Content-Type": tipo, "Content-Length": tamanho, "Accept-Ranges": "bytes" });
+    return enviarFicheiro(ficheiro, res);
   }
   const ini = range[1] ? Number(range[1]) : 0;
   const fim = range[2] ? Number(range[2]) : tamanho - 1;
-  res.writeHead(206, { "Content-Type": "video/mp4", "Content-Length": fim - ini + 1, "Content-Range": `bytes ${ini}-${fim}/${tamanho}`, "Accept-Ranges": "bytes" });
-  createReadStream(ficheiro, { start: ini, end: fim }).pipe(res);
+  res.writeHead(206, { "Content-Type": tipo, "Content-Length": fim - ini + 1, "Content-Range": `bytes ${ini}-${fim}/${tamanho}`, "Accept-Ranges": "bytes" });
+  enviarFicheiro(ficheiro, res, { start: ini, end: fim });
 };
 
 // ---------- lixeira ----------
@@ -982,12 +1450,25 @@ function criarCorte(id, k) {
 
 // move um ficheiro ou pasta; entre discos diferentes (out/ e public/videos no A:, roteiros no C:) o rename dá EXDEV:
 // copia e só depois apaga o original
+const esperar = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
 function mover(de, para) {
-  try { renameSync(de, para); }
-  catch (e) {
-    if (e.code !== "EXDEV") throw e;
-    cpSync(de, para, { recursive: true });
-    rmSync(de, { recursive: true, force: true });
+  libertar(de);
+  for (let tentativa = 0; ; tentativa++) {
+    try { return renameSync(de, para); }
+    catch (e) {
+      // pasta presa no Windows: tenta de novo algumas vezes; se continuar, copia e apaga (o rm também insiste)
+      const preso = ["EPERM", "EBUSY", "EACCES"].includes(e.code);
+      if (preso && tentativa < 6) { esperar(250); continue; }
+      if (e.code !== "EXDEV" && !preso) throw e;
+      cpSync(de, para, { recursive: true });
+      try { rmSync(de, { recursive: true, force: true, maxRetries: 8, retryDelay: 250 }); }
+      catch (e2) {
+        // não deu para apagar o original: desfaz a cópia para não ficar o vídeo em dois sítios
+        rmSync(para, { recursive: true, force: true });
+        throw new Error(`O Windows não deixou mover ${basename(de)}: algum programa tem um ficheiro dele aberto (feche o vídeo noutros programas e tente de novo)`);
+      }
+      return;
+    }
   }
 }
 // move todas as peças; se uma falhar, as que já foram voltam ao sítio (nunca fica um vídeo meio apagado)
@@ -1047,6 +1528,11 @@ const listarVideos = () =>
 
 // YouTube e modo automático (desligado até o criador o ativar no painel)
 const youtube = criarYouTube({ raiz: RAIZ, lerEnv, porta: PORTA });
+// Instagram (API oficial da Meta): contas ligadas, publicar Reels, agenda e números
+const instagram = criarInstagram({ raiz: RAIZ, lerEnv, porta: PORTA });
+const ID_VIDEO = /^[a-z0-9-]{1,80}$/;
+const ID_META = /^\d{5,30}$/;
+const ID_COMENTARIO = /^[\w-]{5,60}$/;
 const cortes = criarCortes({ raiz: RAIZ, claudeJSON, guardarProcesso });
 const automatico = criarAutomatico({
   raiz: RAIZ, canais, youtube,
@@ -1085,12 +1571,22 @@ const rotas = async (req, res) => {
       return pagina("YouTube conectado", `O canal do estúdio <b>${r.canal}</b> publica agora em <b>${r.titulo.replace(/[<>&]/g, "")}</b>.`);
     } catch (e) { return pagina("Não foi possível conectar", e.message.replace(/[<>&]/g, "")); }
   }
+  // o Facebook volta aqui depois de o criador autorizar as páginas com Instagram
+  if (req.method === "GET" && url.pathname === "/oauth/instagram") {
+    const limpo = (x) => String(x ?? "").replace(/[<>&]/g, "");
+    const pagina = (titulo, texto) => { res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" }); res.end(`<!doctype html><meta charset="utf-8"><title>${titulo}</title><body style="font-family:system-ui;background:#0f1115;color:#eee;display:grid;place-items:center;height:100vh;margin:0"><div style="max-width:460px;text-align:center"><h2>${titulo}</h2><p>${texto}</p><p style="opacity:.6">Pode fechar esta janela e voltar ao painel.</p></div>`); };
+    if (url.searchParams.get("error")) return pagina("Conexão cancelada", limpo(url.searchParams.get("error_description") || "O Facebook não deu autorização."));
+    try {
+      const r = await instagram.concluir(url.searchParams.get("code"), url.searchParams.get("state"));
+      return pagina("Instagram conectado", `Contas ligadas ao estúdio: <b>${limpo(r.contas.join(", "))}</b>.`);
+    } catch (e) { return pagina("Não foi possível conectar", limpo(e.message)); }
+  }
   if (req.method === "GET" && url.pathname === "/") {
     res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-cache" });
     return createReadStream(join(RAIZ, "server/painel.html")).pipe(res);
   }
   // estilos e lógica do painel (ficheiros à parte; no-cache = o browser confirma se mudaram, sem descarregar de novo)
-  if (req.method === "GET" && (url.pathname === "/painel.css" || url.pathname === "/painel.js")) {
+  if (req.method === "GET" && (url.pathname === "/painel.css" || url.pathname === "/painel.js" || url.pathname === "/edicao.js" || url.pathname === "/instagram.js")) {
     res.writeHead(200, { "Content-Type": url.pathname.endsWith(".css") ? "text/css; charset=utf-8" : "text/javascript; charset=utf-8", "Cache-Control": "no-cache" });
     return createReadStream(join(RAIZ, "server", url.pathname.slice(1))).pipe(res);
   }
@@ -1102,36 +1598,116 @@ const rotas = async (req, res) => {
     const f = join(RAIZ, "out", b);
     return existsSync(f) ? enviarVideo(req, res, f) : json(res, 404, { erro: "não existe" });
   }
+  // pré-visualização de uma cena no editor (scripts/previa_cena.mjs)
+  if (req.method === "GET" && a === "out" && b === "previa" && /^[a-z0-9-]{1,80}-\d{1,3}\.jpg$/.test(c ?? "")) {
+    const f = join(RAIZ, "out/previa", c);
+    if (!existsSync(f)) return json(res, 404, { erro: "não existe" });
+    res.writeHead(200, { "Content-Type": "image/jpeg", "Cache-Control": "no-cache" });
+    return enviarFicheiro(f, res);
+  }
   if (req.method === "GET" && a === "out" && b === "revisao" && /^[a-z0-9-]{1,80}-\d\.jpg$/.test(c ?? "")) {
     const f = join(RAIZ, "out/revisao", c);
     if (!existsSync(f)) return json(res, 404, { erro: "não existe" });
     res.writeHead(200, { "Content-Type": "image/jpeg", "Cache-Control": "no-cache" });
-    return createReadStream(f).pipe(res);
+    return enviarFicheiro(f, res);
+  }
+  // análise da referência de um estilo aprendido: o storyboard e o relatório do rea-video
+  if (req.method === "GET" && a === "out" && b === "estilos-ref" && /^[a-z0-9-]{1,40}$/.test(c ?? "") && ["storyboard.jpg", "relatorio.html"].includes(url.pathname.split("/").pop())) {
+    const f = join(RAIZ, "out/estilos-ref", c, url.pathname.split("/").pop());
+    if (!existsSync(f)) return json(res, 404, { erro: "não existe" });
+    res.writeHead(200, { "Content-Type": f.endsWith(".jpg") ? "image/jpeg" : "text/html; charset=utf-8" });
+    return enviarFicheiro(f, res);
   }
   // capas: a escolhida (out/<id>.capa.jpg) e as variantes (out/capas/<id>-<layout>.jpg)
   if (req.method === "GET" && a === "out" && (/^[a-z0-9-]{1,80}\.capa\.jpg$/.test(b ?? "") || (b === "capas" && /^[a-z0-9-]{1,80}-(impacto|dividido|objeto)\.jpg$/.test(c ?? "")))) {
     const f = b === "capas" ? join(RAIZ, "out/capas", c) : join(RAIZ, "out", b);
     if (!existsSync(f)) return json(res, 404, { erro: "não existe" });
     res.writeHead(200, { "Content-Type": "image/jpeg", "Cache-Control": "no-cache" });
-    return createReadStream(f).pipe(res);
+    return enviarFicheiro(f, res);
   }
   // miniaturas dos estilos e ícones (SVG do Lucide) usados pelo painel
+  // o player ao vivo do editor manual (scripts/build_editor.mjs)
+  if (req.method === "GET" && a === "editor" && b === "player.js") {
+    compilarPlayerEditor();
+    const f = join(RAIZ, "server/editor/player.js");
+    if (!existsSync(f)) return json(res, 404, { erro: "o player do editor ainda não foi compilado (node scripts/build_editor.mjs)" });
+    res.writeHead(200, { "Content-Type": "text/javascript; charset=utf-8", "Cache-Control": "no-cache" });
+    return enviarFicheiro(f, res);
+  }
   if (req.method === "GET" && (a === "miniaturas" || a === "icones") && /^[\w-]+\.(jpg|svg)$/.test(b ?? "")) {
     const f = a === "miniaturas" ? join(RAIZ, "server/miniaturas", b) : join(RAIZ, "node_modules/lucide-static/icons", b);
     if (!existsSync(f)) return json(res, 404, { erro: "não existe" });
     res.writeHead(200, { "Content-Type": b.endsWith(".svg") ? "image/svg+xml" : "image/jpeg", "Cache-Control": b.endsWith(".svg") ? "max-age=86400" : "no-cache" }); // miniaturas mudam quando se regeneram os estilos
-    return createReadStream(f).pipe(res);
+    return enviarFicheiro(f, res);
   }
   if (req.method === "GET" && a === "public") {
     const rel = decodeURIComponent(url.pathname.slice("/public/".length));
     const f = resolve(RAIZ, "public", rel);
     if (!f.startsWith(resolve(RAIZ, "public")) || !existsSync(f) || !statSync(f).isFile()) return json(res, 404, { erro: "não existe" });
     if (/\.(mp4|webm)$/i.test(f)) return enviarVideo(req, res, f);
-    const tipos = { jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png", webp: "image/webp", gif: "image/gif", mp3: "audio/mpeg", wav: "audio/wav", m4a: "audio/mp4", ogg: "audio/ogg" };
-    res.writeHead(200, { "Content-Type": tipos[f.split(".").pop().toLowerCase()] ?? "application/octet-stream" });
-    return createReadStream(f).pipe(res);
+    const tipos = {
+      jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png", webp: "image/webp", gif: "image/gif", svg: "image/svg+xml", mp3: "audio/mpeg", wav: "audio/wav", m4a: "audio/mp4", ogg: "audio/ogg",
+      // o player ao vivo do editor também pede modelos 3D, texturas e fontes
+      glb: "model/gltf-binary", gltf: "model/gltf+json", bin: "application/octet-stream", json: "application/json", ktx2: "image/ktx2", hdr: "application/octet-stream",
+      ttf: "font/ttf", otf: "font/otf", woff: "font/woff", woff2: "font/woff2",
+    };
+    const tipo = tipos[f.split(".").pop().toLowerCase()] ?? "application/octet-stream";
+    if (tipo.startsWith("audio/")) return enviarVideo(req, res, f, tipo);
+    res.writeHead(200, { "Content-Type": tipo });
+    return enviarFicheiro(f, res);
   }
   if (a !== "api") return json(res, 404, { erro: "rota desconhecida" });
+
+  // ---------- custos (menu Custos): o que cada vídeo e cada etapa gastou ----------
+  // o plano do Claude (para comparar o gasto com a mensalidade): fica no .env
+  if (b === "custos" && c === "plano" && req.method === "POST") {
+    const d = await corpo(req);
+    if (!["pro", "max5", "max20", "api", ""].includes(d.plano)) return json(res, 400, { erro: "Plano inválido" });
+    gravarEnv({ CLAUDE_PLANO: d.plano });
+    return json(res, 200, { plano: d.plano });
+  }
+  if (b === "custos" && req.method === "GET") {
+    const linhas = lerCustos(RAIZ);
+    const agora = Date.now(), dia = 86400e3;
+    const periodo = (ms) => {
+      const l = linhas.filter((x) => agora - Date.parse(x.em) <= ms);
+      const claude = l.filter((x) => x.servico === "claude");
+      return {
+        usd: claude.reduce((t, x) => t + (x.custoUSD || 0), 0),
+        chamadas: claude.length,
+        tokens: claude.reduce((t, x) => t + (x.tokens?.entrada || 0) + (x.tokens?.saida || 0) + (x.tokens?.cacheLeitura || 0) + (x.tokens?.cacheEscrita || 0), 0),
+        caracteres: l.filter((x) => x.servico === "elevenlabs").reduce((t, x) => t + (x.caracteres || 0), 0),
+        externos: l.filter((x) => x.servico === "ia-externa").length,
+      };
+    };
+    const juntar = (chave) => {
+      const m = new Map();
+      for (const x of linhas) {
+        const k = x[chave]; if (!k) continue;
+        const a = m.get(k) ?? { chave: k, usd: 0, chamadas: 0, caracteres: 0, externos: 0, ultimo: x.em };
+        if (x.servico === "claude") { a.usd += x.custoUSD || 0; a.chamadas++; }
+        if (x.servico === "elevenlabs") a.caracteres += x.caracteres || 0;
+        if (x.servico === "ia-externa") a.externos++;
+        if (x.em > a.ultimo) a.ultimo = x.em;
+        m.set(k, a);
+      }
+      return [...m.values()];
+    };
+    const titulo = (id) => { try { return JSON.parse(readFileSync(caminhoRoteiro(id), "utf-8")).titulo || id; } catch { return id; } };
+    let eleven = null;
+    const chave = chaveEleven();
+    if (chave) {
+      const r = await fetch("https://api.elevenlabs.io/v1/user/subscription", { headers: { "xi-api-key": chave } }).catch(() => null);
+      if (r?.ok) { const s = await r.json(); eleven = { plano: s.tier, usados: s.character_count, limite: s.character_limit, renova: s.next_character_count_reset_unix ? s.next_character_count_reset_unix * 1000 : null }; }
+    }
+    return json(res, 200, {
+      hoje: periodo(dia), semana: periodo(7 * dia), mes: periodo(30 * dia), total: periodo(Infinity),
+      porEtapa: juntar("etapa").sort((a, b) => b.usd - a.usd || b.externos - a.externos),
+      porVideo: juntar("video").sort((a, b) => (b.ultimo > a.ultimo ? 1 : -1)).slice(0, 40).map((v) => ({ ...v, titulo: titulo(v.chave) })),
+      recentes: linhas.slice(-40).reverse().map((x) => ({ ...x, titulo: x.video ? titulo(x.video) : undefined })),
+      eleven, modo: modoIA(RAIZ), claude: { plano: process.env.CLAUDE_PLANO || lerEnv().CLAUDE_PLANO || "", token: Boolean(tokenClaude()) },
+    });
+  }
 
   // ---------- canais (marca d'água: nome, @, logo e nicho) ----------
   if (b === "canais" && c === "logo" && req.method === "POST") {
@@ -1243,12 +1819,12 @@ const rotas = async (req, res) => {
   }
 
   if (req.method === "GET" && b === "opcoes")
-    return json(res, 200, { estilos: estilos(), canais: canais(), vozesEdge: VOZES_EDGE, temElevenLabs: Boolean(process.env.ELEVENLABS_API_KEY || lerEnv().ELEVENLABS_API_KEY), temPixabay: Boolean(process.env.PIXABAY_API_KEY || lerEnv().PIXABAY_API_KEY), temSketchfab: Boolean(process.env.SKETCHFAB_API_TOKEN || lerEnv().SKETCHFAB_API_TOKEN), temGoogle: youtube.configurado(), temClaudeToken: Boolean(tokenClaude()), temChatterbox: existsSync(join(RAIZ, ".venv-voz/Scripts/python.exe")), vozesChatterbox: vozesChatterbox() });
+    return json(res, 200, { estilos: estilos(), canais: canais(), vozesEdge: VOZES_EDGE, temElevenLabs: Boolean(process.env.ELEVENLABS_API_KEY || lerEnv().ELEVENLABS_API_KEY), temPixabay: Boolean(process.env.PIXABAY_API_KEY || lerEnv().PIXABAY_API_KEY), temSketchfab: Boolean(process.env.SKETCHFAB_API_TOKEN || lerEnv().SKETCHFAB_API_TOKEN), temGoogle: youtube.configurado(), temMeta: instagram.configurado(), temClaudeToken: Boolean(tokenClaude()), temChatterbox: existsSync(join(RAIZ, ".venv-voz/Scripts/python.exe")), temRea: reaDisponivel(), opcoesEstilo: OPCOES_ESTILO, comEfeitos: readdirSync(PASTA_MODULOS).filter((f) => /^[a-z0-9-]+\.tsx$/.test(f)).map((f) => f.slice(0, -4)), vozesChatterbox: vozesChatterbox() });
 
   if (b === "chaves" && req.method === "POST") {
     const d = await corpo(req);
     const novas = {};
-    for (const nome of ["ELEVENLABS_API_KEY", "PIXABAY_API_KEY", "SKETCHFAB_API_TOKEN", "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "CLAUDE_CODE_OAUTH_TOKEN"]) {
+    for (const nome of ["ELEVENLABS_API_KEY", "PIXABAY_API_KEY", "SKETCHFAB_API_TOKEN", "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "META_APP_ID", "META_APP_SECRET", "CLAUDE_CODE_OAUTH_TOKEN"]) {
       if (!d[nome]) continue;
       if (/\s/.test(d[nome])) return json(res, 400, { erro: `${nome} inválida` });
       novas[nome] = d[nome];
@@ -1306,6 +1882,64 @@ const rotas = async (req, res) => {
     const d = await corpo(req);
     return json(res, 202, novaTarefa("cortes", (t) => cortes.analisar(t, d)));
   }
+  // ---------- vídeos enviados e baixados (public/uploads): ver o espaço e apagar ----------
+  if (b === "uploads" && req.method === "GET") return json(res, 200, listarUploads());
+  if (b === "uploads" && req.method === "DELETE") {
+    const d = await corpo(req);
+    const lista = listarUploads();
+    const pedidos = (d.arquivos ?? []).filter((a) => /^uploads\/[\w.-]+$/.test(a));
+    const emUso = pedidos.filter((a) => lista.find((x) => x.arquivo === a)?.emUso);
+    if (emUso.length) return json(res, 409, { erro: `${emUso.length === 1 ? "Este vídeo está" : `${emUso.length} vídeos estão`} a ser usado(s) por um vídeo da biblioteca. Apague ou produza esse vídeo primeiro.` });
+    let libertado = 0;
+    for (const a of pedidos) {
+      const f = join(RAIZ, "public", a);
+      if (!existsSync(f)) continue;
+      libertado += statSync(f).size;
+      rmSync(f, { force: true });
+      rmSync(f.replace(/\.\w+$/, ".json"), { force: true });
+    }
+    return json(res, 200, { apagados: pedidos.length, libertadoMB: Math.round(libertado / 2 ** 20) });
+  }
+  // modelos realistas do Poly Haven já no projeto (para escolher o objeto de uma frase de efeito)
+  if (b === "polyhaven" && req.method === "GET") {
+    const f = join(RAIZ, "src/lowpoly/polyhaven.json");
+    const cat = existsSync(f) ? JSON.parse(readFileSync(f, "utf-8")) : {};
+    return json(res, 200, Object.entries(cat).filter(([, m]) => existsSync(join(RAIZ, "public", m.arquivo))).map(([id, m]) => ({ id, nome: m.nome, categorias: m.categorias })));
+  }
+  // galeria do campo Objeto: o que cada fonte tem, com miniatura, para ver antes de escolher
+  if (b === "objetos" && req.method === "GET") {
+    const fonte = url.searchParams.get("fonte") ?? "", q = semAcento(url.searchParams.get("q") ?? "");
+    const filtrar = (lista) => (q ? lista.filter((o) => q.split(/\s+/).every((t) => semAcento([o.id, o.nome, ...(o.tags ?? [])].join(" ")).includes(t))) : lista);
+    if (fonte === "polyhaven") {
+      const f = join(RAIZ, "src/lowpoly/polyhaven.json"), cat = existsSync(f) ? JSON.parse(readFileSync(f, "utf-8")) : {};
+      return json(res, 200, filtrar(Object.entries(cat).filter(([, m]) => existsSync(join(RAIZ, "public", m.arquivo)))
+        .map(([id, m]) => ({ id, nome: m.nome, tags: [...(m.categorias ?? []), ...(m.tags ?? [])], mini: `https://cdn.polyhaven.com/asset_img/thumbs/${encodeURIComponent(id)}.png?width=256&height=256` }))));
+    }
+    if (fonte === "anatomia") {
+      const f = join(RAIZ, "src/lowpoly/anatomia.json"), cat = existsSync(f) ? JSON.parse(readFileSync(f, "utf-8")) : {};
+      return json(res, 200, filtrar(Object.entries(cat).filter(([, m]) => existsSync(join(RAIZ, "public", m.arquivo)))
+        .map(([id, m]) => ({ id, nome: m.nome, tags: m.tags, mini: existsSync(join(RAIZ, "public/modelos3d/miniaturas", `anatomia-${id}.jpg`)) ? `/public/modelos3d/miniaturas/anatomia-${id}.jpg` : null }))));
+    }
+    if (fonte === "emoji") {
+      const raiz = "https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets";
+      return json(res, 200, filtrar(EMOJIS_GALERIA.map(([id, nome, tom]) => {
+        const pasta = encodeURIComponent(id[0].toUpperCase() + id.slice(1)), base = id.replace(/-/g, " ").split(/\s+/).join("_");
+        return { id, nome, tags: [id], mini: tom ? `${raiz}/${pasta}/Default/3D/${base}_3d_default.png` : `${raiz}/${pasta}/3D/${base}_3d.png` };
+      })));
+    }
+    if (fonte === "cs2") {
+      const f = join(RAIZ, "out/cache/cs2-skins.json");
+      if (!existsSync(f)) return json(res, 200, []); // o catálogo vem na primeira troca de um objeto do CS2
+      const lista = JSON.parse(readFileSync(f, "utf-8")).map((s) => ({ id: s.name, nome: s.name, tags: [s.weapon?.name, s.category?.name, s.pattern?.name].filter(Boolean), mini: s.image, cor: s.rarity?.color }));
+      return json(res, 200, filtrar(lista).slice(0, 120));
+    }
+    return json(res, 200, []);
+  }
+  if (b === "baixar-link" && req.method === "POST") {
+    const d = await corpo(req);
+    if (!lerLink(d.link)) return json(res, 400, { erro: "Cole um link de vídeo do YouTube (youtube.com/watch, youtu.be, shorts) ou do Instagram (reel ou post)" });
+    return json(res, 202, novaTarefa("baixar", (t) => baixarLink(t, d.link)));
+  }
   if (b === "cortes" && !c && req.method === "GET") return json(res, 200, cortes.guardado(url.searchParams.get("arquivo") ?? "") ?? {});
   if (b === "cortes" && c === "produzir" && req.method === "POST") {
     const d = await corpo(req);
@@ -1317,7 +1951,7 @@ const rotas = async (req, res) => {
       const videoId = `${slug(titulo) || "corte"}-${Date.now().toString(36).slice(-4)}${Math.random().toString(36).slice(2, 4)}`;
       const emojis = Object.fromEntries((x.palavras_chave ?? []).filter((k) => k?.palavra && k?.emoji).map((k) => [k.palavra, k.emoji]));
       writeFileSync(caminhoRoteiro(videoId), JSON.stringify({
-        id: videoId, titulo, formato: "clipe", estilo: d.estilo ?? "hormozi", musica: d.musica ?? "auto",
+        id: videoId, titulo, formato: "clipe", estilo: d.estilo ?? "hormozi", musica: d.musica ?? "auto", ...(Number(d.musicaInicio) > 0 ? { musicaInicio: Math.round(Number(d.musicaInicio) * 10) / 10 } : {}),
         ...(canalDe(d.canal) === "nenhum" ? { marcaDagua: false } : canalDe(d.canal) && { canal: d.canal }),
         destaques: Object.keys(emojis), legenda_post: x.legenda_post, nota: x.nota,
         cenas: [{ tipo: "clipe", bruto: d.arquivo, inicio: x.inicio, fim: x.fim, fala: "", titulo: d.gancho === false ? undefined : x.gancho, cortar: d.cortar !== false, enquadrar: d.enquadrar !== false, exemplos: d.exemplos !== false, gameplay: trechoGameplay(d.gameplay, x.fim - x.inicio, d.gameplayIntercalar === true) }],
@@ -1343,6 +1977,24 @@ const rotas = async (req, res) => {
     writeFileSync(`${base}.resposta.json`, JSON.stringify(valor));
     return json(res, 200, { ok: true });
   }
+  // gerir os estilos aprendidos: editar (PATCH), refinar com o Claude (POST …/refinar) e apagar (DELETE)
+  if (b === "estilos" && /^[a-z0-9-]{1,40}$/.test(c ?? "") && c !== "aprender") {
+    const sub = url.pathname.split("/")[4];
+    try {
+      if (req.method === "PATCH" && !sub) {
+        const d = await corpo(req);
+        estiloAprendido(c);
+        return json(res, 202, novaTarefa("estilo", (t) => editarEstilo(t, c, d)));
+      }
+      if (req.method === "DELETE" && !sub) return json(res, 200, apagarEstilo(c));
+      if (req.method === "POST" && sub === "refinar") {
+        const d = await corpo(req);
+        estiloAprendido(c);
+        if (!String(d.pedido ?? "").trim()) return json(res, 400, { erro: "Diga o que quer mudar no estilo" });
+        return json(res, 202, novaTarefa("estilo", (t) => refinarEstilo(t, c, d)));
+      }
+    } catch (e) { return json(res, 400, { erro: e.message }); }
+  }
   if (b === "estilos" && c === "aprender" && req.method === "POST") {
     const d = await corpo(req);
     if (!d.link && !d.arquivo) return json(res, 400, { erro: "Cole um link do YouTube ou do Instagram, ou envie o vídeo" });
@@ -1357,6 +2009,21 @@ const rotas = async (req, res) => {
   if (b === "jobs" && req.method === "GET") return json(res, 200, [...jobs.values()].sort((x, y) => y.criado - x.criado));
   if (b === "jobs" && c === "parar-tudo" && req.method === "POST") {
     return json(res, 200, { parados: [...jobs.values()].filter(pararJob).length });
+  }
+  // tirar da Produção os vídeos que falharam ou foram parados (só o registo: o roteiro e a mídia ficam)
+  const ACABADOS = ["erro", "parado", "pronto"];
+  if (b === "jobs" && !c && req.method === "DELETE") {
+    let n = 0;
+    for (const [id, j] of jobs) if (j.estado === "erro" || j.estado === "parado") { jobs.delete(id); n++; }
+    return json(res, 200, { removidos: n });
+  }
+  const removerDe = url.pathname.match(/^\/api\/jobs\/([\w-]{1,40})$/);
+  if (removerDe && req.method === "DELETE") {
+    const job = jobs.get(removerDe[1]);
+    if (!job) return json(res, 200, { removidos: 0 });
+    if (!ACABADOS.includes(job.estado)) return json(res, 409, { erro: "Este vídeo ainda está em produção: pare-o primeiro" });
+    jobs.delete(job.id);
+    return json(res, 200, { removidos: 1 });
   }
   const pararDe = url.pathname.match(/^\/api\/jobs\/([\w-]{1,40})\/parar$/);
   if (pararDe && req.method === "POST") {
@@ -1373,7 +2040,7 @@ const rotas = async (req, res) => {
       const arquivos = (d.arquivos ?? []).filter((a) => /^uploads\/[\w.-]+$/.test(a));
       if (!arquivos.length) return json(res, 400, { erro: "Envie pelo menos um vídeo" });
       writeFileSync(caminhoRoteiro(videoId), JSON.stringify({
-        id: videoId, titulo: d.tema.trim(), formato: "clipe", estilo: d.estilo ?? "hormozi", musica: d.musica ?? "auto",
+        id: videoId, titulo: d.tema.trim(), formato: "clipe", estilo: d.estilo ?? "hormozi", musica: d.musica ?? "auto", ...(Number(d.musicaInicio) > 0 ? { musicaInicio: Math.round(Number(d.musicaInicio) * 10) / 10 } : {}),
         ...(canalDe(d.canal) === "nenhum" ? { marcaDagua: false } : canalDe(d.canal) && { canal: d.canal }),
         destaques: (d.destaques ?? "").split(",").map((x) => x.trim()).filter(Boolean),
         cenas: arquivos.map((a) => ({ tipo: "clipe", bruto: a, fala: "", cortar: d.cortar !== false, enquadrar: d.enquadrar !== false, exemplos: d.exemplos === true, gameplay: trechoGameplay(d.gameplay, 60, d.gameplayIntercalar === true) })),
@@ -1407,10 +2074,10 @@ const rotas = async (req, res) => {
     writeFileSync(caminhoRoteiro(videoId), JSON.stringify({ id: videoId, ...r }, null, 2));
     const job = novoJob({
       tipo: "novo", importado: true, videoId, formato: FORMATOS[d.formato] ? d.formato : "ranking", tema: tema.trim(), estilo: d.estilo ?? "neon",
-      narracao: d.narracao ?? "edge", voz: d.voz, pais: d.pais ?? "Brasil (R$)", revisar: true, musica: d.musica ?? "auto",
+      narracao: d.narracao ?? "edge", voz: d.voz, pais: d.pais ?? "Brasil (R$)", revisar: true, musica: d.musica ?? "auto", ...(Number(d.musicaInicio) > 0 ? { musicaInicio: Math.round(Number(d.musicaInicio) * 10) / 10 } : {}),
       duracao: duracaoDe(d), editorChefe: false, canal: canalDe(d.canal),
     });
-    registar(job, `📥 Roteiro importado de outra IA (${r.cenas.length} cenas)`);
+    registar(job, `Roteiro importado de outra IA (${r.cenas.length} cenas)`);
     correrJob(job);
     return json(res, 201, job);
   }
@@ -1522,6 +2189,85 @@ const rotas = async (req, res) => {
     automatico.correr("manual").catch(() => {});
     return json(res, 202, { ok: true });
   }
+  // Insights: GET guardado (+ cruzamento), POST atualizar, POST analisar, GET retenção de um vídeo
+  if (b === "insights") {
+    const canal = url.searchParams.get("canal");
+    if (!canais()[canal]) return json(res, 400, { erro: "Canal desconhecido" });
+    if (req.method === "GET" && !c) {
+      const d = lerInsights(canal);
+      return json(res, 200, { youtube: youtube.estado(), dados: d ? cruzarInsights(d) : null });
+    }
+    if (req.method === "POST" && c === "atualizar") {
+      const dias = [7, 28, 90, 365].includes(Number(url.searchParams.get("dias"))) ? Number(url.searchParams.get("dias")) : 28;
+      return json(res, 202, novaTarefa("insights", (t) => atualizarInsights(t, canal, dias)));
+    }
+    if (req.method === "POST" && c === "analisar") return json(res, 202, novaTarefa("insights", (t) => diagnosticarCanal(t, canal)));
+    if (req.method === "GET" && c === "retencao") {
+      const video = url.searchParams.get("video") ?? "";
+      if (!/^[\w-]{11}$/.test(video)) return json(res, 400, { erro: "Vídeo inválido" });
+      try { return json(res, 200, { pontos: await youtube.retencao(canal, video) }); } catch (e) { return json(res, 400, { erro: e.message }); }
+    }
+  }
+  // ---------- Instagram ----------
+  if (b === "instagram") {
+    const igOk = (x) => ID_META.test(String(x ?? ""));
+    if (!c && req.method === "GET") return json(res, 200, { ...instagram.estado(), agenda: instagram.lerAgenda().slice(-60), canais: canais() });
+    if (c === "ligar" && req.method === "GET") {
+      try { return json(res, 200, { url: instagram.urlLigar() }); } catch (e) { return json(res, 400, { erro: e.message }); }
+    }
+    if (c === "token" && req.method === "POST") {
+      const { token } = await corpo(req);
+      try { return json(res, 200, await instagram.ligarComToken(String(token ?? "").trim())); } catch (e) { return json(res, 400, { erro: e.message }); }
+    }
+    if (c === "desligar" && req.method === "POST") {
+      const { conta } = await corpo(req);
+      if (!igOk(conta)) return json(res, 400, { erro: "Conta inválida" });
+      instagram.desligar(conta);
+      return json(res, 200, { ok: true });
+    }
+    if (c === "associar" && req.method === "POST") {
+      const { conta, canal } = await corpo(req);
+      if (!igOk(conta) || (canal && !canais()[canal])) return json(res, 400, { erro: "Conta ou canal inválido" });
+      try { instagram.associar(conta, canal); return json(res, 200, { ok: true }); } catch (e) { return json(res, 400, { erro: e.message }); }
+    }
+    // publicar um vídeo da biblioteca: agora (tarefa com progresso) ou agendado (o painel publica à hora marcada)
+    if (c === "publicar" && req.method === "POST") {
+      const d = await corpo(req);
+      if (!igOk(d.conta) || !ID_VIDEO.test(String(d.video ?? ""))) return json(res, 400, { erro: "Conta ou vídeo inválido" });
+      const ficheiro = join(RAIZ, "out", `${d.video}.mp4`);
+      if (!existsSync(ficheiro)) return json(res, 400, { erro: "Este vídeo ainda não foi renderizado" });
+      const legenda = String(d.legenda ?? "").slice(0, 2200);
+      const capaMs = Number.isFinite(Number(d.capaMs)) && d.capaMs !== "" && d.capaMs !== null ? Number(d.capaMs) : undefined;
+      if (d.quando && new Date(d.quando).getTime() > Date.now() + 60000) {
+        try { return json(res, 200, { agendado: instagram.agendar({ igId: d.conta, video: d.video, ficheiro, legenda, capaMs, quando: d.quando }) }); } catch (e) { return json(res, 400, { erro: e.message }); }
+      }
+      return json(res, 202, novaTarefa("instagram", (t) => instagram.publicarReel({ igId: d.conta, ficheiro, legenda, capaMs, passo: (p) => { t.passo = p; } })));
+    }
+    if (c === "agenda" && req.method === "DELETE") {
+      try { instagram.cancelar(url.searchParams.get("id")); return json(res, 200, { ok: true }); } catch (e) { return json(res, 400, { erro: e.message }); }
+    }
+    if (c === "limite" && req.method === "GET") {
+      if (!igOk(url.searchParams.get("conta"))) return json(res, 400, { erro: "Conta inválida" });
+      try { return json(res, 200, await instagram.limitePublicacao(url.searchParams.get("conta"))); } catch (e) { return json(res, 400, { erro: e.message }); }
+    }
+    if (c === "dados") {
+      const conta = url.searchParams.get("conta");
+      if (!igOk(conta)) return json(res, 400, { erro: "Conta inválida" });
+      if (req.method === "GET") return json(res, 200, { dados: instagram.lerDados(conta) });
+      if (req.method === "POST") return json(res, 202, novaTarefa("instagram", (t) => instagram.atualizarDados(conta, { passo: (p) => { t.passo = p; } })));
+    }
+    if (c === "comentarios" && req.method === "GET") {
+      const conta = url.searchParams.get("conta"), media = url.searchParams.get("media");
+      if (!igOk(conta) || !igOk(media)) return json(res, 400, { erro: "Conta ou publicação inválida" });
+      try { return json(res, 200, { comentarios: await instagram.comentarios(conta, media) }); } catch (e) { return json(res, 400, { erro: e.message }); }
+    }
+    if (c === "responder" && req.method === "POST") {
+      const d = await corpo(req);
+      if (!igOk(d.conta) || !ID_COMENTARIO.test(String(d.comentario ?? ""))) return json(res, 400, { erro: "Conta ou comentário inválido" });
+      try { return json(res, 200, await instagram.responder(d.conta, d.comentario, d.texto)); } catch (e) { return json(res, 400, { erro: e.message }); }
+    }
+    return json(res, 404, { erro: "Rota do Instagram desconhecida" });
+  }
   if (b === "youtube" && c === "ligar" && req.method === "GET") {
     const canal = url.searchParams.get("canal");
     if (!canais()[canal]) return json(res, 400, { erro: "Canal desconhecido" });
@@ -1573,12 +2319,12 @@ const rotas = async (req, res) => {
       if (Number.isInteger(d.fundo)) args.push("--fundo", String(d.fundo));
       if (["vertical", "horizontal"].includes(d.formato)) args.push("--formato", d.formato);
       return json(res, 202, novaTarefa("capa", (t) => new Promise((ok, falha) => {
-        t.passo = "🎨 Preparando o estúdio…";
+        t.passo = "Preparando o estúdio…";
         const p = spawn(process.execPath, args, { cwd: RAIZ, stdio: ["ignore", "pipe", "pipe"] });
         let ultima = "";
         p.stdout.on("data", (x) => {
           for (const l of String(x).split("\n").map((s) => s.trim()).filter(Boolean)) {
-            if (l.startsWith("✔")) t.passo = `🎨 ${l.split("-").pop().replace(".jpg", "")} pronta`;
+            if (l.startsWith("✔")) t.passo = `Capa ${l.split("-").pop().replace(".jpg", "")} pronta`;
             if (l.startsWith("{")) ultima = l;
           }
         });
@@ -1625,7 +2371,7 @@ const rotas = async (req, res) => {
       const v = antigo.cenas?.[i];
       if (v?.midia?.arquivo && c.tipo === v.tipo && (!c.midia || c.midia.consulta === v.midia.consulta)) c.midia = v.midia;
     });
-    const fica = ["formato", "estilo", "narracao", "voz", "velocidade", "musica", "musicaVolume", "sfxVolume", "canal", "marcaDagua", "mercado", "duracao_alvo"];
+    const fica = ["formato", "estilo", "narracao", "voz", "velocidade", "musica", "musicaVolume", "musicaInicio", "sfxVolume", "canal", "marcaDagua", "mercado", "duracao_alvo"];
     const manter = Object.fromEntries(fica.filter((k) => antigo[k] !== undefined).map((k) => [k, antigo[k]]));
     writeFileSync(caminhoRoteiro(id), JSON.stringify({ ...r, ...manter, id }, null, 2));
     const espera = [...jobs.values()].find((j) => j.videoId === id && j.estado === "aguardando revisao");
@@ -1636,7 +2382,7 @@ const rotas = async (req, res) => {
       musica: antigo.musica ?? "auto", duracao: antigo.duracao_alvo ?? "medio", canal: antigo.marcaDagua === false ? "nenhum" : antigo.canal,
       pais: antigo.mercado === "Portugal" ? "Portugal (€)" : "Brasil (R$)",
     });
-    registar(job, `🔁 Roteiro corrigido reenviado (${r.cenas.length} cenas)`);
+    registar(job, `Roteiro corrigido reenviado (${r.cenas.length} cenas)`);
     correrJob(job);
     return json(res, 200, job);
   }
@@ -1647,6 +2393,19 @@ const rotas = async (req, res) => {
     try { novoId = criarCorte(corteDe[1], Number(corteDe[2])); } catch (e) { return json(res, 400, { erro: e.message }); }
     await correrScript({ log: [] }, ["scripts/validar_roteiro.py", `roteiros/${novoId}.json`, "--corrigir"]).catch(() => {});
     return json(res, 201, { id: novoId });
+  }
+  if (b === "editor" && ID_VALIDO.test(c ?? "") && req.method === "GET") {
+    const p = caminhoRoteiro(c);
+    if (!existsSync(p)) return json(res, 404, { erro: "roteiro não existe" });
+    const roteiro = JSON.parse(readFileSync(p, "utf-8"));
+    let narrado = [];
+    try {
+      narrado = JSON.parse(readFileSync(join(RAIZ, "public/videos", c, "manifest.json"), "utf-8")).cenas
+        .map((x) => ({ fala: x.fala ?? "", duracaoMs: x.duracaoMs, palavras: x.palavras, audio: x.audio }));
+    } catch { /* ainda não narrado: o editor estima os tempos */ }
+    let musica = null;
+    try { musica = escolherMusica(roteiro, RAIZ) ?? null; } catch { /* sem biblioteca de música */ }
+    return json(res, 200, { roteiro, narrado, musica });
   }
   if (b === "roteiros" && ID_VALIDO.test(c ?? "")) {
     const p = caminhoRoteiro(c);
@@ -1668,11 +2427,50 @@ const rotas = async (req, res) => {
       const r = JSON.parse(readFileSync(p, "utf-8"));
       if (!r.cenas[i]) return json(res, 404, { erro: "cena não existe" });
       const d = await corpo(req);
-      if (d.fonte) r.cenas[i].midia = { fonte: d.fonte, consulta: d.consulta, ...(d.tipo && { tipo: d.tipo }), ...(d.indice && { indice: Number(d.indice) }) };
-      else delete r.cenas[i].midia;
+      // campo "objeto": o objeto que flutua na tipografia editorial (modelo 3D, emoji, ícone ou imagem isolada)
+      const nova = !d.fonte ? undefined
+        : d.fonte === "icone" ? { fonte: "icone", consulta: d.consulta, arquivo: `icone:${d.consulta}`, formato: "icone" }
+        : ["polyhaven", "anatomia"].includes(d.fonte) ? { fonte: d.fonte, modelo: d.consulta, tipo: "modelo3d" }
+        : { fonte: d.fonte, consulta: d.consulta, ...(d.tipo && { tipo: d.tipo }), ...(d.indice && { indice: Number(d.indice) }) };
+      const campo = d.campo === "objeto" ? "objeto" : "midia";
+      if (nova) r.cenas[i][campo] = { ...nova, ...(campo === "midia" && r.cenas[i].midia?.pontos && { pontos: r.cenas[i].midia.pontos }) };
+      else delete r.cenas[i][campo];
       writeFileSync(p, JSON.stringify(r, null, 2));
       const registo = { log: [] };
-      if (d.fonte) await correrScript(registo, ["scripts/buscar_midia.py", `roteiros/${c}.json`, "--cena", String(i)]).catch(() => {});
+      if (nova && !nova.arquivo) await correrScript(registo, ["scripts/buscar_midia.py", `roteiros/${c}.json`, "--cena", String(i)]).catch(() => {});
+      return json(res, 200, { roteiro: JSON.parse(readFileSync(p, "utf-8")), log: registo.log });
+    }
+    // pré-visualização de uma cena: um frame com o que está no roteiro (sem renderizar o vídeo)
+    const previaDe = url.pathname.match(/\/previa\/(\d+)$/);
+    if (req.method === "POST" && previaDe) {
+      const i = Number(previaDe[1]);
+      if (!JSON.parse(readFileSync(p, "utf-8")).cenas[i]) return json(res, 404, { erro: "cena não existe" });
+      return json(res, 202, novaTarefa("previa", (t) => new Promise((ok, falha) => {
+        t.passo = "Desenhando a cena…";
+        const proc = guardarProcesso(t, spawn(process.execPath, ["scripts/previa_cena.mjs", c, String(i), String(Number(url.searchParams.get("t")) || 0.6)], { cwd: RAIZ, stdio: ["ignore", "pipe", "pipe"] }));
+        let erro = "";
+        proc.stderr.on("data", (x) => (erro += x));
+        proc.on("error", falha);
+        proc.on("close", (code) => (code === 0 ? ok({ url: `/out/previa/${c}-${i}.jpg?v=${Date.now()}` }) : falha(new Error(erro.trim().split("\n").filter((l) => !/THREE|Tab \d/.test(l)).pop() || "Não consegui desenhar a cena"))));
+      })));
+    }
+    // apoio visual de um corte: troca a mídia (vídeo, foto, print) ou o objeto da frase de efeito e descarrega já
+    const apoioDe = url.pathname.match(/\/apoio\/(\d+)\/(\d+)$/);
+    if (req.method === "POST" && apoioDe) {
+      const [i, k] = [Number(apoioDe[1]), Number(apoioDe[2])];
+      const r = JSON.parse(readFileSync(p, "utf-8"));
+      const b = r.cenas[i]?.broll?.[k];
+      if (!b) return json(res, 404, { erro: "apoio não existe" });
+      const d = await corpo(req);
+      const nova = !d.fonte ? undefined
+        : d.fonte === "icone" ? { fonte: "icone", consulta: d.consulta, arquivo: `icone:${d.consulta}`, formato: "icone" }
+        : ["polyhaven", "anatomia"].includes(d.fonte) ? { fonte: d.fonte, modelo: d.consulta, tipo: "modelo3d" }
+        : { fonte: d.fonte, consulta: d.consulta, ...(d.tipo && { tipo: d.tipo }), ...(d.indice && { indice: Number(d.indice) }) };
+      if (d.campo === "objeto") { if (!b.cena) return json(res, 400, { erro: "este apoio não tem objeto" }); if (nova) b.cena.objeto = nova; else delete b.cena.objeto; }
+      else { if (nova) b.midia = { ...nova, ...(b.midia?.pontos && { pontos: b.midia.pontos }) }; else delete b.midia; }
+      writeFileSync(p, JSON.stringify(r, null, 2));
+      const registo = { log: [] };
+      if (nova && !nova.arquivo) await correrScript(registo, ["scripts/buscar_midia.py", `roteiros/${c}.json`, "--cena", String(i)]).catch(() => {});
       return json(res, 200, { roteiro: JSON.parse(readFileSync(p, "utf-8")), log: registo.log });
     }
     const modeloDe = url.pathname.match(/\/modelo\/(\d+)$/);
@@ -1699,6 +2497,20 @@ const rotas = async (req, res) => {
   }
   json(res, 404, { erro: "rota desconhecida" });
 };
+
+// o player do editor manual é o mesmo código do vídeo (src/), compilado para o navegador: recompila se src/ mudou
+// (no arranque e sempre que o editor pede o player, para as mudanças nas cenas aparecerem sem reiniciar o painel)
+function compilarPlayerEditor() {
+  const saida = join(RAIZ, "server/editor/player.js");
+  const maisRecente = (pasta) => readdirSync(pasta, { withFileTypes: true }).reduce((m, e) => Math.max(m, e.isDirectory() ? maisRecente(join(pasta, e.name)) : statSync(join(pasta, e.name)).mtimeMs), 0);
+  try {
+    if (existsSync(saida) && statSync(saida).mtimeMs >= Math.max(maisRecente(join(RAIZ, "src")), statSync(join(RAIZ, "public/sfx/catalogo.json")).mtimeMs)) return;
+    console.log("A compilar o player do editor…");
+    const r = spawnSync(process.execPath, ["scripts/build_editor.mjs"], { cwd: RAIZ, encoding: "utf-8" });
+    console.log(r.status === 0 ? r.stdout.trim() : `Não consegui compilar o player do editor: ${(r.stderr || r.stdout).trim().split("\n").pop()}`);
+  } catch (e) { console.log(`Player do editor: ${e.message}`); }
+}
+compilarPlayerEditor();
 
 createServer((req, res) => rotas(req, res).catch((e) => json(res, 500, { erro: e.message })))
   .listen(PORTA, "127.0.0.1", () => { console.log(`Painel em http://localhost:${PORTA}`); automatico.iniciar(); });
